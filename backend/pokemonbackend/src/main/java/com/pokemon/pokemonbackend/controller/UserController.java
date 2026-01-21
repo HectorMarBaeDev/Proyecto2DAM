@@ -2,7 +2,7 @@ package com.pokemon.pokemonbackend.controller;
 
 import com.pokemon.pokemonbackend.model.User;
 import com.pokemon.pokemonbackend.repository.UserRepository;
-//import jakarta.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class UserController {
 
     // CREATE
     @PostMapping
-    public ResponseEntity<User> createUser(/*@Valid*/ @RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 
         if (userRepository.existsByUsername(user.getUsername())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();

@@ -1,8 +1,10 @@
 package com.pokemon.pokemonbackend.model;
 
 import jakarta.persistence.*;
-//import jakarta.validation.constraints.Email;
-//import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -12,14 +14,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@NotBlank
+    @NotBlank
     @Column(nullable = false, unique = true)
     private String username;
 
-    //@NotBlank
-    //@Email
+    @NotBlank
+    @Email
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
+    private List<Team> teams;
 
     public User() {}
 
@@ -29,11 +34,36 @@ public class User {
     }
 
     // getters y setters
-    public Long getId() { return id; }
-    public String getUsername() { return username; }
-    public String getEmail() { return email; }
 
-    public void setId(Long id) { this.id = id; }
-    public void setUsername(String username) { this.username = username; }
-    public void setEmail(String email) { this.email = email; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public List<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
+    }
 }
