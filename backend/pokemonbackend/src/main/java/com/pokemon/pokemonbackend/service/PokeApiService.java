@@ -8,25 +8,36 @@ import java.util.Map;
 
 @Service
 public class PokeApiService {
-    private static final String POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon/";
 
+    private static final String POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon/";
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Map<String, Object> getPokemonData (String identefier) {
-        return restTemplate.getForObject(POKEAPI_URL + identefier , Map.class);
+    public Map<String, Object> getPokemonData(String identifier) {
+        return restTemplate.getForObject(
+                POKEAPI_URL + identifier,
+                Map.class
+        );
     }
 
-    public String getPrimaryType (Map <String, Object> data) {
-        List<Map<String, Object>> types = (List<Map<String, Object>>) data.get("types");
-        return (String) ((Map<String, Object>)types.get(0).get("type")).get("name");
+    public String getPrimaryType(Map<String, Object> data) {
+        return getTypeBySlot(data, 1);
     }
 
-    public String getSecondaryType (Map <String, Object> data) {
-        List<Map<String, Object>> types = (List<Map<String, Object>>) data.get("types");
-        if (types.size() < 1) {
-            return (String) ((Map<String, Object>)types.get(0).get("type")).get("name");
-        } else {
-            return null;
+    public String getSecondaryType(Map<String, Object> data) {
+        return getTypeBySlot(data, 2);
+    }
+
+    private String getTypeBySlot(Map<String, Object> data, int slot) {
+        List<Map<String, Object>> types =
+                (List<Map<String, Object>>) data.get("types");
+
+        for (Map<String, Object> typeEntry : types) {
+            Integer typeSlot = (Integer) typeEntry.get("slot");
+            if (typeSlot != null && typeSlot == slot) {
+                Map<String, Object> type = (Map<String, Object>) typeEntry.get("type");
+                return (String) type.get("name");
+            }
         }
+        return null;
     }
 }
