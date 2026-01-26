@@ -1,6 +1,7 @@
 package com.pokemon.pokemonbackend.controller;
 
 import com.pokemon.pokemonbackend.dto.PokemonRequestDTO;
+import com.pokemon.pokemonbackend.dto.PokemonResponseDTO;
 import com.pokemon.pokemonbackend.model.Pokemon;
 import com.pokemon.pokemonbackend.model.Team;
 import com.pokemon.pokemonbackend.repository.PokemonRepository;
@@ -30,7 +31,7 @@ public class PokemonController {
 
     // Añadir Pokémon a un equipo
     @PostMapping
-    public ResponseEntity<Pokemon> addPokemon(
+    public ResponseEntity<PokemonResponseDTO> addPokemon(
             @Valid @RequestBody PokemonRequestDTO request,
             @RequestParam Long teamId
     ) {
@@ -42,33 +43,28 @@ public class PokemonController {
 
         // Regla de negocio: máximo 6 Pokémon
         if (pokemonRepository.findByTeam(team).size() >= 6) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.badRequest().body(null);
         }
 
-        Map<String, Object> data = pokeApiService.getPokemonData(request.getIdentifier());
-
-        Pokemon pokemon = new Pokemon();
-
-        pokemon.setPokedexNumber((Integer) data.get("id"));
-        pokemon.setName((String) data.get("name"));
-        pokemon.setPrimaryType(pokeApiService.getPrimaryType(data));
-        pokemon.setSecondaryType(pokeApiService.getSecondaryType(data));
-        pokemon.setTeam(team);
+        var data = pokeApiService.getPokemonData(request.getIdentifier());
+        Pokemon saved = pokemonRepository.save(new Pokemon((Long) data.get("id"), (String) data.get("name"), pokeApiService.getPrimaryType(data), pokeApiService.getSecondaryType(data), team));
         
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(pokemonRepository.save(pokemon));
+                .body(new PokemonResponseDTO(saved.getId(), saved.getPokedexNumber(), saved.getName(), saved.getPrimaryType(), saved.getSecondaryType()));
     }
 
     // Listar Pokémon de un equipo
     @GetMapping("/team/{teamId}")
-    public ResponseEntity<List<Pokemon>> getPokemonByTeam(@PathVariable Long teamId) {
+    public ResponseEntity<List<PokemonResponseDTO>> getPokemonByTeam(@PathVariable Long teamId) {
         Team team = teamRepository.findById(teamId).orElse(null);
 
         if (team == null) {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(pokemonRepository.findByTeam(team));
+        List<PokemonResponseDTO> response = pokemonRepository.findByTeam(team)
+                .stream().map(p -> new PokemonResponseDTO(p.getId(), p.getPokedexNumber(), p.getName(), p.getPrimaryType(), p.getSecondaryType())).toList();
+        return ResponseEntity.ok(response);
     }
 
     // Eliminar Pokémon
