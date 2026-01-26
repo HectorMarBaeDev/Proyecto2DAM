@@ -2,6 +2,9 @@ package com.pokemon.pokemonbackend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.List;
 
 @Entity
 @Table(name = "teams")
@@ -20,6 +23,10 @@ public class Team {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Pokemon> pokemon;
 
     public Team() {}
 
