@@ -1,15 +1,18 @@
 package com.pokemon.pokemonbackend.controller;
 
+import com.pokemon.pokemonbackend.dto.PokemonRequestDTO;
 import com.pokemon.pokemonbackend.model.Pokemon;
 import com.pokemon.pokemonbackend.model.Team;
 import com.pokemon.pokemonbackend.repository.PokemonRepository;
 import com.pokemon.pokemonbackend.repository.TeamRepository;
+import com.pokemon.pokemonbackend.service.PokeApiService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pokemon")
