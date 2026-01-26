@@ -17,16 +17,18 @@ public class PokemonController {
 
     private final PokemonRepository pokemonRepository;
     private final TeamRepository teamRepository;
+    private final PokeApiService pokeApiService;
 
-    public PokemonController(PokemonRepository pokemonRepository, TeamRepository teamRepository) {
+    public PokemonController(PokemonRepository pokemonRepository, TeamRepository teamRepository, PokeApiService pokeApiService) {
         this.pokemonRepository = pokemonRepository;
         this.teamRepository = teamRepository;
+        this.pokeApiService = pokeApiService;
     }
 
     // Añadir Pokémon a un equipo
     @PostMapping
     public ResponseEntity<Pokemon> addPokemon(
-            @Valid @RequestBody Pokemon pokemon,
+            @Valid @RequestBody PokemonRequestDTO request,
             @RequestParam Long teamId
     ) {
         Team team = teamRepository.findById(teamId).orElse(null);
@@ -40,7 +42,16 @@ public class PokemonController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
+        Map<String, Object> data = pokeApiService.getPokemonData(request.getIdentifier());
+
+        Pokemon pokemon = new Pokemon();
+
+        pokemon.setPokedexNumber((Integer) data.get("id"));
+        pokemon.setName((String) data.get("name"));
+        pokemon.setPrimaryType(pokeApiService.getPrimaryType(data));
+        pokemon.setSecondaryType(pokeApiService.getSecondaryType(data));
         pokemon.setTeam(team);
+        
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(pokemonRepository.save(pokemon));
     }
