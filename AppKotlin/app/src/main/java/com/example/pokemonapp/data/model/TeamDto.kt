@@ -4,5 +4,5 @@ data class TeamDto(
     val id: Long,
     val name: String,
     val format: String,
-    val userId: Long.
+    val userId: Long
 )
