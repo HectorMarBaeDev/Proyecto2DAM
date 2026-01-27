@@ -1,8 +1,8 @@
 package com.pokemon.pokemonbackend.controller;
 
+import com.pokemon.pokemonbackend.dto.UserResponseDTO;
 import com.pokemon.pokemonbackend.model.User;
 import com.pokemon.pokemonbackend.repository.UserRepository;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,31 +21,45 @@ public class UserController {
 
     // CREATE
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody User user) {
+        User saved = userRepository.save(user);
 
-        if (userRepository.existsByUsername(user.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
-        User savedUser = userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new UserResponseDTO(
+                        saved.getId(),
+                        saved.getUsername(),
+                        saved.getEmail()
+                ));
     }
 
     // READ ALL
     @GetMapping
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+
+        List<UserResponseDTO> response = userRepository.findAll()
+                .stream()
+                .map(u -> new UserResponseDTO(
+                        u.getId(),
+                        u.getUsername(),
+                        u.getEmail()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(response);
     }
 
     // READ BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+
         return userRepository.findById(id)
-                .map(ResponseEntity::ok)
+                .map(u -> ResponseEntity.ok(
+                        new UserResponseDTO(
+                                u.getId(),
+                                u.getUsername(),
+                                u.getEmail()
+                        )
+                ))
                 .orElse(ResponseEntity.notFound().build());
     }
 
