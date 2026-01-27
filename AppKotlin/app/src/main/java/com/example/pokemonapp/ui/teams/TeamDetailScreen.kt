@@ -1,2 +1,74 @@
 package com.example.pokemonapp.ui.teams
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.example.pokemonapp.data.model.PokemonDto
+import com.example.pokemonapp.data.repository.PokemonRepository
+import kotlinx.coroutines.launch
+
+@Composable
+fun TeamDetailScreen(
+    teamId: Long
+) {
+
+    val repository = remember { PokemonRepository() }
+    val scope = rememberCoroutineScope()
+
+    var pokemonList by remember { mutableStateOf<List<PokemonDto>>(emptyList()) }
+    var showDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        pokemonList = repository.getPokemonByTeam(teamId)
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Equipo Pokémon") },
+                actions = {
+                    IconButton(onClick = { showDialog = true }) {
+                        Text("+")
+                    }
+                }
+            )
+        }
+    ) { padding ->
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(pokemonList) { pokemon ->
+                PokemonCard(
+                    pokemon = pokemon,
+                    onDelete = {
+                        scope.launch {
+                            repository.deletePokemon(pokemon.id)
+                            pokemonList = repository.getPokemonByTeam(teamId)
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    if (showDialog) {
+        AddPokemonDialog(
+            onDismiss = { showDialog = false },
+            onAdd = { identifier ->
+                scope.launch {
+                    repository.addPokemon(teamId, identifier)
+                    pokemonList = repository.getPokemonByTeam(teamId)
+                    showDialog = false
+                }
+            }
+        )
+    }
+}
