@@ -25,13 +25,14 @@ import com.example.pokemonapp.data.repository.PokemonRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen( onUserSelected: (Long) -> Unit ) {
+fun LoginScreen(
+    onUserSelected: (Long) -> Unit
+) {
+
     val repository = remember { PokemonRepository() }
     val scope = rememberCoroutineScope()
 
-    var users by remember {
-        mutableStateOf(emptyList<UserDto>())
-    }
+    var users by remember { mutableStateOf(emptyList<com.example.pokemonapp.data.model.UserDto>()) }
 
     LaunchedEffect(Unit) {
         users = repository.getUsers()
@@ -49,7 +50,8 @@ fun LoginScreen( onUserSelected: (Long) -> Unit ) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            users.forEach { users ->
+
+            users.forEach { user ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
