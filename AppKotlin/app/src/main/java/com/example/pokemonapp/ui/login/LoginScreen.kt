@@ -16,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -30,17 +29,26 @@ fun LoginScreen(
 ) {
 
     val repository = remember { PokemonRepository() }
-    val scope = rememberCoroutineScope()
 
-    var users by remember { mutableStateOf(emptyList<com.example.pokemonapp.data.model.UserDto>()) }
+    var users by remember { mutableStateOf<List<UserDto>>(emptyList()) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        users = repository.getUsers()
+        try {
+            users = repository.getUsers()
+        } catch (e: Exception) {
+            error = "No se puede conectar con el servidor"
+        } finally {
+            isLoading = false
+        }
     }
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Selecciona usuario") })
+            TopAppBar(
+                title = { Text("Selecciona usuario") }
+            )
         }
     ) { padding ->
 
@@ -51,20 +59,49 @@ fun LoginScreen(
                 .padding(16.dp)
         ) {
 
-            users.forEach { user ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            onUserSelected(user.id)
+            when {
+                // 🔴 Error de conexión (prioridad máxima)
+                error != null -> {
+                    Text(
+                        text = error!!,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                // ⏳ Cargando datos
+                isLoading -> {
+                    Text("Cargando usuarios...")
+                }
+
+                // ⚠️ No hay usuarios
+                users.isEmpty() -> {
+                    Text("No hay usuarios. Crea uno desde el backend.")
+                }
+
+                // ✅ Lista de usuarios
+                else -> {
+                    users.forEach { user ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    onUserSelected(user.id)
+                                }
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = user.username,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = user.email,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                         }
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Text(user.username, style = MaterialTheme.typography.titleMedium)
-                        Text(user.email, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
