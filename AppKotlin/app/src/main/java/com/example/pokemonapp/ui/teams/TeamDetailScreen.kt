@@ -11,6 +11,7 @@ import com.example.pokemonapp.data.model.PokemonDto
 import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamDetailScreen(
     teamId: Long
