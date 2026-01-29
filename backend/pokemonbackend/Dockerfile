@@ -1,14 +1,20 @@
-# Imagen base con Java 17
-FROM eclipse-temurin:17-jdk-alpine
+# -------- ETAPA 1: build --------
+FROM maven:3.9-eclipse-temurin-17 AS build
 
-# Carpeta de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiamos el jar generado
-COPY target/*.jar app.jar
+COPY pom.xml .
+COPY src ./src
 
-# Exponemos el puerto (informativo)
+RUN mvn clean package -DskipTests
+
+# -------- ETAPA 2: runtime --------
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Comando para ejecutar la app
 CMD ["java", "-jar", "app.jar"]
