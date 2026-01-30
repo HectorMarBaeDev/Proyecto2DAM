@@ -23,7 +23,11 @@ public class PokemonController {
     private final TeamRepository teamRepository;
     private final PokeApiService pokeApiService;
 
-    public PokemonController(PokemonRepository pokemonRepository, TeamRepository teamRepository, PokeApiService pokeApiService) {
+    public PokemonController(
+            PokemonRepository pokemonRepository,
+            TeamRepository teamRepository,
+            PokeApiService pokeApiService
+    ) {
         this.pokemonRepository = pokemonRepository;
         this.teamRepository = teamRepository;
         this.pokeApiService = pokeApiService;
@@ -41,16 +45,34 @@ public class PokemonController {
             return ResponseEntity.notFound().build();
         }
 
-        // Regla de negocio: máximo 6 Pokémon
+        // Máximo 6 Pokémon
         if (pokemonRepository.findByTeam(team).size() >= 6) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().build();
         }
 
-        var data = pokeApiService.getPokemonData(request.getIdentifier());
-        Pokemon saved = pokemonRepository.save(new Pokemon((Long) data.get("id"), (String) data.get("name"), pokeApiService.getPrimaryType(data), pokeApiService.getSecondaryType(data), team));
-        
+        Map<String, Object> data = pokeApiService.getPokemonData(request.getIdentifier());
+
+        Integer pokedexNumber = (Integer) data.get("id");
+        String name = (String) data.get("name");
+
+        Pokemon pokemon = new Pokemon(
+                pokedexNumber,
+                name,
+                pokeApiService.getPrimaryType(data),
+                pokeApiService.getSecondaryType(data),
+                team
+        );
+
+        Pokemon saved = pokemonRepository.save(pokemon);
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new PokemonResponseDTO(saved.getId(), saved.getPokedexNumber(), saved.getName(), saved.getPrimaryType(), saved.getSecondaryType()));
+                .body(new PokemonResponseDTO(
+                        saved.getId(),
+                        saved.getPokedexNumber(),
+                        saved.getName(),
+                        saved.getPrimaryType(),
+                        saved.getSecondaryType()
+                ));
     }
 
     // Listar Pokémon de un equipo
@@ -63,7 +85,16 @@ public class PokemonController {
         }
 
         List<PokemonResponseDTO> response = pokemonRepository.findByTeam(team)
-                .stream().map(p -> new PokemonResponseDTO(p.getId(), p.getPokedexNumber(), p.getName(), p.getPrimaryType(), p.getSecondaryType())).toList();
+                .stream()
+                .map(p -> new PokemonResponseDTO(
+                        p.getId(),
+                        p.getPokedexNumber(),
+                        p.getName(),
+                        p.getPrimaryType(),
+                        p.getSecondaryType()
+                ))
+                .toList();
+
         return ResponseEntity.ok(response);
     }
 

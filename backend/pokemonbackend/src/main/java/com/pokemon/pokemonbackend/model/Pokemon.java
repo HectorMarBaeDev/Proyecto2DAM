@@ -10,7 +10,7 @@ public class Pokemon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @NotNull
     private Integer pokedexNumber;
@@ -28,7 +28,7 @@ public class Pokemon {
     private Team team;
 
     public Pokemon() {}
-    public Pokemon(Long id, String name, String primaryType, String secondaryType, Team team) {
+    public Pokemon(int id, String name, String primaryType, String secondaryType, Team team) {
         this.id = id;
         this.name = name;
         this.primaryType = primaryType;
@@ -36,7 +36,7 @@ public class Pokemon {
         this.team = team;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
@@ -60,7 +60,7 @@ public class Pokemon {
         return team;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
