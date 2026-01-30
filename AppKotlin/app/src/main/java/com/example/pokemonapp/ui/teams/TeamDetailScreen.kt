@@ -52,7 +52,7 @@ fun TeamDetailScreen(
                 .fillMaxSize()
         ) {
 
-            // MENSAJE DE ERROR (si existe)
+            // MENSAJE DE ERROR
             errorMessage?.let {
                 Text(
                     text = it,
@@ -92,11 +92,16 @@ fun TeamDetailScreen(
             onAdd = { identifier ->
                 scope.launch {
                     try {
-                        repository.addPokemon(teamId, identifier)
+                        val cleanIdentifier = identifier
+                            .trim()
+                            .lowercase()
+
+                        repository.addPokemon(teamId, cleanIdentifier)
+
                         pokemonList = repository.getPokemonByTeam(teamId)
                         showDialog = false
                     } catch (e: Exception) {
-                        errorMessage = "No se pudo añadir el Pokémon"
+                        errorMessage = e.message ?: "No se pudo añadir el Pokémon"
                     }
                 }
             }
