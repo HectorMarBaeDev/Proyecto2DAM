@@ -1,9 +1,8 @@
 package com.pokemon.pokemonbackend.service;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -11,33 +10,20 @@ import java.util.Map;
 @Service
 public class PokeApiService {
 
-    private static final String POKEAPI_URL =
-            "https://pokeapi.co/api/v2/pokemon/";
-
+    private static final String POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon/";
     private final RestTemplate restTemplate = new RestTemplate();
 
     public Map<String, Object> getPokemonData(String identifier) {
 
+        String normalized = identifier.trim().toLowerCase();
+
         try {
-            Map<String, Object> data = restTemplate.getForObject(
-                    POKEAPI_URL + identifier.toLowerCase(),
+            return restTemplate.getForObject(
+                    POKEAPI_URL + normalized,
                     Map.class
             );
-
-            if (data == null) {
-                throw new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Pokémon no encontrado"
-                );
-            }
-
-            return data;
-
-        } catch (Exception e) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Error consultando la PokeAPI"
-            );
+        } catch (HttpClientErrorException e) {
+            return null; // Pokémon no existe
         }
     }
 
@@ -51,35 +37,17 @@ public class PokeApiService {
 
     @SuppressWarnings("unchecked")
     private String getTypeBySlot(Map<String, Object> data, int slot) {
+        List<Map<String, Object>> types =
+                (List<Map<String, Object>>) data.get("types");
 
-        if (data == null || !data.containsKey("types")) {
-            return null;
-        }
-
-        Object typesObj = data.get("types");
-        if (!(typesObj instanceof List<?> types)) {
-            return null;
-        }
-
-        for (Object entryObj : types) {
-            if (!(entryObj instanceof Map<?, ?> entry)) {
-                continue;
-            }
-
-            Object slotObj = entry.get("slot");
-            if (!(slotObj instanceof Number slotNumber)) {
-                continue;
-            }
-
-            if (slotNumber.intValue() == slot) {
-                Object typeObj = entry.get("type");
-                if (typeObj instanceof Map<?, ?> typeMap) {
-                    Object name = typeMap.get("name");
-                    return name != null ? name.toString() : null;
-                }
+        for (Map<String, Object> typeEntry : types) {
+            Integer typeSlot = (Integer) typeEntry.get("slot");
+            if (typeSlot != null && typeSlot == slot) {
+                Map<String, Object> type =
+                        (Map<String, Object>) typeEntry.get("type");
+                return (String) type.get("name");
             }
         }
-
         return null;
     }
 }

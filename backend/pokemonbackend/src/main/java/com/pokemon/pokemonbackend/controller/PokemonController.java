@@ -50,7 +50,15 @@ public class PokemonController {
             return ResponseEntity.badRequest().build();
         }
 
-        Map<String, Object> data = pokeApiService.getPokemonData(request.getIdentifier());
+        // 🔴 AQUÍ VA LA COMPROBACIÓN
+        Map<String, Object> data =
+                pokeApiService.getPokemonData(request.getIdentifier());
+
+        if (data == null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
 
         Integer pokedexNumber = (Integer) data.get("id");
         String name = (String) data.get("name");
@@ -74,6 +82,7 @@ public class PokemonController {
                         saved.getSecondaryType()
                 ));
     }
+
 
     // Listar Pokémon de un equipo
     @GetMapping("/team/{teamId}")

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@Table(name="pokemon")
+@Table(name = "pokemon")
 public class Pokemon {
 
     @Id
@@ -28,8 +28,16 @@ public class Pokemon {
     private Team team;
 
     public Pokemon() {}
-    public Pokemon(int id, String name, String primaryType, String secondaryType, Team team) {
-        this.id = id;
+
+    // ✅ CONSTRUCTOR CORRECTO
+    public Pokemon(
+            Integer pokedexNumber,
+            String name,
+            String primaryType,
+            String secondaryType,
+            Team team
+    ) {
+        this.pokedexNumber = pokedexNumber;
         this.name = name;
         this.primaryType = primaryType;
         this.secondaryType = secondaryType;
@@ -58,10 +66,6 @@ public class Pokemon {
 
     public Team getTeam() {
         return team;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public void setPokedexNumber(Integer pokedexNumber) {
