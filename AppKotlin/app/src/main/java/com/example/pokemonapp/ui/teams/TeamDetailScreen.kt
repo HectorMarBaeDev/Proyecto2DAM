@@ -22,9 +22,15 @@ fun TeamDetailScreen(
 
     var pokemonList by remember { mutableStateOf<List<PokemonDto>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    // CARGA INICIAL
     LaunchedEffect(Unit) {
-        pokemonList = repository.getPokemonByTeam(teamId)
+        try {
+            pokemonList = repository.getPokemonByTeam(teamId)
+        } catch (e: Exception) {
+            errorMessage = "Error cargando los Pokémon del equipo"
+        }
     }
 
     Scaffold(
@@ -40,34 +46,58 @@ fun TeamDetailScreen(
         }
     ) { padding ->
 
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(16.dp)
         ) {
-            items(pokemonList) { pokemon ->
-                PokemonCard(
-                    pokemon = pokemon,
-                    onDelete = {
-                        scope.launch {
-                            repository.deletePokemon(pokemon.id)
-                            pokemonList = repository.getPokemonByTeam(teamId)
-                        }
-                    }
+
+            // MENSAJE DE ERROR (si existe)
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
                 )
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                items(pokemonList) { pokemon ->
+                    PokemonCard(
+                        pokemon = pokemon,
+                        onDelete = {
+                            scope.launch {
+                                try {
+                                    repository.deletePokemon(pokemon.id)
+                                    pokemonList = repository.getPokemonByTeam(teamId)
+                                } catch (e: Exception) {
+                                    errorMessage = "No se pudo eliminar el Pokémon"
+                                }
+                            }
+                        }
+                    )
+                }
             }
         }
     }
 
+    // DIÁLOGO DE AÑADIR POKÉMON
     if (showDialog) {
         AddPokemonDialog(
             onDismiss = { showDialog = false },
             onAdd = { identifier ->
                 scope.launch {
-                    repository.addPokemon(teamId, identifier)
-                    pokemonList = repository.getPokemonByTeam(teamId)
-                    showDialog = false
+                    try {
+                        repository.addPokemon(teamId, identifier)
+                        pokemonList = repository.getPokemonByTeam(teamId)
+                        showDialog = false
+                    } catch (e: Exception) {
+                        errorMessage = "No se pudo añadir el Pokémon"
+                    }
                 }
             }
         )
