@@ -21,7 +21,9 @@ fun PokemonCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(6.dp)
+            .padding(6.dp),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             modifier = Modifier
@@ -31,7 +33,7 @@ fun PokemonCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            // IZQUIERDA: sprite + info
+            // ───── IZQUIERDA: sprite + info ─────
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -49,22 +51,22 @@ fun PokemonCard(
                         style = MaterialTheme.typography.titleMedium
                     )
 
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        PokemonTypeIcon(pokemon.primaryType)
+                        PokemonTypeIcon(type = pokemon.primaryType)
 
                         pokemon.secondaryType?.let {
-                            PokemonTypeIcon(it)
+                            PokemonTypeIcon(type = it)
                         }
                     }
                 }
             }
 
-            // DERECHA: eliminar
+            // ───── DERECHA: botón eliminar ─────
             TextButton(onClick = onDelete) {
                 Text("Eliminar")
             }
