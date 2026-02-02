@@ -1,5 +1,6 @@
 package com.example.pokemonapp.ui.pokemon
 
+import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,17 +15,31 @@ fun PokemonTypeIcon(
     type: String,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
+    val iconRes = when (type.lowercase()) {
+        "fire" -> R.drawable.type_fire
+        "water" -> R.drawable.type_water
+        "grass" -> R.drawable.type_grass
+        "electric" -> R.drawable.type_electric
+        "psychic" -> R.drawable.type_psychic
+        "fairy" -> R.drawable.type_fairy
+        "dark" -> R.drawable.type_dark
+        "ghost" -> R.drawable.type_ghost
+        "dragon" -> R.drawable.type_dragon
+        "ice" -> R.drawable.type_ice
+        "steel" -> R.drawable.type_steel
+        "rock" -> R.drawable.type_rock
+        "ground" -> R.drawable.type_ground
+        "fighting" -> R.drawable.type_fighting
+        "poison" -> R.drawable.type_poison
+        "bug" -> R.drawable.type_bug
+        "flying" -> R.drawable.type_flying
+        "normal" -> R.drawable.type_normal
+        else -> R.drawable.type_normal
+    }
 
-    val iconUrl =
-        "https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${type.lowercase()}.svg"
-
-    AsyncImage(
-        model = ImageRequest.Builder(context)
-            .data(iconUrl)
-            .decoderFactory(SvgDecoder.Factory())
-            .build(),
+    Image(
+        painter = painterResource(id = iconRes),
         contentDescription = type,
-        modifier = modifier.size(24.dp)
+        modifier = modifier.size(32.dp)
     )
 }
