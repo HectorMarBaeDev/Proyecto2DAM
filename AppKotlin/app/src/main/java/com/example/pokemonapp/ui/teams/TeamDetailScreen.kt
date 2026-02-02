@@ -1,8 +1,9 @@
 package com.example.pokemonapp.ui.teams
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,21 +17,14 @@ import kotlinx.coroutines.launch
 fun TeamDetailScreen(
     teamId: Long
 ) {
-
     val repository = remember { PokemonRepository() }
     val scope = rememberCoroutineScope()
 
     var pokemonList by remember { mutableStateOf<List<PokemonDto>>(emptyList()) }
     var showDialog by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    // CARGA INICIAL
     LaunchedEffect(Unit) {
-        try {
-            pokemonList = repository.getPokemonByTeam(teamId)
-        } catch (e: Exception) {
-            errorMessage = "Error cargando los Pokémon del equipo"
-        }
+        pokemonList = repository.getPokemonByTeam(teamId)
     }
 
     Scaffold(
@@ -46,63 +40,37 @@ fun TeamDetailScreen(
         }
     ) { padding ->
 
-        Column(
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2), // 🔥 2 columnas
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
-            // MENSAJE DE ERROR
-            errorMessage?.let {
-                Text(
-                    text = it,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                items(pokemonList) { pokemon ->
-                    PokemonCard(
-                        pokemon = pokemon,
-                        onDelete = {
-                            scope.launch {
-                                try {
-                                    repository.deletePokemon(pokemon.id)
-                                    pokemonList = repository.getPokemonByTeam(teamId)
-                                } catch (e: Exception) {
-                                    errorMessage = "No se pudo eliminar el Pokémon"
-                                }
-                            }
+            items(pokemonList) { pokemon ->
+                PokemonCard(
+                    pokemon = pokemon,
+                    onDelete = {
+                        scope.launch {
+                            repository.deletePokemon(pokemon.id)
+                            pokemonList = repository.getPokemonByTeam(teamId)
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     }
 
-    // DIÁLOGO DE AÑADIR POKÉMON
     if (showDialog) {
         AddPokemonDialog(
             onDismiss = { showDialog = false },
             onAdd = { identifier ->
                 scope.launch {
-                    try {
-                        val cleanIdentifier = identifier
-                            .trim()
-                            .lowercase()
-
-                        repository.addPokemon(teamId, cleanIdentifier)
-
-                        pokemonList = repository.getPokemonByTeam(teamId)
-                        showDialog = false
-                    } catch (e: Exception) {
-                        errorMessage = e.message ?: "No se pudo añadir el Pokémon"
-                    }
+                    repository.addPokemon(teamId, identifier)
+                    pokemonList = repository.getPokemonByTeam(teamId)
+                    showDialog = false
                 }
             }
         )
