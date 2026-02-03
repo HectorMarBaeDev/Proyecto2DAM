@@ -18,12 +18,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    // 🔐 Password encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-
+    // 🔗 AuthenticationProvider (FORMA CORRECTA EN SS6)
     @Bean
     public DaoAuthenticationProvider authenticationProvider(
             UserDetailsService userDetailsService,
@@ -36,7 +37,7 @@ public class SecurityConfig {
         return provider;
     }
 
-
+    // ⭐ AuthenticationManager
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration config
@@ -44,10 +45,17 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    // 🔐 Security rules
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            DaoAuthenticationProvider authenticationProvider
+    ) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
+                // 🔴 CLAVE: registrar el provider
+                .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
