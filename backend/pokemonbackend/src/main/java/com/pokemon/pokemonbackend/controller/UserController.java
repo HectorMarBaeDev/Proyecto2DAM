@@ -63,6 +63,21 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // READ BY USERNAME (LOGIN SIMPLE)
+    @GetMapping("/username/{username}")
+    public ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable String username) {
+
+        return userRepository.findByUsername(username)
+                .map(u -> ResponseEntity.ok(
+                        new UserResponseDTO(
+                                u.getId(),
+                                u.getUsername(),
+                                u.getEmail()
+                        )
+                ))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
