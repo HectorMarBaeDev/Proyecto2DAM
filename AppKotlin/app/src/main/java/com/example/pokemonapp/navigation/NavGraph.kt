@@ -20,11 +20,13 @@ fun NavGraph() {
         startDestination = "login"
     ) {
 
-        // -------- LOGIN --------
+        // -------- LOGIN REAL --------
         composable("login") {
             LoginScreen(
-                onUserSelected = { userId ->
-                    navController.navigate("teams/$userId")
+                onLoginSuccess = { userId ->
+                    navController.navigate("teams/$userId") {
+                        popUpTo("login") { inclusive = true }
+                    }
                 }
             )
         }
@@ -60,3 +62,4 @@ fun NavGraph() {
         }
     }
 }
+

@@ -1,6 +1,7 @@
 package com.example.pokemonapp.data.api
 
 import com.example.pokemonapp.data.model.*
+import com.example.pokemonapp.data.model.UserDto
 import retrofit2.http.*
 
 interface ApiService {
@@ -43,4 +44,12 @@ interface ApiService {
     suspend fun deletePokemon(
         @Path("id") pokemonId: Long
     )
+    // AUTH
+    @POST("auth/register")
+    suspend fun register(@Body body: Map<String, String>)
+
+    @POST("auth/login-check")
+    suspend fun loginCheck()
+
+
 }
