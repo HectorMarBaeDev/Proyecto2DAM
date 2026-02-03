@@ -1,29 +1,39 @@
 package com.pokemon.pokemonbackend.controller;
 
+import com.pokemon.pokemonbackend.dto.LoginRequest;
 import com.pokemon.pokemonbackend.dto.RegisterRequest;
 import com.pokemon.pokemonbackend.model.AppUser;
 import com.pokemon.pokemonbackend.repository.AppUserRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.net.Authenticator;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
     private final AppUserRepository repo;
     private final PasswordEncoder encoder;
+    private final AuthenticationManager authManager;
 
-    public AuthController(AppUserRepository repo, PasswordEncoder encoder) {
+    public AuthController(
+            AppUserRepository repo,
+            PasswordEncoder encoder,
+            AuthenticationManager authManager
+    ) {
         this.repo = repo;
         this.encoder = encoder;
+        this.authManager = authManager;
     }
 
+    // -------- REGISTRO --------
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest req) {
+
         if (repo.existsByUsername(req.getUsername())) {
             return ResponseEntity.badRequest().body("El usuario ya existe");
         }
@@ -35,11 +45,20 @@ public class AuthController {
         );
 
         repo.save(user);
-        return ResponseEntity.ok("Usuario registrado");
+        return ResponseEntity.ok("Usuario registrado correctamente");
     }
 
-    @PostMapping("/login-check")
-    public ResponseEntity<?> checkLogin(Authentication auth) {
-        return ResponseEntity.ok("OK");
+    // -------- LOGIN --------
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest req) {
+
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                req.getUsername(),
+                req.getPassword()
+        );
+
+        authManager.authenticate(auth);
+
+        return ResponseEntity.ok("Credenciales válidas");
     }
 }
