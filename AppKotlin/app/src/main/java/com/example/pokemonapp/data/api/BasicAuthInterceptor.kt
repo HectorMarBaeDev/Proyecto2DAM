@@ -16,11 +16,15 @@ class BasicAuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val credentials = Credentials.basic(username, password)
 
+        println("🔐 Enviando Authorization: $credentials")
+
         val request = chain.request().newBuilder()
-            .addHeader("Authorization", credentials)
+            .header("Authorization", credentials)
             .build()
 
         return chain.proceed(request)
     }
+
 }
+
 

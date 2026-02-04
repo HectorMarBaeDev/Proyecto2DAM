@@ -64,8 +64,28 @@ fun LoginScreen(
                             val user = repository.login(username, password)
                             onLoginSuccess(user.id)
                         } catch (e: Exception) {
-                            error = "Usuario o contraseña incorrectos"
-                        } finally {
+                            error = when (e) {
+                                is retrofit2.HttpException -> {
+                                    when (e.code()) {
+                                        401 -> "Credenciales incorrectas (401)"
+                                        403 -> "Acceso prohibido (403)"
+                                        404 -> "Endpoint no encontrado (404)"
+                                        else -> "Error HTTP ${e.code()}"
+                                    }
+                                }
+                                is java.net.UnknownHostException ->
+                                    "No se puede conectar con el servidor"
+
+                                is java.net.SocketTimeoutException ->
+                                    "Timeout de conexión"
+
+                                else -> {
+                                    e.printStackTrace()
+                                    "Error inesperado: ${e.message}"
+                                }
+                            }
+                        }
+                        finally {
                             isLoading = false
                         }
                     }

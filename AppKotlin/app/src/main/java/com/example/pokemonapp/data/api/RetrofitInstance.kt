@@ -9,10 +9,7 @@ object RetrofitInstance {
     private const val BASE_URL =
         "https://pokemon-backend-849x.onrender.com/api/"
 
-    fun create(
-        username: String,
-        password: String
-    ): ApiService {
+    fun create(username: String, password: String): ApiService {
 
         val client = OkHttpClient.Builder()
             .addInterceptor(BasicAuthInterceptor(username, password))

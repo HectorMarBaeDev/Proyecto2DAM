@@ -17,13 +17,20 @@ class PokemonRepository {
     // ======================
 
     suspend fun login(username: String, password: String): UserDto {
-        val api = RetrofitInstance.create(username, password)
-        api.loginCheck() // 401 si falla
 
-        // Guardamos sesión
-        AuthManager.login(username, password)
+        println("➡️ Intentando login con usuario=$username")
+
+        val api = RetrofitInstance.create(username, password)
+
+        println("➡️ Llamando a /auth/login-check")
+        api.loginCheck()   // aquí suele fallar
+
+        println("✅ Login-check OK, pidiendo usuarios")
 
         val users = api.getUsers()
+
+        println("📦 Usuarios recibidos: ${users.map { it.username }}")
+
         return users.first { it.username == username }
     }
 
