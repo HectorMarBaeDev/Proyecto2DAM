@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.Customizer;
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -47,21 +50,22 @@ public class SecurityConfig {
 
     // 🔐 Security rules
     @Bean
-    public SecurityFilterChain filterChain(
-            HttpSecurity http,
-            DaoAuthenticationProvider authenticationProvider
-    ) throws Exception {
-
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                // 🔴 CLAVE: registrar el provider
-                .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/health"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());
 
         return http.build();
     }
+
+
+
 }
