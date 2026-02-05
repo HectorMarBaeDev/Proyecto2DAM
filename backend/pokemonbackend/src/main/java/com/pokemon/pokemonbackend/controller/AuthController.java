@@ -2,8 +2,8 @@ package com.pokemon.pokemonbackend.controller;
 
 import com.pokemon.pokemonbackend.dto.LoginRequest;
 import com.pokemon.pokemonbackend.dto.RegisterRequest;
-import com.pokemon.pokemonbackend.model.AppUser;
-import com.pokemon.pokemonbackend.repository.AppUserRepository;
+import com.pokemon.pokemonbackend.model.User;
+import com.pokemon.pokemonbackend.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,56 +16,38 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AppUserRepository repo;
+    private final UserRepository repo;
     private final PasswordEncoder encoder;
-    private final AuthenticationManager authManager;
 
-    public AuthController(
-            AppUserRepository repo,
-            PasswordEncoder encoder,
-            AuthenticationManager authManager
-    ) {
+    public AuthController(UserRepository repo, PasswordEncoder encoder) {
         this.repo = repo;
         this.encoder = encoder;
-        this.authManager = authManager;
     }
 
-    // -------- REGISTRO --------
+    // -------- REGISTER --------
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest req) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest req) {
 
         if (repo.existsByUsername(req.getUsername())) {
             return ResponseEntity.badRequest().body("El usuario ya existe");
         }
 
-        AppUser user = new AppUser(
+        User user = new User(
                 req.getUsername(),
                 encoder.encode(req.getPassword()),
-                "ROLE_USER"
+                "ROLE_USER",
+                req.getEmail()
         );
 
         repo.save(user);
-        return ResponseEntity.ok("Usuario registrado correctamente");
+        return ResponseEntity.ok("Usuario registrado");
     }
 
+    // -------- LOGIN CHECK --------
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest req) {
-
-        try {
-            Authentication auth = new UsernamePasswordAuthenticationToken(
-                    req.getUsername(),
-                    req.getPassword()
-            );
-
-            authManager.authenticate(auth);
-
-            return ResponseEntity.ok("Credenciales válidas");
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(401)
-                    .body("Usuario o contraseña incorrectos");
-        }
+    public ResponseEntity<?> login() {
+        // Si llega aquí, Basic Auth ya validó
+        return ResponseEntity.ok("Login OK");
     }
-
 }
+

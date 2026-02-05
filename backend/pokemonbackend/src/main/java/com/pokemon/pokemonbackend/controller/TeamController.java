@@ -7,6 +7,7 @@ import com.pokemon.pokemonbackend.repository.TeamRepository;
 import com.pokemon.pokemonbackend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,16 +24,14 @@ public class TeamController {
         this.userRepository = userRepository;
     }
 
-    // CREATE
+    // CREATE (team del usuario autenticado)
     @PostMapping
     public ResponseEntity<TeamResponseDTO> createTeam(
-            @RequestParam Long userId,
-            @RequestBody Team team
+            @RequestBody Team team,
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User authUser
     ) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
+        User user = userRepository.findByUsername(authUser.getUsername())
+                .orElseThrow();
 
         team.setUser(user);
         Team saved = teamRepository.save(team);
@@ -46,52 +45,49 @@ public class TeamController {
                 ));
     }
 
-    // READ ALL
+    // READ ALL (opcional)
     @GetMapping
     public ResponseEntity<List<TeamResponseDTO>> getAllTeams() {
-
-        List<TeamResponseDTO> response = teamRepository.findAll()
-                .stream()
-                .map(t -> new TeamResponseDTO(
-                        t.getId(),
-                        t.getName(),
-                        t.getFormat(),
-                        t.getUser().getId()
-                ))
-                .toList();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                teamRepository.findAll()
+                        .stream()
+                        .map(t -> new TeamResponseDTO(
+                                t.getId(),
+                                t.getName(),
+                                t.getFormat(),
+                                t.getUser().getId()
+                        ))
+                        .toList()
+        );
     }
 
-    // READ BY USER
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TeamResponseDTO>> getTeamsByUser(@PathVariable Long userId) {
+    // READ BY USER (autenticado)
+    @GetMapping("/me")
+    public ResponseEntity<List<TeamResponseDTO>> getMyTeams(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.User authUser
+    ) {
+        User user = userRepository.findByUsername(authUser.getUsername())
+                .orElseThrow();
 
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        List<TeamResponseDTO> response = teamRepository.findByUser(user)
-                .stream()
-                .map(t -> new TeamResponseDTO(
-                        t.getId(),
-                        t.getName(),
-                        t.getFormat(),
-                        userId
-                ))
-                .toList();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                teamRepository.findByUser(user)
+                        .stream()
+                        .map(t -> new TeamResponseDTO(
+                                t.getId(),
+                                t.getName(),
+                                t.getFormat(),
+                                user.getId()
+                        ))
+                        .toList()
+        );
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTeam(@PathVariable Long id) {
-
         if (!teamRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-
         teamRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
