@@ -22,7 +22,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // 🔐 SIEMPRE ARRIBA
+    // 🔐 USUARIO AUTENTICADO
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getMe(Principal principal) {
 
@@ -39,8 +39,8 @@ public class UserController {
         );
     }
 
-    // 🔢 DESPUÉS
-    @GetMapping("/{id}")
+    // 🔢 SOLO IDs NUMÉRICOS
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
 
         return userRepository.findById(id)
@@ -53,5 +53,6 @@ public class UserController {
                 ))
                 .orElse(ResponseEntity.notFound().build());
     }
+
 }
 
