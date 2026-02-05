@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,9 +22,27 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // READ ALL (solo para debug / admin)
+    // 🔐 USUARIO AUTENTICADO
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMe(Principal principal) {
+
+        User user = userRepository
+                .findByUsername(principal.getName())
+                .orElseThrow();
+
+        return ResponseEntity.ok(
+                new UserResponseDTO(
+                        user.getId(),
+                        user.getUsername(),
+                        user.getEmail()
+                )
+        );
+    }
+
+    // 🛠 DEBUG / ADMIN
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+
         return ResponseEntity.ok(
                 userRepository.findAll()
                         .stream()
@@ -36,29 +55,13 @@ public class UserController {
         );
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getMe(Authentication authentication) {
-
-        String username = authentication.getName(); // ← ESTE ES EL USERNAME AUTENTICADO
-
-        User user = userRepository.findByUsername(username)
-                .orElseThrow();
-
-        return ResponseEntity.ok(
-                new UserResponseDTO(
-                        user.getId(),
-                        user.getUsername(),
-                        user.getEmail()
-                )
-        );
-    }
-
-    // DELETE (debug / admin)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+
         if (!userRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
+
         userRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

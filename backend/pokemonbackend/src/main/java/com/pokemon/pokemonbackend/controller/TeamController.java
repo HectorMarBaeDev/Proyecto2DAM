@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -61,12 +62,11 @@ public class TeamController {
         );
     }
 
-    // READ BY USER (autenticado)
     @GetMapping("/me")
-    public ResponseEntity<List<TeamResponseDTO>> getMyTeams(
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.User authUser
-    ) {
-        User user = userRepository.findByUsername(authUser.getUsername())
+    public ResponseEntity<List<TeamResponseDTO>> getMyTeams(Principal principal) {
+
+        User user = userRepository
+                .findByUsername(principal.getName())
                 .orElseThrow();
 
         return ResponseEntity.ok(
@@ -81,6 +81,7 @@ public class TeamController {
                         .toList()
         );
     }
+
 
     // DELETE
     @DeleteMapping("/{id}")
