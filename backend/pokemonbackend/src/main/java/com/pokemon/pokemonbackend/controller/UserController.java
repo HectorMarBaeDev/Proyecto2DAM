@@ -5,6 +5,7 @@ import com.pokemon.pokemonbackend.model.User;
 import com.pokemon.pokemonbackend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,12 +36,12 @@ public class UserController {
         );
     }
 
-    // READ ME (usuario autenticado)
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getMe(
-            @AuthenticationPrincipal org.springframework.security.core.userdetails.User authUser
-    ) {
-        User user = userRepository.findByUsername(authUser.getUsername())
+    public ResponseEntity<UserResponseDTO> getMe(Authentication authentication) {
+
+        String username = authentication.getName(); // ← ESTE ES EL USERNAME AUTENTICADO
+
+        User user = userRepository.findByUsername(username)
                 .orElseThrow();
 
         return ResponseEntity.ok(
