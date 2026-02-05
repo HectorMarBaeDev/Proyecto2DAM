@@ -48,17 +48,24 @@ public class AuthController {
         return ResponseEntity.ok("Usuario registrado correctamente");
     }
 
-    // -------- LOGIN --------
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest req) {
 
-        Authentication auth = new UsernamePasswordAuthenticationToken(
-                req.getUsername(),
-                req.getPassword()
-        );
+        try {
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    req.getUsername(),
+                    req.getPassword()
+            );
 
-        authManager.authenticate(auth);
+            authManager.authenticate(auth);
 
-        return ResponseEntity.ok("Credenciales válidas");
+            return ResponseEntity.ok("Credenciales válidas");
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(401)
+                    .body("Usuario o contraseña incorrectos");
+        }
     }
+
 }
