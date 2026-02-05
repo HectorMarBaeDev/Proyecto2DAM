@@ -22,7 +22,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // 🔐 USUARIO AUTENTICADO
+    // 🔐 SIEMPRE ARRIBA
     @GetMapping("/me")
     public ResponseEntity<UserResponseDTO> getMe(Principal principal) {
 
@@ -39,30 +39,19 @@ public class UserController {
         );
     }
 
-    // 🛠 DEBUG / ADMIN
-    @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+    // 🔢 DESPUÉS
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
 
-        return ResponseEntity.ok(
-                userRepository.findAll()
-                        .stream()
-                        .map(u -> new UserResponseDTO(
+        return userRepository.findById(id)
+                .map(u -> ResponseEntity.ok(
+                        new UserResponseDTO(
                                 u.getId(),
                                 u.getUsername(),
                                 u.getEmail()
-                        ))
-                        .toList()
-        );
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-
-        if (!userRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        userRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+                        )
+                ))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
+
