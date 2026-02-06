@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/health").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults());
+                .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
