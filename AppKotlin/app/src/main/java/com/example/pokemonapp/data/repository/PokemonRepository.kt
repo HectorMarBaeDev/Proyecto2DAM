@@ -6,36 +6,36 @@ import com.example.pokemonapp.data.model.*
 
 class PokemonRepository {
 
-    private fun api() =
-        RetrofitInstance.create(
-            AuthManager.username!!,
-            AuthManager.password!!
-        )
-
     // ======================
     // AUTH
     // ======================
 
     suspend fun login(username: String, password: String): UserDto {
 
-        println("➡️ Intentando login con usuario=$username")
+        // 1️⃣ Login por JSON (SIN Basic Auth)
+        val publicApi = RetrofitInstance.create(null, null)
 
-        val api = RetrofitInstance.create(username, password)
+        publicApi.login(
+            mapOf(
+                "username" to username,
+                "password" to password
+            )
+        )
 
-        println("➡️ Llamando a /auth/login-check")
-        api.loginCheck()   // aquí suele fallar
+        // 2️⃣ Guardamos credenciales
+        AuthManager.username = username
+        AuthManager.password = password
 
-        println("✅ Login-check OK, pidiendo usuarios")
-
-        val users = api.getUsers()
-
-        println("📦 Usuarios recibidos: ${users.map { it.username }}")
+        // 3️⃣ Usamos Basic Auth para obtener datos protegidos
+        val securedApi = RetrofitInstance.create(username, password)
+        val users = securedApi.getUsers()
 
         return users.first { it.username == username }
     }
 
     suspend fun register(username: String, email: String, password: String) {
-        RetrofitInstance.create("", "").register(
+        val api = RetrofitInstance.create(null, null)
+        api.register(
             mapOf(
                 "username" to username,
                 "email" to email,
@@ -45,16 +45,33 @@ class PokemonRepository {
     }
 
     // ======================
+    // HELPERS
+    // ======================
+
+    private fun api() =
+        RetrofitInstance.create(
+            AuthManager.username,
+            AuthManager.password
+        )
+
+    // ======================
     // TEAMS
     // ======================
 
     suspend fun getTeamsByUser(userId: Long): List<TeamDto> =
         api().getTeamsByUser(userId)
 
-    suspend fun createTeam(userId: Long, name: String, format: String): TeamDto =
+    suspend fun createTeam(
+        userId: Long,
+        name: String,
+        format: String
+    ): TeamDto =
         api().createTeam(
             userId,
-            mapOf("name" to name, "format" to format)
+            mapOf(
+                "name" to name,
+                "format" to format
+            )
         )
 
     // ======================
@@ -64,7 +81,10 @@ class PokemonRepository {
     suspend fun getPokemonByTeam(teamId: Long): List<PokemonDto> =
         api().getPokemonByTeam(teamId)
 
-    suspend fun addPokemon(teamId: Long, identifier: String): PokemonDto =
+    suspend fun addPokemon(
+        teamId: Long,
+        identifier: String
+    ): PokemonDto =
         api().addPokemon(
             teamId,
             mapOf("identifier" to identifier)

@@ -1,20 +1,30 @@
 package com.example.pokemonapp.data.api
 
 import com.example.pokemonapp.data.model.*
-import com.example.pokemonapp.data.model.UserDto
 import retrofit2.http.*
 
 interface ApiService {
 
-    // -------- USERS --------
+    // ======================
+    // AUTH
+    // ======================
+
+    @POST("auth/login")
+    suspend fun login(@Body body: Map<String, String>)
+
+    @POST("auth/register")
+    suspend fun register(@Body body: Map<String, String>)
+
+    // ======================
+    // USERS
+    // ======================
 
     @GET("users")
     suspend fun getUsers(): List<UserDto>
 
-    @POST("users")
-    suspend fun createUser(@Body user: Map<String, String>): UserDto
-
-    // -------- TEAMS --------
+    // ======================
+    // TEAMS
+    // ======================
 
     @GET("teams/user/{userId}")
     suspend fun getTeamsByUser(
@@ -27,7 +37,9 @@ interface ApiService {
         @Body team: Map<String, String>
     ): TeamDto
 
-    // -------- POKEMON --------
+    // ======================
+    // POKEMON
+    // ======================
 
     @GET("pokemon/team/{teamId}")
     suspend fun getPokemonByTeam(
@@ -44,12 +56,4 @@ interface ApiService {
     suspend fun deletePokemon(
         @Path("id") pokemonId: Long
     )
-    // AUTH
-    @POST("auth/register")
-    suspend fun register(@Body body: Map<String, String>)
-
-    @POST("auth/login-check")
-    suspend fun loginCheck()
-
-
 }

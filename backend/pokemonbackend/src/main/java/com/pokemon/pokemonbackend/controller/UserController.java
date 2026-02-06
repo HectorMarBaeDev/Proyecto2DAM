@@ -24,10 +24,12 @@ public class UserController {
 
     // 🔐 USUARIO AUTENTICADO
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO> getMe(Principal principal) {
+    public ResponseEntity<UserResponseDTO> getMe(Authentication authentication) {
+
+        String username = authentication.getName();
 
         User user = userRepository
-                .findByUsername(principal.getName())
+                .findByUsername(username)
                 .orElseThrow();
 
         return ResponseEntity.ok(
@@ -38,6 +40,7 @@ public class UserController {
                 )
         );
     }
+
 
     // 🔢 SOLO IDs NUMÉRICOS
     @GetMapping("/{id:\\d+}")

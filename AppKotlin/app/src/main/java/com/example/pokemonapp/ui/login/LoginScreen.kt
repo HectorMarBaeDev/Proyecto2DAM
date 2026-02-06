@@ -8,6 +8,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +43,8 @@ fun LoginScreen(
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("Usuario") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -50,7 +54,8 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 label = { Text("Contraseña") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -65,33 +70,31 @@ fun LoginScreen(
                             onLoginSuccess(user.id)
                         } catch (e: Exception) {
                             error = when (e) {
-                                is retrofit2.HttpException -> {
-                                    when (e.code()) {
-                                        401 -> "Credenciales incorrectas (401)"
-                                        403 -> "Acceso prohibido (403)"
-                                        404 -> "Endpoint no encontrado (404)"
-                                        else -> "Error HTTP ${e.code()}"
-                                    }
+                                is HttpException -> when (e.code()) {
+                                    401 -> "Credenciales incorrectas"
+                                    403 -> "Acceso prohibido"
+                                    404 -> "Servicio no disponible"
+                                    else -> "Error HTTP ${e.code()}"
                                 }
-                                is java.net.UnknownHostException ->
+
+                                is UnknownHostException ->
                                     "No se puede conectar con el servidor"
 
-                                is java.net.SocketTimeoutException ->
-                                    "Timeout de conexión"
+                                is SocketTimeoutException ->
+                                    "Tiempo de espera agotado"
 
                                 else -> {
                                     e.printStackTrace()
-                                    "Error inesperado: ${e.message}"
+                                    "Error inesperado"
                                 }
                             }
-                        }
-                        finally {
+                        } finally {
                             isLoading = false
                         }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading
+                enabled = !isLoading && username.isNotBlank() && password.isNotBlank()
             ) {
                 Text(if (isLoading) "Entrando..." else "Entrar")
             }
