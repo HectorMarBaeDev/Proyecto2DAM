@@ -1,9 +1,7 @@
 package com.pokemon.pokemonbackend.controller;
 
 import com.pokemon.pokemonbackend.dto.UserResponseDTO;
-import com.pokemon.pokemonbackend.model.User;
 import com.pokemon.pokemonbackend.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,20 +17,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    // CREATE
-    @PostMapping
-    public ResponseEntity<UserResponseDTO> createUser(@RequestBody User user) {
-        User saved = userRepository.save(user);
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new UserResponseDTO(
-                        saved.getId(),
-                        saved.getUsername(),
-                        saved.getEmail()
-                ));
-    }
-
-    // READ ALL
+    // READ ALL (admin / debug)
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
 
@@ -63,22 +48,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // READ BY USERNAME (LOGIN SIMPLE)
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserResponseDTO> getUserByUsername(@PathVariable String username) {
-
-        return userRepository.findByUsername(username)
-                .map(u -> ResponseEntity.ok(
-                        new UserResponseDTO(
-                                u.getId(),
-                                u.getUsername(),
-                                u.getEmail()
-                        )
-                ))
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    // DELETE
+    // DELETE (admin)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
