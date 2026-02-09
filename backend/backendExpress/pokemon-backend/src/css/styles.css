@@ -1,0 +1,14 @@
+.navPrincipal {
+    background: linear-gradient(#ff5202, #ffc894) !important;
+}
+
+#imgLogo {
+    width: 8%;
+    border: 2px solid black;
+    border-radius: 25%;
+    transition: box-shadow 0.3s ease;
+}
+
+#imgLogo:hover {
+    box-shadow: 0 0 20px 6px rgba(255, 242, 226, 0.8);
+}
