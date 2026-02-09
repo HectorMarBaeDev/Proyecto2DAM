@@ -1,10 +1,10 @@
 package com.pokemon.pokemonbackend.controller;
 
 import com.pokemon.pokemonbackend.dto.TeamResponseDTO;
+import com.pokemon.pokemonbackend.model.AppUser;
 import com.pokemon.pokemonbackend.model.Team;
-import com.pokemon.pokemonbackend.model.User;
 import com.pokemon.pokemonbackend.repository.TeamRepository;
-import com.pokemon.pokemonbackend.repository.UserRepository;
+import com.pokemon.pokemonbackend.repository.AppUserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,11 +18,11 @@ import java.util.List;
 public class TeamController {
 
     private final TeamRepository teamRepository;
-    private final UserRepository userRepository;
+    private final AppUserRepository appUserRepository;
 
-    public TeamController(TeamRepository teamRepository, UserRepository userRepository) {
+    public TeamController(TeamRepository teamRepository, AppUserRepository appUserRepository) {
         this.teamRepository = teamRepository;
-        this.userRepository = userRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     // CREATE (team del usuario autenticado)
@@ -31,10 +31,10 @@ public class TeamController {
             @RequestBody Team team,
             @AuthenticationPrincipal org.springframework.security.core.userdetails.User authUser
     ) {
-        User user = userRepository.findByUsername(authUser.getUsername())
+        AppUser appUser = appUserRepository.findByUsername(authUser.getUsername())
                 .orElseThrow();
 
-        team.setUser(user);
+        team.setUser(appUser);
         Team saved = teamRepository.save(team);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -42,7 +42,7 @@ public class TeamController {
                         saved.getId(),
                         saved.getName(),
                         saved.getFormat(),
-                        user.getId()
+                        appUser.getId()
                 ));
     }
 
@@ -65,18 +65,18 @@ public class TeamController {
     @GetMapping("/me")
     public ResponseEntity<List<TeamResponseDTO>> getMyTeams(Principal principal) {
 
-        User user = userRepository
+        AppUser appUser = appUserRepository
                 .findByUsername(principal.getName())
                 .orElseThrow();
 
         return ResponseEntity.ok(
-                teamRepository.findByUser(user)
+                teamRepository.findByUser(appUser)
                         .stream()
                         .map(t -> new TeamResponseDTO(
                                 t.getId(),
                                 t.getName(),
                                 t.getFormat(),
-                                user.getId()
+                                appUser.getId()
                         ))
                         .toList()
         );

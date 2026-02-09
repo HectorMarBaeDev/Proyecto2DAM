@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class AppUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role = "ROLE_USER";
+    private String role = "USER";
 
     @Email
     @Column(unique = true)
@@ -35,9 +35,9 @@ public class User {
     @JsonIgnore
     private List<Team> teams;
 
-    public User() {}
+    public AppUser() {}
 
-    public User(String username, String password, String role, String email) {
+    public AppUser(String username, String password, String role, String email) {
         this.username = username;
         this.password = password;
         this.role = role;

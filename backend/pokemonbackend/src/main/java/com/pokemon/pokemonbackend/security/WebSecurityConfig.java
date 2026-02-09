@@ -1,0 +1,86 @@
+package com.pokemon.pokemonbackend.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
+
+@Configuration
+@EnableWebSecurity
+public class WebSecurityConfig {
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // @formatter:off
+        http
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/hola").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/app-login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/register").permitAll()
+                        .requestMatchers("/welcome").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                //.csrf().disable()
+                .csrf((csrf) -> csrf.disable())
+                .httpBasic(withDefaults())
+                .formLogin(form -> form.disable());
+        // @formatter:on
+        return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return new ProviderManager(authenticationProvider);
+    }
+
+    // @formatter:off
+
+    // debe estar comentado para que funcione la autenticación mediante usuarios en base de datos
+    /*
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+        //PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        UserDetails user1 = User.withUsername("user")
+                .password(encoder.encode("password"))
+                .roles("USER")
+                .build();
+        UserDetails user2 = User.withUsername("admin")
+                .password(encoder.encode("123"))
+                //.password("123")
+                .roles("USER", "ADMIN")
+                .build();
+        Collection<UserDetails> users = new ArrayList<>();
+        users.add(user1);
+        users.add(user2);
+        return new InMemoryUserDetailsManager(users);
+    }*/
+
+    @Bean
+    public StrictHttpFirewall httpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowSemicolon(true);
+        return firewall;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+}

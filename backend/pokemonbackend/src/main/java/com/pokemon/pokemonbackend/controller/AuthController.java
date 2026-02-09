@@ -1,14 +1,10 @@
 package com.pokemon.pokemonbackend.controller;
 
-import com.pokemon.pokemonbackend.dto.LoginRequest;
 import com.pokemon.pokemonbackend.dto.RegisterRequest;
-import com.pokemon.pokemonbackend.model.User;
-import com.pokemon.pokemonbackend.repository.UserRepository;
+import com.pokemon.pokemonbackend.model.AppUser;
+import com.pokemon.pokemonbackend.repository.AppUserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserRepository repo;
+    private final AppUserRepository repo;
     private final PasswordEncoder encoder;
 
-    public AuthController(UserRepository repo, PasswordEncoder encoder) {
+    public AuthController(AppUserRepository repo, PasswordEncoder encoder) {
         this.repo = repo;
         this.encoder = encoder;
     }
@@ -32,14 +28,14 @@ public class AuthController {
             return ResponseEntity.badRequest().body("El usuario ya existe");
         }
 
-        User user = new User(
+        AppUser appUser = new AppUser(
                 req.getUsername(),
                 encoder.encode(req.getPassword()),
                 "ROLE_USER",
                 req.getEmail()
         );
 
-        repo.save(user);
+        repo.save(appUser);
         return ResponseEntity.ok("Usuario registrado");
     }
 
