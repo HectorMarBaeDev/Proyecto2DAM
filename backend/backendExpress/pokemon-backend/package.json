@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
     "dev": "nodemon src/server.js",
     "seed": "node seeds/seed.js"
   },
@@ -15,6 +16,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "electron": "^40.2.1",
     "express": "^5.2.1",
     "mongoose": "^9.1.4"
   },
