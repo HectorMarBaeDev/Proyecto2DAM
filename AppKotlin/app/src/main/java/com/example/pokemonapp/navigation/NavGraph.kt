@@ -23,11 +23,8 @@ fun NavGraph() {
         // -------- LOGIN REAL --------
         composable("login") {
             LoginScreen(
-                onLoginSuccess = { userId ->
-                    navController.navigate("teams/$userId") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                }
+                onLoginClick = { _, _ -> },
+                onGoToRegister = { }
             )
         }
 

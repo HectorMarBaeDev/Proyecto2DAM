@@ -1,31 +1,43 @@
 package com.example.pokemonapp.ui.login
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.pokemonapp.data.repository.PokemonRepository
-import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
-    onLoginClick: (String, String) -> Unit,
-    onGoToRegister: () -> Unit
+fun RegisterScreen(
+    onRegisterClick: (String, String) -> Unit,
+    onGoToLogin: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Iniciar Sesión") })
+            TopAppBar(title = { Text("Registro") })
         }
     ) { padding ->
 
@@ -59,18 +71,18 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { onLoginClick(username, password) },
+                onClick = { onRegisterClick(username, password) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = username.isNotBlank() && password.isNotBlank()
             ) {
-                Text("Entrar")
+                Text("Registrarse")
             }
 
             TextButton(
-                onClick = onGoToRegister,
+                onClick = onGoToLogin,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text("Registrarse")
+                Text("Volver a inicio de sesión")
             }
         }
     }
@@ -78,11 +90,11 @@ fun LoginScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun RegisterScreenPreview() {
     MaterialTheme {
-        LoginScreen(
-            onLoginClick = { _, _ -> },
-            onGoToRegister = { }
+        RegisterScreen(
+            onRegisterClick = { _, _ -> },
+            onGoToLogin = { }
         )
     }
 }
