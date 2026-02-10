@@ -22,7 +22,7 @@ public class Team {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private AppUser appUser;
+    private AppUser user;
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -30,10 +30,10 @@ public class Team {
 
     public Team() {}
 
-    public Team(String name, String format, AppUser appUser) {
+    public Team(String name, String format, AppUser user) {
         this.name = name;
         this.format = format;
-        this.appUser = appUser;
+        this.user = user;
     }
 
     public Long getId() {
@@ -61,10 +61,10 @@ public class Team {
     }
 
     public AppUser getUser() {
-        return appUser;
+        return user;
     }
 
     public void setUser(AppUser appUser) {
-        this.appUser = appUser;
+        this.user = appUser;
     }
 }
