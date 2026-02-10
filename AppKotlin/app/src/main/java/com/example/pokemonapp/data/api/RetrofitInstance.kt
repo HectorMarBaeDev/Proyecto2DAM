@@ -10,9 +10,27 @@ object RetrofitInstance {
     private const val BASE_URL =
         "https://pokemon-backend-849x.onrender.com/api/"
 
-    fun create(username: String?, password: String?): ApiService {
+    fun create(token: String?): ApiService {
 
-        val clientBuilder = OkHttpClient.Builder()
+        val client = OkHttpClient.Builder()
+
+        if(token != null) {
+            client.addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer $token")
+                    .build()
+                chain.proceed(request)
+            }
+        }
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client.build())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
+
+        /*val clientBuilder = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
@@ -31,6 +49,6 @@ object RetrofitInstance {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
+            .create(ApiService::class.java)*/
     }
 }

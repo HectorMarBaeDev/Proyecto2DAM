@@ -10,12 +10,21 @@ class PokemonRepository {
     // AUTH
     // ======================
 
-    suspend fun login(username: String, password: String): UserDto {
+    suspend fun login(username: String, password: String) {
 
         // 1️⃣ Login por JSON (SIN Basic Auth)
-        val publicApi = RetrofitInstance.create(null, null)
+        val publicApi = RetrofitInstance.create(null)
 
-        publicApi.login(
+        val jwt = publicApi.login(
+            mapOf(
+                "username" to username,
+                "password" to password
+            )
+        )
+
+        AuthManager.jwt = jwt
+
+        /*publicApi.login(
             mapOf(
                 "username" to username,
                 "password" to password
@@ -30,35 +39,43 @@ class PokemonRepository {
         val securedApi = RetrofitInstance.create(username, password)
         val users = securedApi.getUsers()
 
-        return users.first { it.username == username }
+        return users.first { it.username == username }*/
     }
 
     suspend fun register(username: String, email: String, password: String) {
-        val api = RetrofitInstance.create(null, null)
-        api.register(
+        RetrofitInstance.create(null).register(
             mapOf(
                 "username" to username,
                 "email" to email,
                 "password" to password
             )
         )
+
+        /*val api = RetrofitInstance.create(null, null)
+        api.register(
+            mapOf(
+                "username" to username,
+                "email" to email,
+                "password" to password
+            )
+        )*/
     }
 
     // ======================
     // HELPERS
     // ======================
 
-    private fun api() =
+    /*private fun api() =
         RetrofitInstance.create(
             AuthManager.username,
             AuthManager.password
-        )
+        )*/
 
     // ======================
     // TEAMS
     // ======================
 
-    suspend fun getTeamsByUser(userId: Long): List<TeamDto> =
+    /*suspend fun getTeamsByUser(userId: Long): List<TeamDto> =
         api().getTeamsByUser(userId)
 
     suspend fun createTeam(
@@ -92,5 +109,5 @@ class PokemonRepository {
 
     suspend fun deletePokemon(pokemonId: Long) {
         api().deletePokemon(pokemonId)
-    }
+    }*/
 }
