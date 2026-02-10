@@ -19,28 +19,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.pokemonapp.data.repository.PokemonRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    onRegisterClick: (String, String) -> Unit,
+    onRegisterSuccess: () -> Unit,
     onGoToLogin: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordCheck by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val scope = rememberCoroutineScope()
+    val repository = remember { PokemonRepository() }
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Registro") })
-        }
+        topBar = { TopAppBar(title = { Text("Registro") }) }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -48,7 +55,6 @@ fun RegisterScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center
         ) {
-
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -56,9 +62,15 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            Spacer(Modifier.height(12.dp))
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -67,27 +79,51 @@ fun RegisterScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = passwordCheck,
+                onValueChange = { passwordCheck = it },
+                label = { Text("Verificar contraseña") },
+                visualTransformation = PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+            Spacer(Modifier.height(24.dp))
 
             Button(
-                onClick = { onRegisterClick(username, password) },
+                onClick = {
+                    if (password != passwordCheck) {
+                        errorMessage = "Las contraseñas no coinciden"
+                        return@Button
+                    }
+                    scope.launch {
+                        try {
+                            repository.register(username, email, password)
+                            onRegisterSuccess() // Volver al login
+                        } catch (e: Exception) {
+                            errorMessage = e.localizedMessage ?: "Error desconocido"
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = username.isNotBlank() && password.isNotBlank()
+                enabled = username.isNotBlank() && email.isNotBlank() && password.isNotBlank()
             ) {
                 Text("Registrarse")
             }
 
-            TextButton(
-                onClick = onGoToLogin,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
+            errorMessage?.let {
+                Text(it, color = MaterialTheme.colorScheme.error)
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            TextButton(onClick = onGoToLogin, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Text("Volver a inicio de sesión")
             }
         }
     }
 }
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun RegisterScreenPreview() {
@@ -97,5 +133,4 @@ fun RegisterScreenPreview() {
             onGoToLogin = { }
         )
     }
-}
-
+}*/

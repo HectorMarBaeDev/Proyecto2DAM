@@ -10,25 +10,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    onLoginClick: (String, String) -> Unit,
+    onLoginSuccess: (Long) -> Unit, // userId
     onGoToRegister: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    val scope = rememberCoroutineScope()
+    val repository = remember { PokemonRepository() }
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Iniciar Sesión") })
-        }
+        topBar = { TopAppBar(title = { Text("Iniciar Sesión") }) }
     ) { padding ->
-
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -36,7 +34,6 @@ fun LoginScreen(
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center
         ) {
-
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
@@ -44,9 +41,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
+            Spacer(Modifier.height(12.dp))
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -55,28 +50,39 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
 
             Button(
-                onClick = { onLoginClick(username, password) },
+                onClick = {
+                    scope.launch {
+                        try {
+                            val user = repository.login(username, password)
+                            onLoginSuccess(user.id) // Navegar al TeamListScreen con userId
+                        } catch (e: Exception) {
+                            errorMessage = e.localizedMessage ?: "Error desconocido"
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = username.isNotBlank() && password.isNotBlank()
             ) {
                 Text("Entrar")
             }
 
-            TextButton(
-                onClick = onGoToRegister,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
+            errorMessage?.let {
+                Text(it, color = MaterialTheme.colorScheme.error)
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            TextButton(onClick = onGoToRegister, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Text("Registrarse")
             }
         }
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     MaterialTheme {
@@ -85,5 +91,4 @@ fun LoginScreenPreview() {
             onGoToRegister = { }
         )
     }
-}
-
+}*/
