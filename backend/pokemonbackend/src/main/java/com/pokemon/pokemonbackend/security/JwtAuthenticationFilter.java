@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         return path.startsWith("/api/auth/")
-                || path.startsWith("/health");
+                || path.startsWith("/api/health");
     }
 
     @Override
