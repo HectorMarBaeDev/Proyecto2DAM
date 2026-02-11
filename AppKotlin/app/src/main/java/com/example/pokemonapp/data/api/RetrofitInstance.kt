@@ -13,20 +13,24 @@ object RetrofitInstance {
     fun create(token: String?): ApiService {
 
         val client = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val requestBuilder = chain.request().newBuilder()
 
-        if(token != null) {
-            client.addInterceptor { chain ->
-                val request = chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer $token")
-                    .build()
-                chain.proceed(request)
+                token?.let {
+                    requestBuilder.addHeader(
+                        "Authorization",
+                        "Bearer $it"
+                    )
+                }
+
+                chain.proceed(requestBuilder.build())
             }
-        }
+            .build()
 
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(client.build())
             .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
             .build()
             .create(ApiService::class.java)
 

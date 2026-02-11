@@ -10,7 +10,7 @@ interface ApiService {
     // ======================
 
     @POST("auth/login")
-    suspend fun login(@Body body: Map<String, String>): String
+    suspend fun login(@Body body: Map<String, String>): AuthResponseDto
 
     @POST("auth/register")
     suspend fun register(@Body body: Map<String, String>)

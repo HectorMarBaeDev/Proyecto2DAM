@@ -35,8 +35,8 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST,
-                                "/api/auth/login",
-                                "/api/auth/register"
+                                "/**/auth/login",
+                                "/**/auth/register"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/health").permitAll()
                         .anyRequest().authenticated()

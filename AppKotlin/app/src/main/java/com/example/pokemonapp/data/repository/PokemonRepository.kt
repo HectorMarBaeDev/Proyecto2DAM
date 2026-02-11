@@ -9,17 +9,19 @@ class PokemonRepository {
     // AUTH
     // ======================
 
-    suspend fun login(username: String, password: String) {
+    suspend fun login(username: String, password: String): Long {
         val api = RetrofitInstance.create(null)
 
-        val jwt = api.login(
+        val response = api.login(
             mapOf(
                 "username" to username,
                 "password" to password
             )
         )
 
-        AuthManager.jwt = jwt
+        AuthManager.jwt = response.token
+
+        return response.userId
     }
 
     suspend fun register(

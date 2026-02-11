@@ -56,8 +56,8 @@ fun LoginScreen(
                 onClick = {
                     scope.launch {
                         try {
-                            repository.login(username, password)
-                            onLoginSuccess()
+                            val userId = repository.login(username, password)
+                            onLoginSuccess(userId)
                         } catch (e: Exception) {
                             errorMessage = "Usuario o contraseña incorrectos"
                         }
