@@ -42,10 +42,9 @@ public class AppUserDetailService {
                     return User.builder()
                             .username(appUser.getUsername())
                             .password(appUser.getPassword())
-                            //.roles(appUser.getRoles().split(","))
-                            //.roles("USER", "ADMIN")
-                            .roles(appUser.getRole())
+                            .authorities(appUser.getRole())
                             .build();
+
                 } else {
                     throw new UsernameNotFoundException(username);
                 }
