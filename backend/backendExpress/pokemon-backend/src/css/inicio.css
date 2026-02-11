@@ -1,0 +1,84 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(-45deg, #b4d5e2, #099de2, #04609e, #aee5ff);
+    background-size: 400% 400%;
+    animation: cieloAnimado 15s ease infinite;
+}
+
+@keyframes cieloAnimado {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+#imgLogo {
+    width: 12%;
+    border-radius: 20%;
+    border: solid 2px black;
+}
+
+.animar-entrada {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.animar-salida {
+    animation: fadeOut 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+}
+
+/* Animaciones fade + slide vertical */
+.animar-subir {
+    animation: slideUp 0.4s ease forwards;
+}
+
+.animar-bajar {
+    animation: slideDown 0.4s ease forwards;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50px);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.oculto {
+    display: none !important;
+}
