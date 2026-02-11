@@ -1,5 +1,6 @@
 package com.example.pokemonapp.ui.login
 
+import PokemonRepository
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.pokemonapp.data.repository.PokemonRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,9 +99,9 @@ fun RegisterScreen(
                     scope.launch {
                         try {
                             repository.register(username, email, password)
-                            onRegisterSuccess() // Volver al login
+                            onRegisterSuccess()
                         } catch (e: Exception) {
-                            errorMessage = e.localizedMessage ?: "Error desconocido"
+                            errorMessage = "Error al registrar usuario"
                         }
                     }
                 },

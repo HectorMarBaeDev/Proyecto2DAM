@@ -1,5 +1,6 @@
 package com.pokemon.pokemonbackend.controller;
 
+import com.pokemon.pokemonbackend.dto.AuthResponseDTO;
 import com.pokemon.pokemonbackend.dto.RegisterRequest;
 import com.pokemon.pokemonbackend.model.AppUser;
 import com.pokemon.pokemonbackend.repository.AppUserRepository;
@@ -65,12 +66,21 @@ public class AuthController {
                 )
         );
 
+        AppUser user = repo.findByUsername(request.getUsername())
+                .orElseThrow();
+
         String jwt = jwtService.generateToken(
                 (org.springframework.security.core.userdetails.UserDetails)
                         authentication.getPrincipal()
         );
 
-        return ResponseEntity.ok(jwt);
+        return ResponseEntity.ok(
+                new AuthResponseDTO(
+                        jwt,
+                        user.getId(),
+                        user.getUsername()
+                )
+        );
     }
 
 }

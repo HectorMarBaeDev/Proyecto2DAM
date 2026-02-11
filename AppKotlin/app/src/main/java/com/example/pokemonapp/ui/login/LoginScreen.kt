@@ -1,5 +1,6 @@
 package com.example.pokemonapp.ui.login
 
+import PokemonRepository
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -8,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,14 +56,13 @@ fun LoginScreen(
                 onClick = {
                     scope.launch {
                         try {
-                            val user = repository.login(username, password)
-                            onLoginSuccess(user.id) // Navegar al TeamListScreen con userId
+                            repository.login(username, password)
+                            onLoginSuccess()
                         } catch (e: Exception) {
-                            errorMessage = e.localizedMessage ?: "Error desconocido"
+                            errorMessage = "Usuario o contraseña incorrectos"
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth(),
                 enabled = username.isNotBlank() && password.isNotBlank()
             ) {
                 Text("Entrar")
