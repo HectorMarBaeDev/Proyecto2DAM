@@ -6,6 +6,7 @@ import com.pokemon.pokemonbackend.model.AppUser;
 import com.pokemon.pokemonbackend.repository.AppUserRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.pokemon.pokemonbackend.dto.LoginRequest;
@@ -59,29 +60,35 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        System.out.println("Intentando login con: " + request.getUsername());
 
-        AppUser user = repo.findByUsername(request.getUsername())
-                .orElseThrow();
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
 
-        String jwt = jwtService.generateToken(
-                (org.springframework.security.core.userdetails.UserDetails)
-                        authentication.getPrincipal()
-        );
+            System.out.println("Autenticación OK");
 
-        return ResponseEntity.ok(
-                new AuthResponseDTO(
-                        jwt,
-                        user.getId(),
-                        user.getUsername()
-                )
-        );
+            AppUser user = repo.findByUsername(request.getUsername())
+                    .orElseThrow();
+
+            String jwt = jwtService.generateToken(
+                    (UserDetails) authentication.getPrincipal()
+            );
+
+            return ResponseEntity.ok(
+                    new AuthResponseDTO(jwt, user.getId(), user.getUsername())
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
+
 
 }
 
