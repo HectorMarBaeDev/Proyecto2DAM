@@ -19,36 +19,26 @@ import org.springframework.stereotype.Service;
  * @author franp
  */
 @Service
-public class AppUserDetailService {
-    private AppUserRepository appUserRepository;
+public class AppUserDetailService implements UserDetailsService {
 
-    public AppUserDetailService(
-            AppUserRepository appUserRepository
-    ) {
+    private final AppUserRepository appUserRepository;
+
+    public AppUserDetailService(AppUserRepository appUserRepository) {
         this.appUserRepository = appUserRepository;
     }
 
-    // https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/user-details-service.html
-    // https://medium.com/@davoud.badamchi/building-secure-spring-boot-applications-with-database-authentication-a-comprehensive-guide-6c8171979b5a
-    @Bean
-    UserDetailsService customUserDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-                Optional<AppUser> optUser = appUserRepository.findByUsername(username);
-                if (optUser.isPresent()) {
-                    AppUser appUser = optUser.get();
-                    return User.builder()
-                            .username(appUser.getUsername())
-                            .password(appUser.getPassword())
-                            .authorities(appUser.getRole())
-                            .build();
+    @Override
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
 
-                } else {
-                    throw new UsernameNotFoundException(username);
-                }
-            }
-        };
+        AppUser appUser = appUserRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found"));
+
+        return User.builder()
+                .username(appUser.getUsername())
+                .password(appUser.getPassword())
+                .authorities(appUser.getRole())
+                .build();
     }
 }
