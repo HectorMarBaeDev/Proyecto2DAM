@@ -27,6 +27,17 @@ public class PokeApiService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public String getImage(Map<String, Object> data) {
+        if (data == null) return null;
+
+        Map<String, Object> sprites = (Map<String, Object>) data.get("sprites");
+        if (sprites == null) return null;
+
+        return (String) sprites.get("front_default");
+    }
+
+
     public String getPrimaryType(Map<String, Object> data) {
         return getTypeBySlot(data, 1);
     }

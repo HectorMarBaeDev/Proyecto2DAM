@@ -12,8 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/pokemon")
@@ -66,10 +68,11 @@ public class PokemonController {
         Pokemon pokemon = new Pokemon(
                 pokedexNumber,
                 name,
+                pokeApiService.getImage(data),
                 pokeApiService.getPrimaryType(data),
                 pokeApiService.getSecondaryType(data),
                 team
-        );
+        );  
 
         Pokemon saved = pokemonRepository.save(pokemon);
 
@@ -77,6 +80,7 @@ public class PokemonController {
                 .body(new PokemonResponseDTO(
                         saved.getId(),
                         saved.getPokedexNumber(),
+                        saved.getImage(),
                         saved.getName(),
                         saved.getPrimaryType(),
                         saved.getSecondaryType()
@@ -98,6 +102,7 @@ public class PokemonController {
                 .map(p -> new PokemonResponseDTO(
                         p.getId(),
                         p.getPokedexNumber(),
+                        p.getImage(),
                         p.getName(),
                         p.getPrimaryType(),
                         p.getSecondaryType()
@@ -117,4 +122,36 @@ public class PokemonController {
         pokemonRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/index/page")
+    public ResponseEntity<List<PokemonResponseDTO>> getIndexPokemonPage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "9") int pageSize
+    ) {
+        int totalPokemon = 1025;
+
+        // Calcular offset aleatorio si quieres que cambie cada recarga
+        Random random = new Random();
+        int startId = random.nextInt(totalPokemon - pageSize + 1) + 1;
+
+        List<PokemonResponseDTO> result = new ArrayList<>();
+
+        for (int i = 0; i < pageSize; i++) {
+            int pokemonId = startId + i;
+            Map<String, Object> data = pokeApiService.getPokemonData(String.valueOf(pokemonId));
+            if (data == null) continue;
+
+            result.add(new PokemonResponseDTO(
+                    (Integer) data.get("id"),   // id
+                    (Integer) data.get("pokedexNumber"),   // pokedexNumber
+                    (String) data.get("name"),
+                    pokeApiService.getImage(data),
+                    pokeApiService.getPrimaryType(data),
+                    pokeApiService.getSecondaryType(data)
+            ));
+        }
+
+        return ResponseEntity.ok(result);
+    }
+
 }

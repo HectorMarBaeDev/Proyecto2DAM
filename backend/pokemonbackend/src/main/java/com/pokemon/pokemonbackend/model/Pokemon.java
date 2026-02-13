@@ -19,6 +19,9 @@ public class Pokemon {
     private String name;
 
     @NotBlank
+    private String image;
+
+    @NotBlank
     private String primaryType;
 
     private String secondaryType;
@@ -33,12 +36,14 @@ public class Pokemon {
     public Pokemon(
             Integer pokedexNumber,
             String name,
+            String image,
             String primaryType,
             String secondaryType,
             Team team
     ) {
         this.pokedexNumber = pokedexNumber;
         this.name = name;
+        this.image = image;
         this.primaryType = primaryType;
         this.secondaryType = secondaryType;
         this.team = team;
@@ -54,6 +59,10 @@ public class Pokemon {
 
     public String getName() {
         return name;
+    }
+
+    public String getImage() {
+        return image;
     }
 
     public String getPrimaryType() {
@@ -74,6 +83,10 @@ public class Pokemon {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setPrimaryType(String primaryType) {

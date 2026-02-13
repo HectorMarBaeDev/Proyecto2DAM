@@ -36,3 +36,43 @@ divPrincipal.addEventListener("scroll", () => {
         navbar.classList.remove("shrink");
     }
 });
+
+
+let currentPage = 1;
+const pageSize = 9;
+
+const pokemonContainer = document.getElementById("pokemonContainer");
+const nextPageBtn = document.getElementById("nextPageBtn");
+
+function cargarPokemons(page) {
+    fetch(`http://localhost:8080/api/pokemon/index/page?page=${page}&pageSize=${pageSize}`)
+        .then(res => res.json())
+        .then(pokemons => {
+            // Limpiar contenedor
+            pokemonContainer.innerHTML = "";
+
+            pokemons.forEach(p => {
+                const card = document.createElement("div");
+                card.classList.add("card", "p-2", "shadow", "text-center");
+                card.style.width = "150px";
+
+                card.innerHTML = `
+                    <img src="${p.image}" alt="${p.name}" class="card-img-top" style="width:100px;margin:auto;">
+                    <h5>${p.name}</h5>
+                    <p>${p.primaryType}${p.secondaryType ? ' / ' + p.secondaryType : ''}</p>
+                `;
+
+                pokemonContainer.appendChild(card);
+            });
+        })
+        .catch(err => console.error(err));
+}
+
+// Cargar primera página al iniciar
+cargarPokemons(currentPage);
+
+// Botón siguiente página
+nextPageBtn.addEventListener("click", () => {
+    currentPage++;
+    cargarPokemons(currentPage);
+});
