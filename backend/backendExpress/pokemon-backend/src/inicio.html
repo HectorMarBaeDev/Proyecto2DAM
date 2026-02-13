@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,24 +10,30 @@
     <script src="./js/inicioFunctions.js" defer></script>
     <title>Inicio Aplicación</title>
 </head>
+
 <body>
-<div class="container-fluid vh-100 d-flex justify-content-center align-items-center">
-    <div class="text-center" id="bloquePrincipal">
+    <div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center">
 
-        <img src="sources/icono_app.png" alt="Icono App" id="imgLogo">
-        <h1>PokeBuild</h1>
-        <p class="display-6">El mejor constructor de builds para competitivo</p>
+        <div class="d-flex flex-column align-items-center text-center" id="bloquePrincipal">
 
-        <div class="d-flex justify-content-center gap-3 mt-3 animar-entrada" id="botonesInicio">
-            <button class="btn btn-primary btn-lg" id="iniciarSesion">Iniciar sesión</button>
-            <button class="btn btn-primary btn-lg" id="registrarse">Registrarse</button>
+            <!-- BLOQUE SUPERIOR -->
+            <div id="bloqueHeader">
+                <img src="sources/icono_app.png" alt="Icono App" id="imgLogo">
+                <h1 id="titApp">PokeBuild</h1>
+                <p class="display-6 fs-3">El mejor constructor de equipos para competitivo</p>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="d-flex justify-content-center gap-3 mt-3" id="botonesInicio">
+                <button class="btn btn-primary btn-lg" id="iniciarSesion">Iniciar sesión</button>
+                <button class="btn btn-primary btn-lg" id="registrarse">Registrarse</button>
+            </div>
+
+            <!-- FORM -->
+            <div class="mt-4" id="contenedorForm"></div>
+
         </div>
-
-        <div class="mt-4 oculto" id="contenedorForm"></div>
-
     </div>
-</div>
-
-
 </body>
+
 </html>

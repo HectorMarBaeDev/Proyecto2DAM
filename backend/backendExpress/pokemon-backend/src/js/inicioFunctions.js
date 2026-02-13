@@ -4,19 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnRegister = document.getElementById("registrarse");
     const botonesInicio = document.getElementById("botonesInicio");
     const contenedor = document.getElementById("contenedorForm");
-    const bloquePrincipal = document.getElementById("bloquePrincipal");
+    const header = document.getElementById("bloqueHeader");
 
     btnLogin.addEventListener("click", () => cambiarVista("login"));
     btnRegister.addEventListener("click", () => cambiarVista("registro"));
 
     function cambiarVista(tipo) {
-        // Animar botones y bloque principal hacia arriba
-        bloquePrincipal.classList.remove("animar-bajar");
-        bloquePrincipal.classList.add("animar-subir");
+
+        // Ocultar botones con animación
         botonesInicio.classList.remove("animar-entrada");
         botonesInicio.classList.add("animar-salida");
 
         setTimeout(() => {
+
             botonesInicio.classList.add("oculto");
             botonesInicio.classList.remove("animar-salida");
 
@@ -24,33 +24,32 @@ document.addEventListener("DOMContentLoaded", () => {
             else cargarRegistro();
 
             contenedor.classList.remove("oculto");
-            contenedor.classList.remove("animar-salida");
             contenedor.classList.add("animar-entrada");
 
-        }, 400);
+            // 👇 Reducir header suavemente
+            header.classList.add("header-pequeño");
+
+        }, 300);
     }
 
     function volverInicio() {
-        // Animar salida del formulario
+
         contenedor.classList.remove("animar-entrada");
         contenedor.classList.add("animar-salida");
 
-        // Animar bloque principal hacia abajo
-        bloquePrincipal.classList.remove("animar-subir");
-        bloquePrincipal.classList.add("animar-bajar");
-
         setTimeout(() => {
+
             contenedor.classList.add("oculto");
             contenedor.classList.remove("animar-salida");
             contenedor.innerHTML = "";
 
             botonesInicio.classList.remove("oculto");
-            botonesInicio.classList.remove("animar-salida");
             botonesInicio.classList.add("animar-entrada");
 
-            // Limpiar animaciones del bloque principal
-            bloquePrincipal.classList.remove("animar-bajar");
-        }, 400);
+            // 👇 Restaurar tamaño normal
+            header.classList.remove("header-pequeño");
+
+        }, 300);
     }
 
     function cargarLogin() {
@@ -74,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             </div>
         `;
+
         document.getElementById("cancelar").addEventListener("click", volverInicio);
     }
 
@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             </div>
         `;
+
         document.getElementById("cancelar").addEventListener("click", volverInicio);
     }
 
