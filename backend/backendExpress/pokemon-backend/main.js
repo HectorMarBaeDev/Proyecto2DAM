@@ -22,4 +22,7 @@ app.whenReady().then(() => {
     createWindow();
 });
 
+app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
+
+
 // Hay que instalar los módulos de client y server para el funcionamiento general
