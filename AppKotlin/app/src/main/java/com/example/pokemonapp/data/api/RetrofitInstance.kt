@@ -1,5 +1,7 @@
 package com.example.pokemonapp.data.api
 
+import android.util.Log
+import com.example.pokemonapp.data.auth.AuthManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,13 +12,15 @@ object RetrofitInstance {
     private const val BASE_URL =
         "https://pokemon-backend-849x.onrender.com/api/"
 
-    fun create(token: String?): ApiService {
+    fun create(): ApiService {
 
         val client = OkHttpClient.Builder()
             .addInterceptor { chain ->
                 val requestBuilder = chain.request().newBuilder()
 
-                token?.let {
+                Log.d("JWT_DEBUG", "Token actual: ${AuthManager.jwt}")
+
+                AuthManager.jwt?.let {
                     requestBuilder.addHeader(
                         "Authorization",
                         "Bearer $it"

@@ -68,7 +68,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             System.out.println("Token username: " + username);
             System.out.println("DB username: " + userDetails.getUsername());
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
             if (jwtService.isTokenValid(jwt, userDetails)) {
 
                 UsernamePasswordAuthenticationToken authToken =

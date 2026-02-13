@@ -1,3 +1,5 @@
+package com.example.pokemonapp.data.repository
+
 import com.example.pokemonapp.data.api.RetrofitInstance
 import com.example.pokemonapp.data.auth.AuthManager
 import com.example.pokemonapp.data.model.PokemonDto
@@ -10,7 +12,7 @@ class PokemonRepository {
     // ======================
 
     suspend fun login(username: String, password: String): Long {
-        val api = RetrofitInstance.create(null)
+        val api = RetrofitInstance.create()
 
         val response = api.login(
             mapOf(
@@ -29,7 +31,7 @@ class PokemonRepository {
         email: String,
         password: String
     ) {
-        RetrofitInstance.create(null).register(
+        RetrofitInstance.create().register(
             mapOf(
                 "username" to username,
                 "email" to email,
@@ -43,7 +45,7 @@ class PokemonRepository {
     // ======================
 
     suspend fun getTeamsByUser(userId: Long): List<TeamDto> {
-        val api = RetrofitInstance.create(AuthManager.jwt)
+        val api = RetrofitInstance.create()
         return api.getTeamsByUser(userId)
     }
 
@@ -52,7 +54,7 @@ class PokemonRepository {
         name: String,
         format: String
     ): TeamDto {
-        val api = RetrofitInstance.create(AuthManager.jwt)
+        val api = RetrofitInstance.create()
 
         return api.createTeam(
             userId,
@@ -68,7 +70,7 @@ class PokemonRepository {
     // ======================
 
     suspend fun getPokemonByTeam(teamId: Long): List<PokemonDto> {
-        val api = RetrofitInstance.create(AuthManager.jwt)
+        val api = RetrofitInstance.create()
         return api.getPokemonByTeam(teamId)
     }
 
@@ -76,7 +78,7 @@ class PokemonRepository {
         teamId: Long,
         identifier: String
     ): PokemonDto {
-        val api = RetrofitInstance.create(AuthManager.jwt)
+        val api = RetrofitInstance.create()
 
         return api.addPokemon(
             teamId,
@@ -85,7 +87,7 @@ class PokemonRepository {
     }
 
     suspend fun deletePokemon(pokemonId: Long) {
-        val api = RetrofitInstance.create(AuthManager.jwt)
+        val api = RetrofitInstance.create()
         api.deletePokemon(pokemonId)
     }
 }

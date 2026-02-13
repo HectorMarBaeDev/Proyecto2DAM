@@ -1,6 +1,6 @@
 package com.example.pokemonapp.ui.teams
 
-import PokemonRepository
+import com.example.pokemonapp.data.repository.PokemonRepository
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
