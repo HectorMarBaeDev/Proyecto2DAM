@@ -1,6 +1,3 @@
-package com.example.pokemonapp.data.repository
-
-import com.example.pokemonapp.data.api.RetrofitInstance
 import com.example.pokemonapp.data.auth.AuthManager
 import com.example.pokemonapp.data.model.PokemonDto
 import com.example.pokemonapp.data.model.TeamDto
@@ -45,7 +42,7 @@ class PokemonRepository {
     // ======================
 
     suspend fun getTeamsByUser(userId: Long): List<TeamDto> {
-        val api = RetrofitInstance.create()
+        val api = RetrofitInstance.createWithToken()
         return api.getTeamsByUser(userId)
     }
 
@@ -54,7 +51,7 @@ class PokemonRepository {
         name: String,
         format: String
     ): TeamDto {
-        val api = RetrofitInstance.create()
+        val api = RetrofitInstance.createWithToken()
 
         return api.createTeam(
             userId,
@@ -70,7 +67,7 @@ class PokemonRepository {
     // ======================
 
     suspend fun getPokemonByTeam(teamId: Long): List<PokemonDto> {
-        val api = RetrofitInstance.create()
+        val api = RetrofitInstance.createWithToken()
         return api.getPokemonByTeam(teamId)
     }
 
@@ -78,7 +75,7 @@ class PokemonRepository {
         teamId: Long,
         identifier: String
     ): PokemonDto {
-        val api = RetrofitInstance.create()
+        val api = RetrofitInstance.createWithToken()
 
         return api.addPokemon(
             teamId,
@@ -87,7 +84,7 @@ class PokemonRepository {
     }
 
     suspend fun deletePokemon(pokemonId: Long) {
-        val api = RetrofitInstance.create()
+        val api = RetrofitInstance.createWithToken()
         api.deletePokemon(pokemonId)
     }
 }
