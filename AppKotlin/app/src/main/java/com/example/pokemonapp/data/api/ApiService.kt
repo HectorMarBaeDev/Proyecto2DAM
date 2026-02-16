@@ -26,15 +26,12 @@ interface ApiService {
     // TEAMS
     // ======================
 
-    @GET("teams/user/{userId}")
-    suspend fun getTeamsByUser(
-        @Path("userId") userId: Long
-    ): List<TeamDto>
+    @GET("teams/me")
+    suspend fun getMyTeams(): List<TeamDto>
 
     @POST("teams")
     suspend fun createTeam(
-        @Query("userId") userId: Long,
-        @Body team: Map<String, String>
+        @Body body: Map<String, String>
     ): TeamDto
 
     // ======================

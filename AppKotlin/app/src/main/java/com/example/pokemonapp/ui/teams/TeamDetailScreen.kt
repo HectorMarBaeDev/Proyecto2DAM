@@ -1,5 +1,6 @@
 package com.example.pokemonapp.ui.teams
 
+import android.util.Log
 import com.example.pokemonapp.data.repository.PokemonRepository
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -24,7 +25,16 @@ fun TeamDetailScreen(
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        pokemonList = repository.getPokemonByTeam(teamId)
+        pokemonList = try {
+            val list = repository.getPokemonByTeam(teamId)
+            // Añade esto para ver qué datos llegan
+            list.forEach { pokemon ->
+                Log.d("POKEMON_DATA", "ID: ${pokemon.id}, Name: ${pokemon.name}, Pokedex: ${pokemon.pokedexNumber}")
+            }
+            list
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     Scaffold(
