@@ -48,7 +48,7 @@ fun NavigationRoot() {
             entry<RegisterScreenKey> {
                 RegisterScreen(
                     onRegisterSuccess = { navBackStack.add(LoginScreenKey) },
-                    onGoToLogin = { navBackStack.add(LoginScreenKey) }
+                    onBackToLogin = { navBackStack.add(LoginScreenKey) }
                 )
             }
 
