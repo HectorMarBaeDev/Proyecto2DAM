@@ -68,7 +68,16 @@ public class PokeApiService {
     @SuppressWarnings("unchecked")
     public List<PokemonListItemDTO> getAllPokemonBasic() {
 
-        String url = "https://pokeapi.co/api/v2/pokemon?limit=151";
+        // Primero obtenemos el total real de Pokémon
+        String baseUrl = "https://pokeapi.co/api/v2/pokemon?limit=1";
+
+        Map<String, Object> countResponse =
+                restTemplate.getForObject(baseUrl, Map.class);
+
+        Integer total = (Integer) countResponse.get("count");
+
+        // Ahora pedimos TODOS
+        String url = "https://pokeapi.co/api/v2/pokemon?limit=" + total;
 
         Map<String, Object> response =
                 restTemplate.getForObject(url, Map.class);
@@ -89,5 +98,6 @@ public class PokeApiService {
 
         return pokemonList;
     }
+
 
 }
