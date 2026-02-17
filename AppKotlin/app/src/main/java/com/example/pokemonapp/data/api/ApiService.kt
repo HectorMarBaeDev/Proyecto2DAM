@@ -1,6 +1,9 @@
 package com.example.pokemonapp.data.api
 
 import com.example.pokemonapp.data.model.*
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
@@ -21,6 +24,18 @@ interface ApiService {
 
     @GET("users")
     suspend fun getUsers(): List<UserDto>
+
+    @Multipart
+    @POST("users/me/profile-picture")
+    suspend fun uploadProfilePicture(
+        @Part file: MultipartBody.Part
+    ): Response<ResponseBody>
+
+    // Obtener foto de perfil
+    @GET("users/{id}/profile-picture")
+    suspend fun getProfilePicture(
+        @Path("id") id: Long
+    ): Response<ResponseBody>
 
     // ======================
     // TEAMS
@@ -56,5 +71,4 @@ interface ApiService {
 
     @GET("pokemon")
     suspend fun getAllPokemon(): List<PokemonListItemDto>
-
 }

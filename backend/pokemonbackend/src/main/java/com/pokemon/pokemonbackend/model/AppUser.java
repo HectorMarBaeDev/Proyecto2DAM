@@ -31,6 +31,8 @@ public class AppUser {
     @Column(unique = true)
     private String email;
 
+    private String profileImage;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Team> teams;
@@ -91,5 +93,12 @@ public class AppUser {
     public void setEmail(String email) {
         this.email = email;
     }
-    // getters y setters
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }

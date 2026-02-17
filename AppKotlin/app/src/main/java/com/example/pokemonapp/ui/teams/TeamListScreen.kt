@@ -1,18 +1,28 @@
 package com.example.pokemonapp.ui.teams
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.pokemonapp.data.model.TeamDto
 import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
@@ -27,8 +37,25 @@ fun TeamsScreen(
     var newTeamName by remember { mutableStateOf("") }
     var newTeamFormat by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    var profileImageUrl by remember { mutableStateOf<String?>(null) }
 
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            scope.launch {
+                try {
+                    repository.uploadProfilePicture(it, context)
+                    profileImageUrl = "http://tu-backend.com/api/users/me/profile-picture"
+                } catch (e: Exception) {
+                    errorMessage = "Error subiendo imagen"
+                }
+            }
+        }
+    }
 
     // Cargar equipos al entrar
     LaunchedEffect(Unit) {
@@ -44,11 +71,36 @@ fun TeamsScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Mis Equipos", fontWeight = FontWeight.Bold) },
+                actions = {
+                    IconButton(onClick = {
+                        imagePickerLauncher.launch("image/*")
+                    }) {
+                        if (profileImageUrl != null) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(profileImageUrl)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "Foto de perfil",
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "Subir foto de perfil"
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
+
         }
+
     ) { padding ->
         Column(
             modifier = Modifier
