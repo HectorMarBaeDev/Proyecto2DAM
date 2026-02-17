@@ -4,10 +4,19 @@ public class PokemonListItemDTO {
 
     private int pokedexNumber;
     private String name;
+    private String primaryType;
+    private String secondaryType;
 
-    public PokemonListItemDTO(int pokedexNumber, String name) {
+    public PokemonListItemDTO(
+            int pokedexNumber,
+            String name,
+            String primaryType,
+            String secondaryType
+    ) {
         this.pokedexNumber = pokedexNumber;
         this.name = name;
+        this.primaryType = primaryType;
+        this.secondaryType = secondaryType;
     }
 
     public int getPokedexNumber() {
@@ -16,5 +25,13 @@ public class PokemonListItemDTO {
 
     public String getName() {
         return name;
+    }
+
+    public String getPrimaryType() {
+        return primaryType;
+    }
+
+    public String getSecondaryType() {
+        return secondaryType;
     }
 }

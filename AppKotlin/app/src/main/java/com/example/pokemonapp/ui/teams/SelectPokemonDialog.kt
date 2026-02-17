@@ -6,10 +6,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.pokemonapp.data.model.PokemonListItemDto
 import com.example.pokemonapp.data.repository.PokemonRepository
+import com.example.pokemonapp.ui.pokemon.PokemonTypeIcon
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,16 +61,46 @@ fun SelectPokemonDialog(
                         modifier = Modifier.height(400.dp)
                     ) {
                         items(filteredList) { pokemon ->
-                            Text(
-                                text = "${pokemon.pokedexNumber} - ${pokemon.name}",
+
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
                                         onPokemonSelected(pokemon)
                                     }
-                                    .padding(12.dp)
-                            )
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+
+                                // Sprite desde GitHub
+                                AsyncImage(
+                                    model = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.pokedexNumber}.png",
+                                    contentDescription = pokemon.name,
+                                    modifier = Modifier.size(60.dp)
+                                )
+
+                                Spacer(Modifier.width(12.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+
+                                    Text(
+                                        text = "#${String.format("%04d", pokemon.pokedexNumber)} ${pokemon.name.replaceFirstChar { it.uppercase() }}",
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+
+                                    Spacer(Modifier.height(4.dp))
+
+                                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                        PokemonTypeIcon(pokemon.primaryType)
+
+                                        pokemon.secondaryType?.let {
+                                            PokemonTypeIcon(it)
+                                        }
+                                    }
+                                }
+                            }
                         }
+
                     }
                 }
             }
