@@ -136,4 +136,15 @@ class PokemonRepository {
         val api = RetrofitInstance.createWithToken()
         return api.getAllPokemon()
     }
+
+    suspend fun getPokemonById(id: Long): PokemonDto {
+        val api = RetrofitInstance.createWithToken()
+        return api.getPokemonById(id)
+    }
+
+    suspend fun updatePokemon(pokemon: PokemonDto): PokemonDto {
+        val api = RetrofitInstance.createWithToken()
+        return api.updatePokemon(pokemon.id, pokemon)
+    }
+
 }

@@ -71,4 +71,16 @@ interface ApiService {
 
     @GET("pokemon")
     suspend fun getAllPokemon(): List<PokemonListItemDto>
+
+    @GET("pokemon/{id}")
+    suspend fun getPokemonById(
+        @Path("id") id: Long
+    ): PokemonDto
+
+    @PUT("pokemon/{id}")
+    suspend fun updatePokemon(
+        @Path("id") id: Long,
+        @Body pokemon: PokemonDto
+    ): PokemonDto
+
 }
