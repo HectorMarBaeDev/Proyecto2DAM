@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
 
-    private const val BASE_URL = "https://pokemon-backend-849x.onrender.com/api/"
+    const val BASE_URL = "https://pokemon-backend-849x.onrender.com/api/"
 
     // Para login / register
     fun create(): ApiService {

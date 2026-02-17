@@ -31,6 +31,7 @@ class PokemonRepository {
             )
 
             AuthManager.jwt = response.token
+            AuthManager.userId = response.userId
             return response.userId
 
         } catch (e: Exception) {

@@ -23,7 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.example.pokemonapp.data.auth.AuthManager
 import com.example.pokemonapp.data.model.TeamDto
 import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
@@ -49,14 +51,20 @@ fun TeamsScreen(
         uri?.let {
             scope.launch {
                 try {
-                    repository.uploadProfilePicture(it, context) // función para subir
-                    Log.d("Upload", "Imagen subida correctamente")
+                    repository.uploadProfilePicture(it, context)
+
+                    // 🔥 FORZAR RECARGA DE IMAGEN (evita caché)
+                    val userId = AuthManager.userId
+                    profileImageUrl =
+                        "${RetrofitInstance.BASE_URL}api/users/$userId/profile-picture?timestamp=${System.currentTimeMillis()}"
+
                 } catch (e: Exception) {
                     Log.e("Upload", "Error subiendo imagen", e)
                 }
             }
         }
     }
+
 
 // Botón para seleccionar foto
     Button(onClick = { imagePickerLauncher.launch("image/*") }) {
@@ -65,13 +73,21 @@ fun TeamsScreen(
 
     // Cargar equipos al entrar
     LaunchedEffect(Unit) {
+
+        // Cargar equipos
         teams = try {
             repository.getTeamsByUser()
         } catch (e: Exception) {
             errorMessage = "Error cargando equipos"
             emptyList()
         }
+
+        // 🔥 Cargar imagen de perfil
+        val userId = AuthManager.userId
+        profileImageUrl =
+            "${RetrofitInstance.BASE_URL}api/users/$userId/profile-picture"
     }
+
 
     Scaffold(
         topBar = {
@@ -83,15 +99,18 @@ fun TeamsScreen(
                     }) {
                         if (profileImageUrl != null) {
                             AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
+                                model = ImageRequest.Builder(context)
                                     .data(profileImageUrl)
                                     .crossfade(true)
+                                    .memoryCachePolicy(CachePolicy.DISABLED)
+                                    .diskCachePolicy(CachePolicy.DISABLED)
                                     .build(),
                                 contentDescription = "Foto de perfil",
                                 modifier = Modifier
                                     .size(36.dp)
                                     .clip(CircleShape)
                             )
+
                         } else {
                             Icon(
                                 imageVector = Icons.Default.AccountCircle,
