@@ -103,20 +103,32 @@ public class PokeApiService {
 
         List<PokemonListItemDTO> pokemonList = new ArrayList<>();
 
-        int pokedexNumber = 1;
-
         for (Map<String, Object> pokemon : results) {
 
             String name = (String) pokemon.get("name");
+            String pokemonUrl = (String) pokemon.get("url");
 
-            Map<String, Object> fullData =
-                    restTemplate.getForObject(
-                            POKEAPI_URL + pokedexNumber,
-                            Map.class
-                    );
+            Map<String, Object> fullData;
+
+            try {
+                fullData = restTemplate.getForObject(
+                        pokemonUrl,
+                        Map.class
+                );
+            } catch (Exception e) {
+                continue; // si uno falla, seguimos
+            }
 
             String primaryType = getPrimaryType(fullData);
             String secondaryType = getSecondaryType(fullData);
+
+            // Extraer número real desde la URL
+            String[] parts = pokemonUrl.split("/");
+            int pokedexNumber = Integer.parseInt(
+                    parts[parts.length - 1].isEmpty()
+                            ? parts[parts.length - 2]
+                            : parts[parts.length - 1]
+            );
 
             pokemonList.add(
                     new PokemonListItemDTO(
@@ -126,8 +138,6 @@ public class PokeApiService {
                             secondaryType
                     )
             );
-
-            pokedexNumber++;
         }
 
         cachedPokemonList = pokemonList;
