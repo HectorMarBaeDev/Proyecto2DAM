@@ -22,7 +22,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TeamDetailScreen(teamId: Long) {
+fun TeamDetailScreen(
+    teamId: Long,
+    onPokemonClick: (Long) -> Unit
+)
+ {
 
     val repository = remember { PokemonRepository() }
     val scope = rememberCoroutineScope()
@@ -146,6 +150,7 @@ fun TeamDetailScreen(teamId: Long) {
                     items(pokemonList) { pokemon ->
                         PokemonCard(
                             pokemon = pokemon,
+                            onClick = { onPokemonClick(pokemon.id) },
                             onDelete = {
                                 scope.launch {
                                     try {
@@ -162,6 +167,7 @@ fun TeamDetailScreen(teamId: Long) {
                                 }
                             }
                         )
+
                     }
                 }
             }

@@ -18,12 +18,15 @@ import com.example.pokemonapp.ui.pokemon.PokemonTypeIcon
 @Composable
 fun PokemonCard(
     pokemon: PokemonDto,
+    onClick: () -> Unit,
     onDelete: () -> Unit
-) {
+)
+ {
     val spriteUrl =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.pokedexNumber}.png"
 
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(0.75f),

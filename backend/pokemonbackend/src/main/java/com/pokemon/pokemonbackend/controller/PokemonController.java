@@ -160,5 +160,110 @@ public class PokemonController {
         return pokeApiService.getAllPokemonBasic();
     }
 
+    // Obtener un Pokémon concreto por id
+    @GetMapping("/{id}")
+    public ResponseEntity<PokemonResponseDTO> getPokemonById(@PathVariable Long id) {
+
+        Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
+
+        if (pokemon == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(new PokemonResponseDTO(
+                pokemon.getId(),
+                pokemon.getPokedexNumber(),
+                pokemon.getName(),
+                pokemon.getImage(),
+                pokemon.getPrimaryType(),
+                pokemon.getSecondaryType(),
+                pokemon.getItem(),
+                pokemon.getAbility(),
+                pokemon.getMove1(),
+                pokemon.getMove2(),
+                pokemon.getMove3(),
+                pokemon.getMove4(),
+                pokemon.getHpIv(),
+                pokemon.getAtkIv(),
+                pokemon.getDefIv(),
+                pokemon.getSpAtkIv(),
+                pokemon.getSpDefIv(),
+                pokemon.getSpeedIv(),
+                pokemon.getHpEv(),
+                pokemon.getAtkEv(),
+                pokemon.getDefEv(),
+                pokemon.getSpAtkEv(),
+                pokemon.getSpDefEv(),
+                pokemon.getSpeedEv()
+        ));
+    }
+
+    // Actualizar build competitivo
+    @PutMapping("/{id}")
+    public ResponseEntity<PokemonResponseDTO> updatePokemon(
+            @PathVariable Long id,
+            @RequestBody PokemonResponseDTO dto
+    ) {
+
+        Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
+
+        if (pokemon == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Solo actualizamos datos competitivos
+        pokemon.setItem(dto.getItem());
+        pokemon.setAbility(dto.getAbility());
+        pokemon.setMove1(dto.getMove1());
+        pokemon.setMove2(dto.getMove2());
+        pokemon.setMove3(dto.getMove3());
+        pokemon.setMove4(dto.getMove4());
+
+        pokemon.setHpIv(dto.getHpIv());
+        pokemon.setAtkIv(dto.getAtkIv());
+        pokemon.setDefIv(dto.getDefIv());
+        pokemon.setSpAtkIv(dto.getSpAtkIv());
+        pokemon.setSpDefIv(dto.getSpDefIv());
+        pokemon.setSpeedIv(dto.getSpeedIv());
+
+        pokemon.setHpEv(dto.getHpEv());
+        pokemon.setAtkEv(dto.getAtkEv());
+        pokemon.setDefEv(dto.getDefEv());
+        pokemon.setSpAtkEv(dto.getSpAtkEv());
+        pokemon.setSpDefEv(dto.getSpDefEv());
+        pokemon.setSpeedEv(dto.getSpeedEv());
+
+        Pokemon saved = pokemonRepository.save(pokemon);
+
+        return ResponseEntity.ok(new PokemonResponseDTO(
+                saved.getId(),
+                saved.getPokedexNumber(),
+                saved.getName(),
+                saved.getImage(),
+                saved.getPrimaryType(),
+                saved.getSecondaryType(),
+                saved.getItem(),
+                saved.getAbility(),
+                saved.getMove1(),
+                saved.getMove2(),
+                saved.getMove3(),
+                saved.getMove4(),
+                saved.getHpIv(),
+                saved.getAtkIv(),
+                saved.getDefIv(),
+                saved.getSpAtkIv(),
+                saved.getSpDefIv(),
+                saved.getSpeedIv(),
+                saved.getHpEv(),
+                saved.getAtkEv(),
+                saved.getDefEv(),
+                saved.getSpAtkEv(),
+                saved.getSpDefEv(),
+                saved.getSpeedEv()
+        ));
+    }
+
+
+
 
 }

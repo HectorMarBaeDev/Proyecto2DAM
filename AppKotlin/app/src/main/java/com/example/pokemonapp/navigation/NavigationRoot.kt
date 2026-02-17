@@ -12,6 +12,8 @@ import com.example.pokemonapp.ui.login.LoginScreen
 import com.example.pokemonapp.ui.login.RegisterScreen
 import com.example.pokemonapp.ui.teams.TeamDetailScreen
 import kotlinx.serialization.Serializable
+import com.example.pokemonapp.ui.pokemon.PokemonDetailScreen
+
 
 @Serializable
 data object LoginScreenKey : NavKey
@@ -25,6 +27,10 @@ data object TeamListScreenKey : NavKey
 
 @Serializable
 data class TeamDetailScreenKey(val teamId: Long) : NavKey
+
+@Serializable
+data class PokemonDetailScreenKey(val pokemonId: Long) : NavKey
+
 
 @Composable
 fun NavigationRoot() {
@@ -66,8 +72,22 @@ fun NavigationRoot() {
 
             // -------------------- TEAM DETAIL --------------------
             entry<TeamDetailScreenKey> { key ->
-                TeamDetailScreen(teamId = key.teamId)
+                TeamDetailScreen(
+                    teamId = key.teamId,
+                    onPokemonClick = { pokemonId ->
+                        navBackStack.add(PokemonDetailScreenKey(pokemonId))
+                    }
+                )
             }
+
+
+            // -------------------- POKEMON DETAIL --------------------
+            entry<PokemonDetailScreenKey> { key ->
+                PokemonDetailScreen(
+                    pokemonId = key.pokemonId
+                )
+            }
+
 
         }
     )
