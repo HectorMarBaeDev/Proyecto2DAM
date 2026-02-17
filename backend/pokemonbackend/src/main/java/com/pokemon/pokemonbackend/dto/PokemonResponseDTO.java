@@ -31,6 +31,10 @@ public class PokemonResponseDTO {
     private Integer spDefEv;
     private Integer speedEv;
 
+    public PokemonResponseDTO() {
+    }
+
+
     public PokemonResponseDTO(
             int id,
             int pokedexNumber,
@@ -129,4 +133,100 @@ public class PokemonResponseDTO {
     public Integer getSpAtkEv() { return spAtkEv; }
     public Integer getSpDefEv() { return spDefEv; }
     public Integer getSpeedEv() { return speedEv; }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setPokedexNumber(int pokedexNumber) {
+        this.pokedexNumber = pokedexNumber;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public void setPrimaryType(String primaryType) {
+        this.primaryType = primaryType;
+    }
+
+    public void setSecondaryType(String secondaryType) {
+        this.secondaryType = secondaryType;
+    }
+
+    public void setItem(String item) {
+        this.item = item;
+    }
+
+    public void setAbility(String ability) {
+        this.ability = ability;
+    }
+
+    public void setMove1(String move1) {
+        this.move1 = move1;
+    }
+
+    public void setMove2(String move2) {
+        this.move2 = move2;
+    }
+
+    public void setMove3(String move3) {
+        this.move3 = move3;
+    }
+
+    public void setMove4(String move4) {
+        this.move4 = move4;
+    }
+
+    public void setHpIv(Integer hpIv) {
+        this.hpIv = hpIv;
+    }
+
+    public void setAtkIv(Integer atkIv) {
+        this.atkIv = atkIv;
+    }
+
+    public void setDefIv(Integer defIv) {
+        this.defIv = defIv;
+    }
+
+    public void setSpDefIv(Integer spDefIv) {
+        this.spDefIv = spDefIv;
+    }
+
+    public void setSpAtkIv(Integer spAtkIv) {
+        this.spAtkIv = spAtkIv;
+    }
+
+    public void setSpeedIv(Integer speedIv) {
+        this.speedIv = speedIv;
+    }
+
+    public void setHpEv(Integer hpEv) {
+        this.hpEv = hpEv;
+    }
+
+    public void setAtkEv(Integer atkEv) {
+        this.atkEv = atkEv;
+    }
+
+    public void setDefEv(Integer defEv) {
+        this.defEv = defEv;
+    }
+
+    public void setSpAtkEv(Integer spAtkEv) {
+        this.spAtkEv = spAtkEv;
+    }
+
+    public void setSpDefEv(Integer spDefEv) {
+        this.spDefEv = spDefEv;
+    }
+
+    public void setSpeedEv(Integer speedEv) {
+        this.speedEv = speedEv;
+    }
 }
