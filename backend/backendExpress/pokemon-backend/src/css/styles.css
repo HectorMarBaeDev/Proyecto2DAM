@@ -61,7 +61,6 @@ body {
     height: calc(100vh - 80px); /* altura visible menos navbar */
     overflow-y: auto;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     padding: 1rem;
 }
@@ -70,4 +69,48 @@ body {
 .cardPokemon {
     display: flex;
     justify-content: center;
+    padding: 10px;
+}
+
+.card_img {
+    width: 70%
+}
+
+.card_pkm_name{
+    text-transform: capitalize;
+}
+
+.recorte {
+    border-radius: 4px;
+    width: 38px;
+    overflow: hidden;  
+}
+
+.recorte img {
+    width: 150px; /* más grande */
+}
+
+/* Animación de entrada */
+.fade-in {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+/* Animación de salida */
+.fade-out {
+    animation: fadeOut 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+
+
+#cardsContainer {
+    grid-template-columns: repeat(3, 1fr);
 }

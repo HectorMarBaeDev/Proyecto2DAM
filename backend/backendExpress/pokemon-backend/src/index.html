@@ -47,17 +47,38 @@
                         </ul>
                     </li>
                 </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                <form class="d-flex" role="search" id="searchForm">
+                    <input class="form-control me-2" type="search" placeholder="Buscar pokémon..." aria-label="Search" id="searchInput"/>
+                    <button class="btn btn-outline-success" type="submit">Buscar</button>
                 </form>
             </div>
         </div>
     </nav>
-    <div class="d-grid" id="divPrincipal">
+<div class="fade-in" id="divPrincipal">
+    <div id="cardsContainer" class="d-grid align-items-baseline"></div>
+    <div id="paginationContainer"></div>
+</div>
+
+
+    <!-- Modal para salto de página -->
+<div class="modal fade" id="modalSaltoPagina" tabindex="-1" aria-labelledby="modalSaltoPaginaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalSaltoPaginaLabel">Ir a página</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input type="number" class="form-control" id="inputPagina" placeholder="Número de página">
+        <small id="errorPagina" class="text-danger d-none">Número inválido</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnIrPagina">Ir</button>
+      </div>
     </div>
-    <button id="prevPageBtn" class="btn btn-secondary">Regresar</button>
-    <button class="btn btn-primary" id="nextPageBtn">Siguiente</button>
+  </div>
+</div>
 
 </body>
 

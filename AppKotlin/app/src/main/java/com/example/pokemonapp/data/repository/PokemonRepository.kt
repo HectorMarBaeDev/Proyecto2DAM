@@ -1,3 +1,6 @@
+package com.example.pokemonapp.data.repository
+
+import android.util.Log
 import com.example.pokemonapp.data.auth.AuthManager
 import com.example.pokemonapp.data.model.PokemonDto
 import com.example.pokemonapp.data.model.TeamDto
@@ -11,17 +14,23 @@ class PokemonRepository {
     suspend fun login(username: String, password: String): Long {
         val api = RetrofitInstance.create()
 
-        val response = api.login(
-            mapOf(
-                "username" to username,
-                "password" to password
+        try {
+            val response = api.login(
+                mapOf(
+                    "username" to username,
+                    "password" to password
+                )
             )
-        )
 
-        AuthManager.jwt = response.token
+            AuthManager.jwt = response.token
+            return response.userId
 
-        return response.userId
+        } catch (e: Exception) {
+            Log.e("LOGIN_ERROR", e.toString())
+            throw e
+        }
     }
+
 
     suspend fun register(
         username: String,
@@ -41,26 +50,25 @@ class PokemonRepository {
     // TEAMS
     // ======================
 
-    suspend fun getTeamsByUser(userId: Long): List<TeamDto> {
-        val api = RetrofitInstance.createWithToken()
-        return api.getTeamsByUser(userId)
+    suspend fun getTeamsByUser(): List<TeamDto> {
+        val api = RetrofitInstance.createWithToken() // token en el header
+        return api.getMyTeams()
     }
 
     suspend fun createTeam(
-        userId: Long,
+        userId: Long = 0, // lo ignoramos
         name: String,
         format: String
     ): TeamDto {
         val api = RetrofitInstance.createWithToken()
-
         return api.createTeam(
-            userId,
             mapOf(
                 "name" to name,
                 "format" to format
             )
         )
     }
+
 
     // ======================
     // POKEMON

@@ -52,7 +52,6 @@ public class PokemonController {
             return ResponseEntity.badRequest().build();
         }
 
-        // 🔴 AQUÍ VA LA COMPROBACIÓN
         Map<String, Object> data =
                 pokeApiService.getPokemonData(request.getIdentifier());
 
@@ -64,15 +63,16 @@ public class PokemonController {
 
         Integer pokedexNumber = (Integer) data.get("id");
         String name = (String) data.get("name");
+        String image = pokeApiService.getImage(data);
 
         Pokemon pokemon = new Pokemon(
                 pokedexNumber,
                 name,
-                pokeApiService.getImage(data),
+                image,
                 pokeApiService.getPrimaryType(data),
                 pokeApiService.getSecondaryType(data),
                 team
-        );  
+        );
 
         Pokemon saved = pokemonRepository.save(pokemon);
 
@@ -80,8 +80,8 @@ public class PokemonController {
                 .body(new PokemonResponseDTO(
                         saved.getId(),
                         saved.getPokedexNumber(),
-                        saved.getImage(),
                         saved.getName(),
+                        saved.getImage(),
                         saved.getPrimaryType(),
                         saved.getSecondaryType()
                 ));
@@ -102,8 +102,8 @@ public class PokemonController {
                 .map(p -> new PokemonResponseDTO(
                         p.getId(),
                         p.getPokedexNumber(),
-                        p.getImage(),
                         p.getName(),
+                        p.getImage(),
                         p.getPrimaryType(),
                         p.getSecondaryType()
                 ))
@@ -142,8 +142,8 @@ public class PokemonController {
             if (data == null) continue;
 
             result.add(new PokemonResponseDTO(
-                    (Integer) data.get("id"),   // id
-                    (Integer) data.get("pokedexNumber"),   // pokedexNumber
+                    (Integer) data.get("id"),
+                    (Integer) data.get("id"),
                     (String) data.get("name"),
                     pokeApiService.getImage(data),
                     pokeApiService.getPrimaryType(data),
