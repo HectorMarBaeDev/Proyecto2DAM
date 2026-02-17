@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author franp
  */
+
 public interface StorageService {
     
     void init();
