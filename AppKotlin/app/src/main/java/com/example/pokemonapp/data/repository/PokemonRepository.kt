@@ -3,6 +3,7 @@ package com.example.pokemonapp.data.repository
 import android.util.Log
 import com.example.pokemonapp.data.auth.AuthManager
 import com.example.pokemonapp.data.model.PokemonDto
+import com.example.pokemonapp.data.model.PokemonListItemDto
 import com.example.pokemonapp.data.model.TeamDto
 
 class PokemonRepository {
@@ -95,4 +96,10 @@ class PokemonRepository {
         val api = RetrofitInstance.createWithToken()
         api.deletePokemon(pokemonId)
     }
+
+    suspend fun getAllPokemon(): List<PokemonListItemDto> {
+        val api = RetrofitInstance.createWithToken()
+        return api.getAllPokemon()
+    }
+
 }

@@ -34,7 +34,7 @@ fun RegisterScreen(
 
 
     //  Validaciones derivadas
-    
+
     val passwordsMatch = password == confirmPassword
     val isEmailValid = email.contains("@")
     val isFormValid =

@@ -17,11 +17,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pokemonapp.data.model.PokemonDto
+import com.example.pokemonapp.data.model.PokemonListItemDto
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TeamDetailScreen(teamId: Long) {
+
     val repository = remember { PokemonRepository() }
     val scope = rememberCoroutineScope()
 
@@ -56,11 +58,7 @@ fun TeamDetailScreen(teamId: Long) {
                         shape = RoundedCornerShape(12.dp),
                         enabled = pokemonList.size < 6
                     ) {
-                        Text(
-                            "+",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         Spacer(Modifier.width(4.dp))
                         Text("Añadir")
                     }
@@ -68,21 +66,6 @@ fun TeamDetailScreen(teamId: Long) {
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
-            )
-        },
-        snackbarHost = {
-            SnackbarHost(
-                hostState = remember { SnackbarHostState() }.apply {
-                    LaunchedEffect(errorMessage) {
-                        errorMessage?.let {
-                            showSnackbar(
-                                message = it,
-                                duration = SnackbarDuration.Short
-                            )
-                            errorMessage = null
-                        }
-                    }
-                }
             )
         }
     ) { padding ->
@@ -93,17 +76,19 @@ fun TeamDetailScreen(teamId: Long) {
                 .padding(padding)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            // Contador de Pokémon
+
+            // Contador
             if (pokemonList.isNotEmpty()) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (pokemonList.size >= 6)
-                            MaterialTheme.colorScheme.errorContainer
-                        else
-                            MaterialTheme.colorScheme.secondaryContainer
+                        containerColor =
+                            if (pokemonList.size >= 6)
+                                MaterialTheme.colorScheme.errorContainer
+                            else
+                                MaterialTheme.colorScheme.secondaryContainer
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -115,12 +100,12 @@ fun TeamDetailScreen(teamId: Long) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Pokémon en el equipo:",
+                            "Pokémon en el equipo:",
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium
                         )
                         Text(
-                            text = "${pokemonList.size}/6",
+                            "${pokemonList.size}/6",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp
@@ -129,27 +114,21 @@ fun TeamDetailScreen(teamId: Long) {
                 }
             }
 
-            // Lista de Pokémon o estado vacío
+            // Lista
             if (pokemonList.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Spacer(Modifier.height(16.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "No hay Pokémon en este equipo",
+                            "No hay Pokémon en este equipo",
                             style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Medium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            fontWeight = FontWeight.Medium
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = "Toca el botón + para añadir uno",
-                            style = MaterialTheme.typography.bodyMedium,
+                            "Toca el botón + para añadir uno",
                             color = Color.Gray
                         )
                     }
@@ -172,10 +151,11 @@ fun TeamDetailScreen(teamId: Long) {
                                     try {
                                         isLoading = true
                                         repository.deletePokemon(pokemon.id)
-                                        pokemonList = repository.getPokemonByTeam(teamId)
+                                        pokemonList =
+                                            repository.getPokemonByTeam(teamId)
                                     } catch (e: Exception) {
-                                        Log.e("TEAM_DETAIL", "Error deleting: ${e.message}")
-                                        errorMessage = "Error al eliminar el Pokémon"
+                                        errorMessage =
+                                            "Error al eliminar el Pokémon"
                                     } finally {
                                         isLoading = false
                                     }
@@ -186,7 +166,6 @@ fun TeamDetailScreen(teamId: Long) {
                 }
             }
 
-            // Indicador de carga
             if (isLoading) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth()
@@ -195,39 +174,38 @@ fun TeamDetailScreen(teamId: Long) {
         }
     }
 
+    // 🔥 NUEVO DIALOGO DE SELECCIÓN
     if (showDialog) {
-        AddPokemonDialog(
+        SelectPokemonDialog(
+            repository = repository,
             onDismiss = { showDialog = false },
-            onAdd = { identifier ->
+            onPokemonSelected = { pokemon: PokemonListItemDto ->
+
                 scope.launch {
                     try {
                         isLoading = true
 
-                        // Verificar límite antes de llamar al backend
                         if (pokemonList.size >= 6) {
-                            errorMessage = "Ya tienes 6 Pokémon en el equipo (máximo permitido)"
+                            errorMessage =
+                                "Ya tienes 6 Pokémon en el equipo"
                             showDialog = false
                             return@launch
                         }
 
-                        repository.addPokemon(teamId, identifier)
-                        pokemonList = repository.getPokemonByTeam(teamId)
-                        showDialog = false
+                        repository.addPokemon(
+                            teamId,
+                            pokemon.pokedexNumber.toString()
+                        )
 
-                    } catch (e: retrofit2.HttpException) {
-                        // Manejar errores HTTP específicos
-                        when (e.code()) {
-                            400 -> errorMessage = "Pokémon no encontrado. Verifica el nombre o número"
-                            404 -> errorMessage = "Equipo no encontrado"
-                            else -> errorMessage = "Error al añadir Pokémon: ${e.message()}"
-                        }
+                        pokemonList =
+                            repository.getPokemonByTeam(teamId)
+
                         showDialog = false
 
                     } catch (e: Exception) {
-                        Log.e("TEAM_DETAIL", "Error adding pokemon: ${e.message}")
-                        errorMessage = "Error de conexión. Verifica tu internet"
+                        errorMessage =
+                            "Error al añadir el Pokémon"
                         showDialog = false
-
                     } finally {
                         isLoading = false
                     }

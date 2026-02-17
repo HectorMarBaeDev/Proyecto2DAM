@@ -1,5 +1,6 @@
 package com.pokemon.pokemonbackend.controller;
 
+import com.pokemon.pokemonbackend.dto.PokemonListItemDTO;
 import com.pokemon.pokemonbackend.dto.PokemonRequestDTO;
 import com.pokemon.pokemonbackend.dto.PokemonResponseDTO;
 import com.pokemon.pokemonbackend.model.Pokemon;
@@ -153,5 +154,11 @@ public class PokemonController {
 
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping
+    public List<PokemonListItemDTO> getAllPokemon() {
+        return pokeApiService.getAllPokemonBasic();
+    }
+
 
 }

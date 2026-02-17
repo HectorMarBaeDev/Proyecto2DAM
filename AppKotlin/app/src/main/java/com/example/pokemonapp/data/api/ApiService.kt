@@ -53,4 +53,8 @@ interface ApiService {
     suspend fun deletePokemon(
         @Path("id") pokemonId: Long
     )
+
+    @GET("pokemon")
+    suspend fun getAllPokemon(): List<PokemonListItemDto>
+
 }

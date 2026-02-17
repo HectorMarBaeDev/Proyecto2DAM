@@ -3,6 +3,9 @@ package com.pokemon.pokemonbackend.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import com.pokemon.pokemonbackend.dto.PokemonListItemDTO;
+import java.util.ArrayList;
+
 
 import java.util.List;
 import java.util.Map;
@@ -61,4 +64,30 @@ public class PokeApiService {
         }
         return null;
     }
+
+    @SuppressWarnings("unchecked")
+    public List<PokemonListItemDTO> getAllPokemonBasic() {
+
+        String url = "https://pokeapi.co/api/v2/pokemon?limit=151";
+
+        Map<String, Object> response =
+                restTemplate.getForObject(url, Map.class);
+
+        List<Map<String, Object>> results =
+                (List<Map<String, Object>>) response.get("results");
+
+        List<PokemonListItemDTO> pokemonList = new ArrayList<>();
+
+        int pokedexNumber = 1;
+
+        for (Map<String, Object> pokemon : results) {
+            String name = (String) pokemon.get("name");
+            pokemonList.add(
+                    new PokemonListItemDTO(pokedexNumber++, name)
+            );
+        }
+
+        return pokemonList;
+    }
+
 }
