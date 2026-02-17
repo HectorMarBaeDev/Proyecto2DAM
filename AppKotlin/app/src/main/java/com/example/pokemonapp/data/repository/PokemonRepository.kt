@@ -1,5 +1,6 @@
 package com.example.pokemonapp.data.repository
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.example.pokemonapp.data.api.ApiService
@@ -80,33 +81,30 @@ class PokemonRepository {
     // USERS
     // ======================
 
-    suspend fun uploadProfilePicture(uri: Uri, context: android.content.Context) {
-        // Convertimos Uri a File temporal
-        val file = uriToFile(uri, context)
+    suspend fun uploadProfilePicture(uri: Uri, context: Context) {
+        if (AuthManager.jwt == null) throw Exception("No hay token disponible para subir imagen")
 
+        val file = uriToFile(uri, context)
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
-        val response = RetrofitInstance.createWithToken().uploadProfilePicture(body) // tu API de Retrofit
-        if (!response.isSuccessful) {
-            throw Exception("Error subiendo imagen: ${response.code()}")
-        }
+        // ✅ Llamada que lanza excepción si hay 403/401
+        RetrofitInstance.createWithToken().uploadProfilePicture(body)
+
+        Log.d("Upload", "Imagen subida correctamente")
     }
 
 
-    fun uriToFile(uri: Uri, context: android.content.Context): File {
+
+    fun uriToFile(uri: Uri, context: Context): File {
         val inputStream = context.contentResolver.openInputStream(uri)
-            ?: throw IllegalArgumentException("No se pudo abrir el URI")
-        val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
-        inputStream.use { input ->
-            file.outputStream().use { output ->
-                input.copyTo(output)
-            }
+            ?: throw IllegalArgumentException("No se puede abrir el archivo")
+        val tempFile = File(context.cacheDir, "temp_upload.jpg")
+        tempFile.outputStream().use { output ->
+            inputStream.copyTo(output)
         }
-        return file
+        return tempFile
     }
-
-
 
     // ======================
     // POKEMON

@@ -48,6 +48,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-resources/**").permitAll()
                         .requestMatchers("/webjars/**").permitAll()
+                        .requestMatchers("/api/users/me/profile-picture").permitAll()
+                        .requestMatchers("/api/users//{id:\\d+}/profile-picture").permitAll()
                         .anyRequest().authenticated()
                 )
 
