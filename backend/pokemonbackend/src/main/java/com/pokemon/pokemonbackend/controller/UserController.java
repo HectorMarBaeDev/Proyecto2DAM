@@ -1,11 +1,11 @@
 package com.pokemon.pokemonbackend.controller;
 
+
 import com.pokemon.pokemonbackend.dto.UserResponseDTO;
 import com.pokemon.pokemonbackend.model.AppUser;
 import com.pokemon.pokemonbackend.repository.AppUserRepository;
 import com.pokemon.pokemonbackend.storage.StorageService;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
