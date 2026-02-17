@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.pokemon.pokemonbackend.dto.PokemonListItemDTO;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +15,9 @@ public class PokeApiService {
     private static final String POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon/";
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // 🔥 Cache en memoria
+    // Cache en memoria
     private List<PokemonListItemDTO> cachedPokemonList;
 
-    // 🔥 Precarga automática al iniciar el servidor
     @jakarta.annotation.PostConstruct
     public void preloadPokemon() {
         getAllPokemonBasic();
@@ -57,17 +57,25 @@ public class PokeApiService {
 
     @SuppressWarnings("unchecked")
     private String getTypeBySlot(Map<String, Object> data, int slot) {
+
         List<Map<String, Object>> types =
                 (List<Map<String, Object>>) data.get("types");
 
+        if (types == null) return null;
+
         for (Map<String, Object> typeEntry : types) {
+
             Integer typeSlot = (Integer) typeEntry.get("slot");
+
             if (typeSlot != null && typeSlot == slot) {
+
                 Map<String, Object> type =
                         (Map<String, Object>) typeEntry.get("type");
+
                 return (String) type.get("name");
             }
         }
+
         return null;
     }
 
@@ -95,21 +103,32 @@ public class PokeApiService {
 
         List<PokemonListItemDTO> pokemonList = new ArrayList<>();
 
-        int pokedexNumber = 1;
-
         for (Map<String, Object> pokemon : results) {
 
             String name = (String) pokemon.get("name");
+            String pokemonUrl = (String) pokemon.get("url");
 
-            // 🔥 Llamada individual para obtener tipos
-            Map<String, Object> fullData =
-                    restTemplate.getForObject(
-                            POKEAPI_URL + pokedexNumber,
-                            Map.class
-                    );
+            Map<String, Object> fullData;
+
+            try {
+                fullData = restTemplate.getForObject(
+                        pokemonUrl,
+                        Map.class
+                );
+            } catch (Exception e) {
+                continue; // si uno falla, seguimos
+            }
 
             String primaryType = getPrimaryType(fullData);
             String secondaryType = getSecondaryType(fullData);
+
+            // Extraer número real desde la URL
+            String[] parts = pokemonUrl.split("/");
+            int pokedexNumber = Integer.parseInt(
+                    parts[parts.length - 1].isEmpty()
+                            ? parts[parts.length - 2]
+                            : parts[parts.length - 1]
+            );
 
             pokemonList.add(
                     new PokemonListItemDTO(
@@ -119,18 +138,8 @@ public class PokeApiService {
                             secondaryType
                     )
             );
-
-            pokedexNumber++;
         }
 
-        cachedPokemonList = pokemonList;
-
-        return cachedPokemonList;
-    }
-
-
-
-        // 🔥 Guardar en memoria
         cachedPokemonList = pokemonList;
 
         return cachedPokemonList;

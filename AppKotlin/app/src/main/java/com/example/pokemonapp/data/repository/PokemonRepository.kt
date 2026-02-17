@@ -1,10 +1,16 @@
 package com.example.pokemonapp.data.repository
 
+import android.net.Uri
 import android.util.Log
+import com.example.pokemonapp.data.api.ApiService
 import com.example.pokemonapp.data.auth.AuthManager
 import com.example.pokemonapp.data.model.PokemonDto
 import com.example.pokemonapp.data.model.PokemonListItemDto
 import com.example.pokemonapp.data.model.TeamDto
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
 
 class PokemonRepository {
 
@@ -70,6 +76,37 @@ class PokemonRepository {
         )
     }
 
+    // ======================
+    // USERS
+    // ======================
+
+    suspend fun uploadProfilePicture(uri: Uri, context: android.content.Context) {
+        // Convertimos Uri a File temporal
+        val file = uriToFile(uri, context)
+
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+
+        val response = RetrofitInstance.createWithToken().uploadProfilePicture(body) // tu API de Retrofit
+        if (!response.isSuccessful) {
+            throw Exception("Error subiendo imagen: ${response.code()}")
+        }
+    }
+
+
+    fun uriToFile(uri: Uri, context: android.content.Context): File {
+        val inputStream = context.contentResolver.openInputStream(uri)
+            ?: throw IllegalArgumentException("No se pudo abrir el URI")
+        val file = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+        inputStream.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        return file
+    }
+
+
 
     // ======================
     // POKEMON
@@ -101,5 +138,4 @@ class PokemonRepository {
         val api = RetrofitInstance.createWithToken()
         return api.getAllPokemon()
     }
-
 }
