@@ -60,7 +60,6 @@ body {
 #divPrincipal {
     height: calc(100vh - 80px); /* altura visible menos navbar */
     overflow-y: auto;
-    display: grid;
     gap: 1rem;
     padding: 1rem;
 }
@@ -111,6 +110,12 @@ body {
 }
 
 
-#cardsContainer {
+#cardsContainer, .divFiltro {
     grid-template-columns: repeat(3, 1fr);
+}
+
+#spinnerIndex {
+    width: 100px;
+    height: 100px;
+    vertical-align: middle;
 }

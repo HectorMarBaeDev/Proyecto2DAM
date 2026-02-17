@@ -30,55 +30,101 @@
                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link" href="#" id="filtrar">Filtrar</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Dropdown
-                        </a>
+                            aria-expanded="false">Mi cuenta</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            <li><a class="dropdown-item" href="#">Mi equipo</a></li>
+                            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
                         </ul>
                     </li>
                 </ul>
                 <form class="d-flex" role="search" id="searchForm">
-                    <input class="form-control me-2" type="search" placeholder="Buscar pokémon..." aria-label="Search" id="searchInput"/>
+                    <input class="form-control me-2" type="search" placeholder="Buscar pokémon..." aria-label="Search"
+                        id="searchInput" />
                     <button class="btn btn-outline-success" type="submit">Buscar</button>
                 </form>
             </div>
         </div>
     </nav>
-<div class="fade-in" id="divPrincipal">
-    <div id="cardsContainer" class="d-grid align-items-baseline"></div>
-    <div id="paginationContainer"></div>
-</div>
+    <div class="fade-in" id="divPrincipal">
+        <div id="spinnerCarga" class="d-flex justify-content-center align-items-center">
+            <div class="spinner-border text-warning" role="status" id="spinnerIndex">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+
+        <div id="cardsContainer" class="d-grid align-items-baseline"></div>
+        <div id="paginationContainer" class="mt-2 mb-2"></div>
+    </div>
 
 
     <!-- Modal para salto de página -->
-<div class="modal fade" id="modalSaltoPagina" tabindex="-1" aria-labelledby="modalSaltoPaginaLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalSaltoPaginaLabel">Ir a página</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <input type="number" class="form-control" id="inputPagina" placeholder="Número de página">
-        <small id="errorPagina" class="text-danger d-none">Número inválido</small>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary" id="btnIrPagina">Ir</button>
-      </div>
+    <div class="modal fade" id="modalSaltoPagina" tabindex="-1" aria-labelledby="modalSaltoPaginaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalSaltoPaginaLabel">Ir a página</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" class="form-control" id="inputPagina" placeholder="Número de página">
+                    <small id="errorPagina" class="text-danger d-none">Número inválido</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnIrPagina">Ir</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
+
+    <!-- Modal Filtros -->
+    <div class="modal fade" id="modalFiltros" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtros Pokémon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- TIPOS -->
+                    <h6>Tipos</h6>
+                    <div id="filtroTipos" class="d-grid gap-2 mb-4 divFiltro"></div>
+
+                    <!-- GENERACIONES -->
+                    <h6>Generaciones</h6>
+                    <div id="filtroGeneraciones" class="d-grid gap-2 mb-4 divFiltro"></div>
+
+                    <!-- ORDEN -->
+                    <h6>Ordenar por</h6>
+                    <select id="ordenSelect" class="form-select">
+                        <option value="">Sin ordenar</option>
+                        <option value="az">Nombre A - Z</option>
+                        <option value="za">Nombre Z - A</option>
+                        <option value="id-asc">ID menor - mayor</option>
+                        <option value="id-desc">ID mayor - menor</option>
+                    </select>
+
+                </div>
+
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-danger" id="resetFiltros">
+                        Reiniciar filtros
+                    </button>
+
+                    <button type="button" class="btn btn-primary" id="aplicarFiltros">Aplicar filtros</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 </body>
 

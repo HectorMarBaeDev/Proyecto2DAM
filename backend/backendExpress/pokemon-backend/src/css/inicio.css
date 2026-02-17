@@ -6,6 +6,7 @@ body {
     animation: cieloAnimado 15s ease infinite;
 }
 
+
 @keyframes cieloAnimado {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }

@@ -1,0 +1,40 @@
+
+#imgPokemon{
+    width: 350px;
+    padding: 15px;
+}
+
+.recorte {
+    border-radius: 4px;
+    width: 38px;
+    overflow: hidden;  
+}
+
+.recorte img {
+    width: 150px; /* más grande */
+}
+
+#pTipos {
+    display: contents;
+}
+
+#detalleContainer {
+    min-height: 80vh;           /* Ocupa toda la altura de la pantalla */
+    display: flex;                /* Activa Flexbox */
+    justify-content: center;      /* Centra horizontalmente */
+    align-items: center;          /* Centra verticalmente */
+    padding: 1rem;                /* Espaciado interno */
+    flex-direction: column;       /* Para que el contenido se apile verticalmente */
+    background-color: #f8f9fa;    /* Opcional: fondo claro */
+}
+
+#divBotones{
+    width: 30%;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.card{
+    width: -webkit-fill-available;
+}
+
