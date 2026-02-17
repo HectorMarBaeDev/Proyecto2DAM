@@ -1,6 +1,7 @@
 package com.example.pokemonapp.ui.teams
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -48,13 +49,18 @@ fun TeamsScreen(
         uri?.let {
             scope.launch {
                 try {
-                    repository.uploadProfilePicture(it, context)
-                    profileImageUrl = "http://tu-backend.com/api/users/me/profile-picture"
+                    repository.uploadProfilePicture(it, context) // función para subir
+                    Log.d("Upload", "Imagen subida correctamente")
                 } catch (e: Exception) {
-                    errorMessage = "Error subiendo imagen"
+                    Log.e("Upload", "Error subiendo imagen", e)
                 }
             }
         }
+    }
+
+// Botón para seleccionar foto
+    Button(onClick = { imagePickerLauncher.launch("image/*") }) {
+        Text("Seleccionar foto de perfil")
     }
 
     // Cargar equipos al entrar

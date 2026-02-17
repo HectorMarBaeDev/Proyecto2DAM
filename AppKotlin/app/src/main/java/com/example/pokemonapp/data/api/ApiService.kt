@@ -29,7 +29,7 @@ interface ApiService {
     @POST("users/me/profile-picture")
     suspend fun uploadProfilePicture(
         @Part file: MultipartBody.Part
-    ): Response<ResponseBody>
+    ): Unit
 
     // Obtener foto de perfil
     @GET("users/{id}/profile-picture")
