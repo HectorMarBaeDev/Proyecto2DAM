@@ -38,6 +38,6 @@ fun PokemonTypeIcon(
     Image(
         painter = painterResource(id = iconRes),
         contentDescription = type,
-        modifier = modifier.size(32.dp)
+        modifier = modifier.size(68.dp)
     )
 }

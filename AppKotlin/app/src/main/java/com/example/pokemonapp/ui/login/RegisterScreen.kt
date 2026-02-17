@@ -32,6 +32,18 @@ fun RegisterScreen(
     val scope = rememberCoroutineScope()
     val repository = remember { PokemonRepository() }
 
+
+    //  Validaciones derivadas
+    
+    val passwordsMatch = password == confirmPassword
+    val isEmailValid = email.contains("@")
+    val isFormValid =
+        username.isNotBlank() &&
+                email.isNotBlank() &&
+                isEmailValid &&
+                password.length >= 8 &&
+                passwordsMatch
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -48,6 +60,7 @@ fun RegisterScreen(
             )
         }
     ) { padding ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,6 +68,7 @@ fun RegisterScreen(
                 .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center
         ) {
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -66,6 +80,7 @@ fun RegisterScreen(
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -81,7 +96,7 @@ fun RegisterScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Campo Usuario
+                    // Usuario
                     OutlinedTextField(
                         value = username,
                         onValueChange = {
@@ -95,7 +110,7 @@ fun RegisterScreen(
                         shape = RoundedCornerShape(12.dp)
                     )
 
-                    // Campo Email
+                    // Email
                     OutlinedTextField(
                         value = email,
                         onValueChange = {
@@ -106,10 +121,19 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
+                        isError = email.isNotBlank() && !isEmailValid,
                         shape = RoundedCornerShape(12.dp)
                     )
 
-                    // Campo Contraseña
+                    if (email.isNotBlank() && !isEmailValid) {
+                        Text(
+                            text = "Email inválido",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    // Contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = {
@@ -124,7 +148,7 @@ fun RegisterScreen(
                         shape = RoundedCornerShape(12.dp)
                     )
 
-                    // Campo Confirmar Contraseña
+                    // Confirmar contraseña
                     OutlinedTextField(
                         value = confirmPassword,
                         onValueChange = {
@@ -136,12 +160,11 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp),
-                        isError = confirmPassword.isNotBlank() && password != confirmPassword
+                        isError = confirmPassword.isNotBlank() && !passwordsMatch,
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    // Mensaje de validación de contraseña
-                    if (confirmPassword.isNotBlank() && password != confirmPassword) {
+                    if (confirmPassword.isNotBlank() && !passwordsMatch) {
                         Text(
                             text = "Las contraseñas no coinciden",
                             color = MaterialTheme.colorScheme.error,
@@ -149,7 +172,7 @@ fun RegisterScreen(
                         )
                     }
 
-                    // Mensaje de error
+                    // Error general backend
                     errorMessage?.let { error ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -169,39 +192,28 @@ fun RegisterScreen(
 
                     Spacer(Modifier.height(8.dp))
 
-                    // Botón Registrarse
+                    // Botón Registro
                     Button(
                         onClick = {
-                            // Validaciones
-                            when {
-                                username.isBlank() -> errorMessage = "El usuario es obligatorio"
-                                email.isBlank() -> errorMessage = "El email es obligatorio"
-                                !email.contains("@") -> errorMessage = "Email inválido"
-                                password.isBlank() -> errorMessage = "La contraseña es obligatoria"
-                                password.length < 6 -> errorMessage = "La contraseña debe tener al menos 6 caracteres"
-                                password != confirmPassword -> errorMessage = "Las contraseñas no coinciden"
-                                else -> {
-                                    scope.launch {
-                                        try {
-                                            isLoading = true
-                                            errorMessage = null
-                                            repository.register(username, email, password)
-                                            onRegisterSuccess()
-                                        } catch (e: retrofit2.HttpException) {
-                                            when (e.code()) {
-                                                409 -> errorMessage = "El usuario o email ya existe"
-                                                else -> errorMessage = "Error en el servidor"
-                                            }
-                                        } catch (e: Exception) {
-                                            errorMessage = "Error de conexión. Verifica tu internet"
-                                        } finally {
-                                            isLoading = false
-                                        }
+                            scope.launch {
+                                try {
+                                    isLoading = true
+                                    errorMessage = null
+                                    repository.register(username, email, password)
+                                    onRegisterSuccess()
+                                } catch (e: retrofit2.HttpException) {
+                                    when (e.code()) {
+                                        409 -> errorMessage = "El usuario o email ya existe"
+                                        else -> errorMessage = "Error en el servidor"
                                     }
+                                } catch (e: Exception) {
+                                    errorMessage = "Error de conexión. Verifica tu internet"
+                                } finally {
+                                    isLoading = false
                                 }
                             }
                         },
-                        enabled = !isLoading,
+                        enabled = !isLoading && isFormValid,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
@@ -222,7 +234,7 @@ fun RegisterScreen(
                         }
                     }
 
-                    // Divider
+                    // Separador
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -232,13 +244,12 @@ fun RegisterScreen(
                         Text(
                             "o",
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         HorizontalDivider(modifier = Modifier.weight(1f))
                     }
 
-                    // Botón Volver al Login
+                    // Volver login
                     OutlinedButton(
                         onClick = onBackToLogin,
                         modifier = Modifier
