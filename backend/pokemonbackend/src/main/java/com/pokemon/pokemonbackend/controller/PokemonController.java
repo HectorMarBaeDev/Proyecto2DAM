@@ -264,6 +264,38 @@ public class PokemonController {
     }
 
 
+    @GetMapping("/{id}/abilities")
+    public ResponseEntity<List<String>> getPokemonAbilities(@PathVariable Long id) {
+
+        Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
+
+        if (pokemon == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Map<String, Object> data =
+                pokeApiService.getPokemonData(pokemon.getName());
+
+        if (data == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Map<String, Object>> abilities =
+                (List<Map<String, Object>>) data.get("abilities");
+
+        List<String> abilityNames = new ArrayList<>();
+
+        for (Map<String, Object> abilityEntry : abilities) {
+            Map<String, Object> ability =
+                    (Map<String, Object>) abilityEntry.get("ability");
+
+            abilityNames.add((String) ability.get("name"));
+        }
+
+        return ResponseEntity.ok(abilityNames);
+    }
+
+
 
 
 }
