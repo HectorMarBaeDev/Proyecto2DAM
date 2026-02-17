@@ -24,7 +24,7 @@ public class FileUploadController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> listUploadedFiles() throws IOException {
+    public ResponseEntity<?> listUploadedFiles() {
         return ResponseEntity.ok(
                 storageService.loadAll()
                         .map(path -> MvcUriComponentsBuilder
@@ -52,8 +52,8 @@ public class FileUploadController {
         return ResponseEntity.ok("Archivo subido: " + file.getOriginalFilename());
     }
 
-    @ExceptionHandler(StorageFileNotFoundException.class)
-    public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-        return ResponseEntity.notFound().build();
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleStorageFileNotFound(RuntimeException exc) {
+        return ResponseEntity.status(500).body(exc.getMessage());
     }
 }
