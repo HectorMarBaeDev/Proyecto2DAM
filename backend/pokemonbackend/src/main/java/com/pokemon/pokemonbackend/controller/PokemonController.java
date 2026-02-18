@@ -8,12 +8,14 @@ import com.pokemon.pokemonbackend.model.Team;
 import com.pokemon.pokemonbackend.repository.PokemonRepository;
 import com.pokemon.pokemonbackend.repository.TeamRepository;
 import com.pokemon.pokemonbackend.service.PokeApiService;
+import com.pokemon.pokemonbackend.service.PokemonStatService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+
 
 @RestController
 @RequestMapping("/api/pokemon")
@@ -41,7 +43,6 @@ public class PokemonController {
             @RequestParam Long teamId
     ) {
         Team team = teamRepository.findById(teamId).orElse(null);
-
         if (team == null) return ResponseEntity.notFound().build();
         if (pokemonRepository.findByTeam(team).size() >= 6)
             return ResponseEntity.badRequest().build();
@@ -101,45 +102,12 @@ public class PokemonController {
 
     @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deletePokemon(@PathVariable Long id) {
+
         if (!pokemonRepository.existsById(id))
             return ResponseEntity.notFound().build();
 
         pokemonRepository.deleteById(id);
         return ResponseEntity.noContent().build();
-    }
-
-    // ---------------- INDEX RANDOM ----------------
-
-    @GetMapping("/index/page")
-    public ResponseEntity<List<PokemonResponseDTO>> getIndexPokemonPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "9") int pageSize
-    ) {
-
-        int totalPokemon = 1025;
-        Random random = new Random();
-        int startId = random.nextInt(totalPokemon - pageSize + 1) + 1;
-
-        List<PokemonResponseDTO> result = new ArrayList<>();
-
-        for (int i = 0; i < pageSize; i++) {
-
-            Map<String, Object> data =
-                    pokeApiService.getPokemonData(String.valueOf(startId + i));
-
-            if (data == null) continue;
-
-            result.add(new PokemonResponseDTO(
-                    (Integer) data.get("id"),
-                    (Integer) data.get("id"),
-                    (String) data.get("name"),
-                    pokeApiService.getImage(data),
-                    pokeApiService.getPrimaryType(data),
-                    pokeApiService.getSecondaryType(data)
-            ));
-        }
-
-        return ResponseEntity.ok(result);
     }
 
     // ---------------- GET ALL ----------------
@@ -149,7 +117,7 @@ public class PokemonController {
         return pokeApiService.getAllPokemonBasic();
     }
 
-    // ---------------- GET BY ID ----------------
+    // ---------------- GET BY ID (CON STATS) ----------------
 
     @GetMapping("/id/{id}")
     public ResponseEntity<PokemonResponseDTO> getPokemonById(@PathVariable Long id) {
@@ -157,32 +125,7 @@ public class PokemonController {
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
         if (pokemon == null) return ResponseEntity.notFound().build();
 
-        return ResponseEntity.ok(new PokemonResponseDTO(
-                pokemon.getId(),
-                pokemon.getPokedexNumber(),
-                pokemon.getName(),
-                pokemon.getImage(),
-                pokemon.getPrimaryType(),
-                pokemon.getSecondaryType(),
-                pokemon.getItem(),
-                pokemon.getAbility(),
-                pokemon.getMove1(),
-                pokemon.getMove2(),
-                pokemon.getMove3(),
-                pokemon.getMove4(),
-                pokemon.getHpIv(),
-                pokemon.getAtkIv(),
-                pokemon.getDefIv(),
-                pokemon.getSpAtkIv(),
-                pokemon.getSpDefIv(),
-                pokemon.getSpeedIv(),
-                pokemon.getHpEv(),
-                pokemon.getAtkEv(),
-                pokemon.getDefEv(),
-                pokemon.getSpAtkEv(),
-                pokemon.getSpDefEv(),
-                pokemon.getSpeedEv()
-        ));
+        return ResponseEntity.ok(buildResponseWithStats(pokemon));
     }
 
     // ---------------- UPDATE ----------------
@@ -217,34 +160,11 @@ public class PokemonController {
         pokemon.setSpDefEv(dto.getSpDefEv());
         pokemon.setSpeedEv(dto.getSpeedEv());
 
+        pokemon.setNature(dto.getNature());
+
         Pokemon saved = pokemonRepository.save(pokemon);
 
-        return ResponseEntity.ok(new PokemonResponseDTO(
-                saved.getId(),
-                saved.getPokedexNumber(),
-                saved.getName(),
-                saved.getImage(),
-                saved.getPrimaryType(),
-                saved.getSecondaryType(),
-                saved.getItem(),
-                saved.getAbility(),
-                saved.getMove1(),
-                saved.getMove2(),
-                saved.getMove3(),
-                saved.getMove4(),
-                saved.getHpIv(),
-                saved.getAtkIv(),
-                saved.getDefIv(),
-                saved.getSpAtkIv(),
-                saved.getSpDefIv(),
-                saved.getSpeedIv(),
-                saved.getHpEv(),
-                saved.getAtkEv(),
-                saved.getDefEv(),
-                saved.getSpAtkEv(),
-                saved.getSpDefEv(),
-                saved.getSpeedEv()
-        ));
+        return ResponseEntity.ok(buildResponseWithStats(saved));
     }
 
     // ---------------- ABILITIES ----------------
@@ -274,12 +194,12 @@ public class PokemonController {
         return ResponseEntity.ok(abilityNames);
     }
 
-    // ---------------- ITEMS PAGINATED ----------------
+    // ---------------- COMPETITIVE ITEMS ----------------
 
     @GetMapping("/competitive-items")
     public ResponseEntity<List<String>> getCompetitiveItems() {
 
-        List<String> items = List.of(
+        return ResponseEntity.ok(List.of(
                 "leftovers",
                 "choice-band",
                 "choice-scarf",
@@ -297,28 +217,21 @@ public class PokemonController {
                 "expert-belt",
                 "black-sludge",
                 "light-clay"
-        );
-
-        return ResponseEntity.ok(items);
+        ));
     }
 
-    // MOVES
+    // ---------------- MOVES ----------------
 
-    @GetMapping("/{id}/moves")
+    @GetMapping("/id/{id}/moves")
     public ResponseEntity<List<String>> getPokemonMoves(@PathVariable Long id) {
 
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
-
-        if (pokemon == null) {
-            return ResponseEntity.notFound().build();
-        }
+        if (pokemon == null) return ResponseEntity.notFound().build();
 
         Map<String, Object> data =
                 pokeApiService.getPokemonData(pokemon.getName());
 
-        if (data == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        if (data == null) return ResponseEntity.badRequest().build();
 
         List<Map<String, Object>> moves =
                 (List<Map<String, Object>>) data.get("moves");
@@ -328,7 +241,6 @@ public class PokemonController {
         for (Map<String, Object> moveEntry : moves) {
             Map<String, Object> move =
                     (Map<String, Object>) moveEntry.get("move");
-
             moveNames.add((String) move.get("name"));
         }
 
@@ -338,6 +250,110 @@ public class PokemonController {
         return ResponseEntity.ok(result);
     }
 
+    // ===================== PRIVATE BUILDER =====================
 
+    private PokemonResponseDTO buildResponseWithStats(Pokemon pokemon) {
 
+        Map<String, Object> data =
+                pokeApiService.getPokemonData(pokemon.getName());
+
+        Map<String, Integer> baseStats =
+                pokeApiService.extractBaseStats(data);
+
+        Map<String, String> natureMap =
+                pokeApiService.getNatureMap();
+
+        int level = 50;
+
+        int finalHp = PokemonStatService.calculateHp(
+                baseStats.get("hp"),
+                pokemon.getHpIv(),
+                pokemon.getHpEv(),
+                level
+        );
+
+        int finalAtk = PokemonStatService.calculateOtherStat(
+                baseStats.get("atk"),
+                pokemon.getAtkIv(),
+                pokemon.getAtkEv(),
+                level,
+                PokemonStatService.getNatureMultiplier(
+                        pokemon.getNature(), "atk", natureMap
+                )
+        );
+
+        int finalDef = PokemonStatService.calculateOtherStat(
+                baseStats.get("def"),
+                pokemon.getDefIv(),
+                pokemon.getDefEv(),
+                level,
+                PokemonStatService.getNatureMultiplier(
+                        pokemon.getNature(), "def", natureMap
+                )
+        );
+
+        int finalSpAtk = PokemonStatService.calculateOtherStat(
+                baseStats.get("spAtk"),
+                pokemon.getSpAtkIv(),
+                pokemon.getSpAtkEv(),
+                level,
+                PokemonStatService.getNatureMultiplier(
+                        pokemon.getNature(), "spAtk", natureMap
+                )
+        );
+
+        int finalSpDef = PokemonStatService.calculateOtherStat(
+                baseStats.get("spDef"),
+                pokemon.getSpDefIv(),
+                pokemon.getSpDefEv(),
+                level,
+                PokemonStatService.getNatureMultiplier(
+                        pokemon.getNature(), "spDef", natureMap
+                )
+        );
+
+        int finalSpeed = PokemonStatService.calculateOtherStat(
+                baseStats.get("speed"),
+                pokemon.getSpeedIv(),
+                pokemon.getSpeedEv(),
+                level,
+                PokemonStatService.getNatureMultiplier(
+                        pokemon.getNature(), "speed", natureMap
+                )
+        );
+
+        return new PokemonResponseDTO(
+                pokemon.getId(),
+                pokemon.getPokedexNumber(),
+                pokemon.getName(),
+                pokemon.getImage(),
+                pokemon.getPrimaryType(),
+                pokemon.getSecondaryType(),
+                pokemon.getItem(),
+                pokemon.getAbility(),
+                pokemon.getMove1(),
+                pokemon.getMove2(),
+                pokemon.getMove3(),
+                pokemon.getMove4(),
+                pokemon.getHpIv(),
+                pokemon.getAtkIv(),
+                pokemon.getDefIv(),
+                pokemon.getSpAtkIv(),
+                pokemon.getSpDefIv(),
+                pokemon.getSpeedIv(),
+                pokemon.getHpEv(),
+                pokemon.getAtkEv(),
+                pokemon.getDefEv(),
+                pokemon.getSpAtkEv(),
+                pokemon.getSpDefEv(),
+                pokemon.getSpeedEv(),
+                pokemon.getNature(),
+                finalHp,
+                finalAtk,
+                finalDef,
+                finalSpAtk,
+                finalSpDef,
+                finalSpeed
+        );
+    }
 }
