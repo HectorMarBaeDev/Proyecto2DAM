@@ -13,10 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/pokemon")
@@ -304,6 +301,43 @@ public class PokemonController {
 
         return ResponseEntity.ok(items);
     }
+
+    // MOVES
+
+    @GetMapping("/{id}/moves")
+    public ResponseEntity<List<String>> getPokemonMoves(@PathVariable Long id) {
+
+        Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
+
+        if (pokemon == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Map<String, Object> data =
+                pokeApiService.getPokemonData(pokemon.getName());
+
+        if (data == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Map<String, Object>> moves =
+                (List<Map<String, Object>>) data.get("moves");
+
+        Set<String> moveNames = new HashSet<>();
+
+        for (Map<String, Object> moveEntry : moves) {
+            Map<String, Object> move =
+                    (Map<String, Object>) moveEntry.get("move");
+
+            moveNames.add((String) move.get("name"));
+        }
+
+        List<String> result = new ArrayList<>(moveNames);
+        Collections.sort(result);
+
+        return ResponseEntity.ok(result);
+    }
+
 
 
 }
