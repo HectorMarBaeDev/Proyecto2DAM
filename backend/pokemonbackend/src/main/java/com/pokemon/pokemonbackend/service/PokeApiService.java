@@ -1,5 +1,6 @@
 package com.pokemon.pokemonbackend.service;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -205,4 +206,8 @@ public class PokeApiService {
         return competitiveItems;
     }
 
+    private List<String> cachedCompetitiveItems;
+    
+
 }
+
