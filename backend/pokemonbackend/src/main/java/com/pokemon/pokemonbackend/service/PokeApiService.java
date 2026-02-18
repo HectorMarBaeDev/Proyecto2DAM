@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import com.pokemon.pokemonbackend.dto.PokemonListItemDTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -172,6 +173,65 @@ public class PokeApiService {
                 "z-crystals"
         ).contains(category);
     }
+    @SuppressWarnings("unchecked")
+    public Map<String, Integer> extractBaseStats(Map<String, Object> data) {
+
+        List<Map<String, Object>> stats =
+                (List<Map<String, Object>>) data.get("stats");
+
+        Map<String, Integer> result = new HashMap<>();
+
+        for (Map<String, Object> statEntry : stats) {
+
+            int baseStat = (Integer) statEntry.get("base_stat");
+
+            Map<String, Object> statInfo =
+                    (Map<String, Object>) statEntry.get("stat");
+
+            String statName = (String) statInfo.get("name");
+
+            switch (statName) {
+                case "hp" -> result.put("hp", baseStat);
+                case "attack" -> result.put("atk", baseStat);
+                case "defense" -> result.put("def", baseStat);
+                case "special-attack" -> result.put("spAtk", baseStat);
+                case "special-defense" -> result.put("spDef", baseStat);
+                case "speed" -> result.put("speed", baseStat);
+            }
+        }
+
+        return result;
+    }
+
+    public Map<String, String> getNatureMap() {
+
+        Map<String, String> natureMap = new HashMap<>();
+
+        natureMap.put("adamant", "atk,spAtk");
+        natureMap.put("modest", "spAtk,atk");
+        natureMap.put("jolly", "speed,spAtk");
+        natureMap.put("timid", "speed,atk");
+        natureMap.put("bold", "def,atk");
+        natureMap.put("calm", "spDef,atk");
+        natureMap.put("careful", "spDef,spAtk");
+        natureMap.put("impish", "def,spAtk");
+        natureMap.put("naive", "speed,spDef");
+        natureMap.put("hasty", "speed,def");
+        natureMap.put("brave", "atk,speed");
+        natureMap.put("quiet", "spAtk,speed");
+        natureMap.put("relaxed", "def,speed");
+        natureMap.put("sassy", "spDef,speed");
+        natureMap.put("rash", "spAtk,spDef");
+        natureMap.put("mild", "spAtk,def");
+        natureMap.put("gentle", "spDef,def");
+        natureMap.put("lonely", "atk,def");
+        natureMap.put("naughty", "atk,spDef");
+
+        return natureMap;
+    }
+
+
+
 
 }
 
