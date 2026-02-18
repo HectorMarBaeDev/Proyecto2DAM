@@ -172,6 +172,6 @@ public class PokeApiService {
                 "z-crystals"
         ).contains(category);
     }
-    
+
 }
 

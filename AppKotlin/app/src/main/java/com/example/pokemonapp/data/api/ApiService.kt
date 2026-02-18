@@ -29,9 +29,8 @@ interface ApiService {
     @POST("users/me/profile-picture")
     suspend fun uploadProfilePicture(
         @Part file: MultipartBody.Part
-    ): Unit
+    )
 
-    // Obtener foto de perfil
     @GET("users/{id}/profile-picture")
     suspend fun getProfilePicture(
         @Path("id") id: Long
@@ -64,23 +63,41 @@ interface ApiService {
         @Body request: Map<String, String>
     ): PokemonDto
 
-    @DELETE("pokemon/{id}")
+    // 🔁 RUTAS ACTUALIZADAS
+
+    @DELETE("pokemon/id/{id}")
     suspend fun deletePokemon(
         @Path("id") pokemonId: Long
     )
 
-    @GET("pokemon")
-    suspend fun getAllPokemon(): List<PokemonListItemDto>
-
-    @GET("pokemon/{id}")
+    @GET("pokemon/id/{id}")
     suspend fun getPokemonById(
         @Path("id") id: Long
     ): PokemonDto
 
-    @PUT("pokemon/{id}")
+    @PUT("pokemon/id/{id}")
     suspend fun updatePokemon(
         @Path("id") id: Long,
         @Body pokemon: PokemonDto
     ): PokemonDto
 
+    @GET("pokemon/id/{id}/abilities")
+    suspend fun getPokemonAbilities(
+        @Path("id") id: Long
+    ): List<String>
+
+    // ======================
+    // ITEMS PAGINADOS
+    // ======================
+
+    @GET("pokemon/competitive-items")
+    suspend fun getCompetitiveItems(): List<String>
+
+
+    // ======================
+    // INDEX
+    // ======================
+
+    @GET("pokemon")
+    suspend fun getAllPokemon(): List<PokemonListItemDto>
 }
