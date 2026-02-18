@@ -145,16 +145,7 @@ public class PokeApiService {
         return cachedPokemonList;
     }
 
-    public Map<String, Object> getItemsList() {
 
-        String url = "https://pokeapi.co/api/v2/item?limit=2000";
-
-        try {
-            return restTemplate.getForObject(url, Map.class);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     public Map<String, Object> getItemsPage(int offset, int limit) {
 
@@ -166,6 +157,52 @@ public class PokeApiService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private boolean isCompetitiveCategory(String category) {
+
+        return List.of(
+                "held-items",
+                "choice-items",
+                "type-enhancement",
+                "plates",
+                "mega-stones",
+                "memories",
+                "z-crystals"
+        ).contains(category);
+    }
+
+
+    public List<String> getCompetitiveItems() {
+
+        String url = "https://pokeapi.co/api/v2/item?limit=2000";
+
+        Map<String, Object> response =
+                restTemplate.getForObject(url, Map.class);
+
+        List<Map<String, Object>> results =
+                (List<Map<String, Object>>) response.get("results");
+
+        List<String> competitiveItems = new ArrayList<>();
+
+        for (Map<String, Object> item : results) {
+
+            String itemUrl = (String) item.get("url");
+
+            Map<String, Object> itemData =
+                    restTemplate.getForObject(itemUrl, Map.class);
+
+            Map<String, Object> category =
+                    (Map<String, Object>) itemData.get("category");
+
+            String categoryName = (String) category.get("name");
+
+            if (isCompetitiveCategory(categoryName)) {
+                competitiveItems.add((String) item.get("name"));
+            }
+        }
+
+        return competitiveItems;
     }
 
 }
