@@ -148,4 +148,17 @@ class PokemonRepository {
         return api.updatePokemon(pokemon.id, pokemon)
     }
 
+    suspend fun getPokemonAbilities(id: Long): List<String> {
+        val api = RetrofitInstance.createWithToken()
+        return api.getPokemonAbilities(id)
+    }
+
+
+    suspend fun getCompetitiveItems(): List<String> {
+        return RetrofitInstance.createWithToken().getCompetitiveItems()
+    }
+
+
+
+
 }

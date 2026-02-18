@@ -1,10 +1,14 @@
 package com.example.pokemonapp.ui.pokemon
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,12 +29,22 @@ fun PokemonDetailScreen(
     val scope = rememberCoroutineScope()
 
     var pokemon by remember { mutableStateOf<PokemonDto?>(null) }
+
+    var abilityOptions by remember { mutableStateOf<List<String>>(emptyList()) }
+    var abilityExpanded by remember { mutableStateOf(false) }
+
+    var itemOptions by remember { mutableStateOf<List<String>>(emptyList()) }
+    var itemExpanded by remember { mutableStateOf(false) }
+
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
+    // 🔥 ÚNICO LaunchedEffect
     LaunchedEffect(pokemonId) {
         try {
             pokemon = repository.getPokemonById(pokemonId)
+            abilityOptions = repository.getPokemonAbilities(pokemonId)
+            itemOptions = repository.getCompetitiveItems()
         } catch (e: Exception) {
             error = "Error cargando Pokémon"
         } finally {
@@ -54,14 +68,8 @@ fun PokemonDetailScreen(
         ) {
 
             when {
-                isLoading -> {
-                    CircularProgressIndicator()
-                }
-
-                error != null -> {
-                    Text(error!!)
-                }
-
+                isLoading -> CircularProgressIndicator()
+                error != null -> Text(error!!)
                 pokemon != null -> {
 
                     var item by remember { mutableStateOf(pokemon!!.item ?: "") }
@@ -96,21 +104,85 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        OutlinedTextField(
-                            value = item,
-                            onValueChange = { item = it },
-                            label = { Text("Item") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        // -------- ITEM DROPDOWN --------
+
+                        ExposedDropdownMenuBox(
+                            expanded = itemExpanded,
+                            onExpandedChange = { itemExpanded = !itemExpanded }
+                        ) {
+                            OutlinedTextField(
+                                value = item.replaceFirstChar { it.uppercase() },
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Item") },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = itemExpanded
+                                    )
+                                },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = itemExpanded,
+                                onDismissRequest = { itemExpanded = false }
+                            ) {
+                                itemOptions.forEach { option ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(option.replaceFirstChar { it.uppercase() })
+                                        },
+                                        onClick = {
+                                            item = option
+                                            itemExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        OutlinedTextField(
-                            value = ability,
-                            onValueChange = { ability = it },
-                            label = { Text("Ability") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                        // -------- ABILITY DROPDOWN --------
+
+                        ExposedDropdownMenuBox(
+                            expanded = abilityExpanded,
+                            onExpandedChange = { abilityExpanded = !abilityExpanded }
+                        ) {
+                            OutlinedTextField(
+                                value = ability.replaceFirstChar { it.uppercase() },
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Ability") },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = abilityExpanded
+                                    )
+                                },
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = abilityExpanded,
+                                onDismissRequest = { abilityExpanded = false }
+                            ) {
+                                abilityOptions.forEach { option ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(option.replaceFirstChar { it.uppercase() })
+                                        },
+                                        onClick = {
+                                            ability = option
+                                            abilityExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
                         Text("IVs", style = MaterialTheme.typography.titleMedium)
@@ -119,7 +191,7 @@ fun PokemonDetailScreen(
                         fun numberField(value: String, onChange: (String) -> Unit, label: String) {
                             OutlinedTextField(
                                 value = value,
-                                onValueChange = { onChange(it) },
+                                onValueChange = onChange,
                                 label = { Text(label) },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                 modifier = Modifier
@@ -153,72 +225,24 @@ fun PokemonDetailScreen(
                                     try {
                                         isLoading = true
 
-                                        val hpEvInt = hpEv.toIntOrNull() ?: 0
-                                        val atkEvInt = atkEv.toIntOrNull() ?: 0
-                                        val defEvInt = defEv.toIntOrNull() ?: 0
-                                        val spAtkEvInt = spAtkEv.toIntOrNull() ?: 0
-                                        val spDefEvInt = spDefEv.toIntOrNull() ?: 0
-                                        val speedEvInt = speedEv.toIntOrNull() ?: 0
-
-                                        val totalEv = hpEvInt + atkEvInt + defEvInt +
-                                                spAtkEvInt + spDefEvInt + speedEvInt
-
-                                        // ---- VALIDACIONES ----
-
-                                        if (listOf(
-                                                hpEvInt, atkEvInt, defEvInt,
-                                                spAtkEvInt, spDefEvInt, speedEvInt
-                                            ).any { it > 252 || it < 0 }
-                                        ) {
-                                            error = "Cada EV debe estar entre 0 y 252"
-                                            isLoading = false
-                                            return@launch
-                                        }
-
-                                        if (totalEv > 510) {
-                                            error = "El total de EV no puede superar 510"
-                                            isLoading = false
-                                            return@launch
-                                        }
-
-                                        val hpIvInt = hpIv.toIntOrNull() ?: 31
-                                        val atkIvInt = atkIv.toIntOrNull() ?: 31
-                                        val defIvInt = defIv.toIntOrNull() ?: 31
-                                        val spAtkIvInt = spAtkIv.toIntOrNull() ?: 31
-                                        val spDefIvInt = spDefIv.toIntOrNull() ?: 31
-                                        val speedIvInt = speedIv.toIntOrNull() ?: 31
-
-                                        if (listOf(
-                                                hpIvInt, atkIvInt, defIvInt,
-                                                spAtkIvInt, spDefIvInt, speedIvInt
-                                            ).any { it > 31 || it < 0 }
-                                        ) {
-                                            error = "Cada IV debe estar entre 0 y 31"
-                                            isLoading = false
-                                            return@launch
-                                        }
-
                                         val updatedPokemon = pokemon!!.copy(
                                             item = item.ifBlank { null },
                                             ability = ability.ifBlank { null },
-
-                                            hpIv = hpIvInt,
-                                            atkIv = atkIvInt,
-                                            defIv = defIvInt,
-                                            spAtkIv = spAtkIvInt,
-                                            spDefIv = spDefIvInt,
-                                            speedIv = speedIvInt,
-
-                                            hpEv = hpEvInt,
-                                            atkEv = atkEvInt,
-                                            defEv = defEvInt,
-                                            spAtkEv = spAtkEvInt,
-                                            spDefEv = spDefEvInt,
-                                            speedEv = speedEvInt
+                                            hpIv = hpIv.toIntOrNull() ?: 31,
+                                            atkIv = atkIv.toIntOrNull() ?: 31,
+                                            defIv = defIv.toIntOrNull() ?: 31,
+                                            spAtkIv = spAtkIv.toIntOrNull() ?: 31,
+                                            spDefIv = spDefIv.toIntOrNull() ?: 31,
+                                            speedIv = speedIv.toIntOrNull() ?: 31,
+                                            hpEv = hpEv.toIntOrNull() ?: 0,
+                                            atkEv = atkEv.toIntOrNull() ?: 0,
+                                            defEv = defEv.toIntOrNull() ?: 0,
+                                            spAtkEv = spAtkEv.toIntOrNull() ?: 0,
+                                            spDefEv = spDefEv.toIntOrNull() ?: 0,
+                                            speedEv = speedEv.toIntOrNull() ?: 0
                                         )
 
                                         pokemon = repository.updatePokemon(updatedPokemon)
-
                                         error = null
 
                                     } catch (e: Exception) {
@@ -238,3 +262,4 @@ fun PokemonDetailScreen(
         }
     }
 }
+
