@@ -23,8 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.request.CachePolicy
-import coil.request.ImageRequest
 import com.example.pokemonapp.data.auth.AuthManager
 import com.example.pokemonapp.data.model.TeamDto
 import com.example.pokemonapp.data.repository.PokemonRepository
@@ -40,10 +38,12 @@ fun TeamsScreen(
     var newTeamName by remember { mutableStateOf("") }
     var newTeamFormat by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var profileImageUrl by remember { mutableStateOf<String?>(null) }
+
+    var imageVersion by remember { mutableLongStateOf(0L) }
 
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    val userId = AuthManager.userId
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -53,10 +53,8 @@ fun TeamsScreen(
                 try {
                     repository.uploadProfilePicture(it, context)
 
-                    // 🔥 FORZAR RECARGA DE IMAGEN (evita caché)
-                    val userId = AuthManager.userId
-                    profileImageUrl =
-                        "${RetrofitInstance.BASE_URL}api/users/$userId/profile-picture?timestamp=${System.currentTimeMillis()}"
+                    // 🔥 Forzar recarga inmediata
+                    imageVersion = System.currentTimeMillis()
 
                 } catch (e: Exception) {
                     Log.e("Upload", "Error subiendo imagen", e)
@@ -65,16 +63,8 @@ fun TeamsScreen(
         }
     }
 
-
-// Botón para seleccionar foto
-    Button(onClick = { imagePickerLauncher.launch("image/*") }) {
-        Text("Seleccionar foto de perfil")
-    }
-
     // Cargar equipos al entrar
     LaunchedEffect(Unit) {
-
-        // Cargar equipos
         teams = try {
             repository.getTeamsByUser()
         } catch (e: Exception) {
@@ -82,12 +72,9 @@ fun TeamsScreen(
             emptyList()
         }
 
-        // 🔥 Cargar imagen de perfil
-        val userId = AuthManager.userId
-        profileImageUrl =
-            "${RetrofitInstance.BASE_URL}api/users/$userId/profile-picture"
+        // 🔥 Inicializar versión para que cargue imagen
+        imageVersion = System.currentTimeMillis()
     }
-
 
     Scaffold(
         topBar = {
@@ -97,14 +84,14 @@ fun TeamsScreen(
                     IconButton(onClick = {
                         imagePickerLauncher.launch("image/*")
                     }) {
-                        if (profileImageUrl != null) {
+
+                        if (userId != null) {
+
+                            val imageUrl =
+                                "${RetrofitInstance.BASE_URL}users/$userId/profile-picture?v=$imageVersion"
+
                             AsyncImage(
-                                model = ImageRequest.Builder(context)
-                                    .data(profileImageUrl)
-                                    .crossfade(true)
-                                    .memoryCachePolicy(CachePolicy.DISABLED)
-                                    .diskCachePolicy(CachePolicy.DISABLED)
-                                    .build(),
+                                model = imageUrl,
                                 contentDescription = "Foto de perfil",
                                 modifier = Modifier
                                     .size(36.dp)
@@ -123,10 +110,9 @@ fun TeamsScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
-
         }
-
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -135,19 +121,20 @@ fun TeamsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Formulario de creación
+
+            // ---------- CREAR EQUIPO ----------
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                )
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+
                     Text(
                         "Crear Nuevo Equipo",
                         style = MaterialTheme.typography.titleMedium,
@@ -158,16 +145,14 @@ fun TeamsScreen(
                         value = newTeamName,
                         onValueChange = { newTeamName = it },
                         label = { Text("Nombre del equipo") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     OutlinedTextField(
                         value = newTeamFormat,
                         onValueChange = { newTeamFormat = it },
                         label = { Text("Formato") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Button(
@@ -188,22 +173,20 @@ fun TeamsScreen(
                             }
                         },
                         enabled = newTeamName.isNotBlank() && newTeamFormat.isNotBlank(),
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text("Crear equipo", modifier = Modifier.padding(vertical = 4.dp))
+                        Text("Crear equipo")
                     }
                 }
             }
 
-            // Mensaje de error
+            // ---------- ERROR ----------
             errorMessage?.let {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    )
                 ) {
                     Text(
                         text = it,
@@ -213,7 +196,7 @@ fun TeamsScreen(
                 }
             }
 
-            // Lista de equipos
+            // ---------- LISTA ----------
             Text(
                 "Equipos",
                 style = MaterialTheme.typography.titleMedium,
@@ -221,12 +204,12 @@ fun TeamsScreen(
             )
 
             if (teams.isEmpty()) {
+
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    )
                 ) {
                     Box(
                         modifier = Modifier
@@ -234,14 +217,12 @@ fun TeamsScreen(
                             .padding(32.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            "No hay equipos aún",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
+                        Text("No hay equipos aún")
                     }
                 }
+
             } else {
+
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -250,11 +231,9 @@ fun TeamsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable { onTeamClick(team.id) },
-                            shape = RoundedCornerShape(12.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            )
                         ) {
                             Row(
                                 modifier = Modifier
@@ -266,22 +245,12 @@ fun TeamsScreen(
                                 Column {
                                     Text(
                                         text = team.name,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                        fontWeight = FontWeight.Bold
                                     )
                                     Spacer(Modifier.height(4.dp))
-                                    Text(
-                                        text = team.format,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                                    )
+                                    Text(text = team.format)
                                 }
-                                Text(
-                                    "→",
-                                    fontSize = 24.sp,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
+                                Text("→", fontSize = 24.sp)
                             }
                         }
                     }
