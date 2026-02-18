@@ -156,4 +156,16 @@ public class PokeApiService {
         }
     }
 
+    public Map<String, Object> getItemsPage(int offset, int limit) {
+
+        String url = "https://pokeapi.co/api/v2/item?offset="
+                + offset + "&limit=" + limit;
+
+        try {
+            return restTemplate.getForObject(url, Map.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

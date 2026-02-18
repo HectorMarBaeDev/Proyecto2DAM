@@ -297,10 +297,13 @@ public class PokemonController {
 
 
     @GetMapping("/items")
-    public ResponseEntity<List<String>> getAllItems() {
+    public ResponseEntity<List<String>> getItemsPage(
+            @RequestParam(defaultValue = "0") int offset,
+            @RequestParam(defaultValue = "200") int limit
+    ) {
 
         Map<String, Object> response =
-                pokeApiService.getItemsList();
+                pokeApiService.getItemsPage(offset, limit);
 
         if (response == null) {
             return ResponseEntity.badRequest().build();
