@@ -31,27 +31,20 @@ fun PokemonDetailScreen(
     var pokemon by remember { mutableStateOf<PokemonDto?>(null) }
 
     var abilityOptions by remember { mutableStateOf<List<String>>(emptyList()) }
-    var itemOptions by remember { mutableStateOf<List<String>>(emptyList()) }
-    var moveOptions by remember { mutableStateOf<List<String>>(emptyList()) }
-
     var abilityExpanded by remember { mutableStateOf(false) }
-    var itemExpanded by remember { mutableStateOf(false) }
 
-    var showMoveDialog1 by remember { mutableStateOf(false) }
-    var showMoveDialog2 by remember { mutableStateOf(false) }
-    var showMoveDialog3 by remember { mutableStateOf(false) }
-    var showMoveDialog4 by remember { mutableStateOf(false) }
+    var itemOptions by remember { mutableStateOf<List<String>>(emptyList()) }
+    var itemExpanded by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    // --------- CARGA INICIAL ---------
+    // 🔥 ÚNICO LaunchedEffect
     LaunchedEffect(pokemonId) {
         try {
             pokemon = repository.getPokemonById(pokemonId)
             abilityOptions = repository.getPokemonAbilities(pokemonId)
             itemOptions = repository.getCompetitiveItems()
-            moveOptions = repository.getPokemonMoves(pokemonId)
         } catch (e: Exception) {
             error = "Error cargando Pokémon"
         } finally {
@@ -61,7 +54,9 @@ fun PokemonDetailScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Detalle Pokémon") })
+            TopAppBar(
+                title = { Text("Detalle Pokémon") }
+            )
         }
     ) { padding ->
 
@@ -79,11 +74,6 @@ fun PokemonDetailScreen(
 
                     var item by remember { mutableStateOf(pokemon!!.item ?: "") }
                     var ability by remember { mutableStateOf(pokemon!!.ability ?: "") }
-
-                    var move1 by remember { mutableStateOf(pokemon!!.move1 ?: "") }
-                    var move2 by remember { mutableStateOf(pokemon!!.move2 ?: "") }
-                    var move3 by remember { mutableStateOf(pokemon!!.move3 ?: "") }
-                    var move4 by remember { mutableStateOf(pokemon!!.move4 ?: "") }
 
                     var hpIv by remember { mutableStateOf(pokemon!!.hpIv?.toString() ?: "31") }
                     var atkIv by remember { mutableStateOf(pokemon!!.atkIv?.toString() ?: "31") }
@@ -114,7 +104,7 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // -------- ITEM --------
+                        // -------- ITEM DROPDOWN --------
 
                         ExposedDropdownMenuBox(
                             expanded = itemExpanded,
@@ -126,9 +116,13 @@ fun PokemonDetailScreen(
                                 readOnly = true,
                                 label = { Text("Item") },
                                 trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(itemExpanded)
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = itemExpanded
+                                    )
                                 },
-                                modifier = Modifier.menuAnchor().fillMaxWidth()
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
                             )
 
                             ExposedDropdownMenu(
@@ -137,7 +131,9 @@ fun PokemonDetailScreen(
                             ) {
                                 itemOptions.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(option.replaceFirstChar { it.uppercase() }) },
+                                        text = {
+                                            Text(option.replaceFirstChar { it.uppercase() })
+                                        },
                                         onClick = {
                                             item = option
                                             itemExpanded = false
@@ -149,7 +145,7 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // -------- ABILITY --------
+                        // -------- ABILITY DROPDOWN --------
 
                         ExposedDropdownMenuBox(
                             expanded = abilityExpanded,
@@ -161,9 +157,13 @@ fun PokemonDetailScreen(
                                 readOnly = true,
                                 label = { Text("Ability") },
                                 trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(abilityExpanded)
+                                    ExposedDropdownMenuDefaults.TrailingIcon(
+                                        expanded = abilityExpanded
+                                    )
                                 },
-                                modifier = Modifier.menuAnchor().fillMaxWidth()
+                                modifier = Modifier
+                                    .menuAnchor()
+                                    .fillMaxWidth()
                             )
 
                             ExposedDropdownMenu(
@@ -172,7 +172,9 @@ fun PokemonDetailScreen(
                             ) {
                                 abilityOptions.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(option.replaceFirstChar { it.uppercase() }) },
+                                        text = {
+                                            Text(option.replaceFirstChar { it.uppercase() })
+                                        },
                                         onClick = {
                                             ability = option
                                             abilityExpanded = false
@@ -183,36 +185,7 @@ fun PokemonDetailScreen(
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        // -------- MOVES --------
-
-                        Text("Movimientos", style = MaterialTheme.typography.titleMedium)
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        @Composable
-                        fun moveButton(text: String, onClick: () -> Unit) {
-                            Button(
-                                onClick = onClick,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                            ) {
-                                Text(
-                                    if (text.isBlank()) "Seleccionar movimiento"
-                                    else text.replaceFirstChar { it.uppercase() }
-                                )
-                            }
-                        }
-
-                        moveButton(move1) { showMoveDialog1 = true }
-                        moveButton(move2) { showMoveDialog2 = true }
-                        moveButton(move3) { showMoveDialog3 = true }
-                        moveButton(move4) { showMoveDialog4 = true }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // -------- IVs / EVs (igual que antes) --------
+                        Text("IVs", style = MaterialTheme.typography.titleMedium)
 
                         @Composable
                         fun numberField(value: String, onChange: (String) -> Unit, label: String) {
@@ -227,8 +200,6 @@ fun PokemonDetailScreen(
                             )
                         }
 
-                        Text("IVs", style = MaterialTheme.typography.titleMedium)
-
                         numberField(hpIv, { hpIv = it }, "HP IV")
                         numberField(atkIv, { atkIv = it }, "Atk IV")
                         numberField(defIv, { defIv = it }, "Def IV")
@@ -237,7 +208,6 @@ fun PokemonDetailScreen(
                         numberField(speedIv, { speedIv = it }, "Speed IV")
 
                         Spacer(modifier = Modifier.height(16.dp))
-
                         Text("EVs", style = MaterialTheme.typography.titleMedium)
 
                         numberField(hpEv, { hpEv = it }, "HP EV")
@@ -258,10 +228,6 @@ fun PokemonDetailScreen(
                                         val updatedPokemon = pokemon!!.copy(
                                             item = item.ifBlank { null },
                                             ability = ability.ifBlank { null },
-                                            move1 = move1.ifBlank { null },
-                                            move2 = move2.ifBlank { null },
-                                            move3 = move3.ifBlank { null },
-                                            move4 = move4.ifBlank { null },
                                             hpIv = hpIv.toIntOrNull() ?: 31,
                                             atkIv = atkIv.toIntOrNull() ?: 31,
                                             defIv = defIv.toIntOrNull() ?: 31,
@@ -291,24 +257,9 @@ fun PokemonDetailScreen(
                             Text("Guardar")
                         }
                     }
-
-                    // -------- DIALOGS --------
-
-                    if (showMoveDialog1)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog1 = false }) { move1 = it }
-
-                    if (showMoveDialog2)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog2 = false }) { move2 = it }
-
-                    if (showMoveDialog3)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog3 = false }) { move3 = it }
-
-                    if (showMoveDialog4)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog4 = false }) { move4 = it }
                 }
             }
         }
     }
 }
-
 

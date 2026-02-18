@@ -28,8 +28,6 @@ public class Pokemon {
 
     private String item;
 
-    private String nature = "serious";
-
     private String ability;
 
     private String move1;
@@ -58,7 +56,7 @@ public class Pokemon {
 
     public Pokemon() {}
 
-    //  CONSTRUCTOR CORRECTO
+    // ✅ CONSTRUCTOR CORRECTO
     public Pokemon(
             Integer pokedexNumber,
             String name,
@@ -273,13 +271,5 @@ public class Pokemon {
 
     public void setSpeedEv(Integer speedEv) {
         this.speedEv = speedEv;
-    }
-
-    public String getNature() {
-        return nature;
-    }
-
-    public void setNature(String nature) {
-        this.nature = nature;
     }
 }

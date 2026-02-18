@@ -159,11 +159,6 @@ class PokemonRepository {
     }
 
 
-    suspend fun getPokemonMoves(id: Long): List<String> {
-        return RetrofitInstance.createWithToken().getPokemonMoves(id)
-    }
-
-
 
 
 }

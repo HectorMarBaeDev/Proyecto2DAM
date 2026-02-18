@@ -11,7 +11,6 @@ public class PokemonResponseDTO {
 
     private String item;
     private String ability;
-    private String nature;
 
     private String move1;
     private String move2;
@@ -32,18 +31,10 @@ public class PokemonResponseDTO {
     private Integer spDefEv;
     private Integer speedEv;
 
-    // 🔥 STATS FINALES CALCULADOS
-    private Integer finalHp;
-    private Integer finalAtk;
-    private Integer finalDef;
-    private Integer finalSpAtk;
-    private Integer finalSpDef;
-    private Integer finalSpeed;
-
     public PokemonResponseDTO() {
     }
 
-    // ✅ Constructor COMPLETO (detalle)
+
     public PokemonResponseDTO(
             int id,
             int pokedexNumber,
@@ -68,14 +59,7 @@ public class PokemonResponseDTO {
             Integer defEv,
             Integer spAtkEv,
             Integer spDefEv,
-            Integer speedEv,
-            String nature,
-            Integer finalHp,
-            Integer finalAtk,
-            Integer finalDef,
-            Integer finalSpAtk,
-            Integer finalSpDef,
-            Integer finalSpeed
+            Integer speedEv
     ) {
         this.id = id;
         this.pokedexNumber = pokedexNumber;
@@ -101,17 +85,9 @@ public class PokemonResponseDTO {
         this.spAtkEv = spAtkEv;
         this.spDefEv = spDefEv;
         this.speedEv = speedEv;
-        this.nature = nature;
-
-        this.finalHp = finalHp;
-        this.finalAtk = finalAtk;
-        this.finalDef = finalDef;
-        this.finalSpAtk = finalSpAtk;
-        this.finalSpDef = finalSpDef;
-        this.finalSpeed = finalSpeed;
     }
 
-    // ✅ Constructor básico (listados)
+    // Constructor básico (para listados)
     public PokemonResponseDTO(
             int id,
             int pokedexNumber,
@@ -128,7 +104,6 @@ public class PokemonResponseDTO {
         this.secondaryType = secondaryType;
     }
 
-    // ---------------- GETTERS ----------------
 
     public int getId() { return id; }
     public int getPokedexNumber() { return pokedexNumber; }
@@ -139,7 +114,6 @@ public class PokemonResponseDTO {
 
     public String getItem() { return item; }
     public String getAbility() { return ability; }
-    public String getNature() { return nature; }
 
     public String getMove1() { return move1; }
     public String getMove2() { return move2; }
@@ -160,49 +134,99 @@ public class PokemonResponseDTO {
     public Integer getSpDefEv() { return spDefEv; }
     public Integer getSpeedEv() { return speedEv; }
 
-    public Integer getFinalHp() { return finalHp; }
-    public Integer getFinalAtk() { return finalAtk; }
-    public Integer getFinalDef() { return finalDef; }
-    public Integer getFinalSpAtk() { return finalSpAtk; }
-    public Integer getFinalSpDef() { return finalSpDef; }
-    public Integer getFinalSpeed() { return finalSpeed; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    // ---------------- SETTERS ----------------
+    public void setPokedexNumber(int pokedexNumber) {
+        this.pokedexNumber = pokedexNumber;
+    }
 
-    public void setId(int id) { this.id = id; }
-    public void setPokedexNumber(int pokedexNumber) { this.pokedexNumber = pokedexNumber; }
-    public void setName(String name) { this.name = name; }
-    public void setImage(String image) { this.image = image; }
-    public void setPrimaryType(String primaryType) { this.primaryType = primaryType; }
-    public void setSecondaryType(String secondaryType) { this.secondaryType = secondaryType; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public void setItem(String item) { this.item = item; }
-    public void setAbility(String ability) { this.ability = ability; }
-    public void setNature(String nature) { this.nature = nature; }
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-    public void setMove1(String move1) { this.move1 = move1; }
-    public void setMove2(String move2) { this.move2 = move2; }
-    public void setMove3(String move3) { this.move3 = move3; }
-    public void setMove4(String move4) { this.move4 = move4; }
+    public void setPrimaryType(String primaryType) {
+        this.primaryType = primaryType;
+    }
 
-    public void setHpIv(Integer hpIv) { this.hpIv = hpIv; }
-    public void setAtkIv(Integer atkIv) { this.atkIv = atkIv; }
-    public void setDefIv(Integer defIv) { this.defIv = defIv; }
-    public void setSpAtkIv(Integer spAtkIv) { this.spAtkIv = spAtkIv; }
-    public void setSpDefIv(Integer spDefIv) { this.spDefIv = spDefIv; }
-    public void setSpeedIv(Integer speedIv) { this.speedIv = speedIv; }
+    public void setSecondaryType(String secondaryType) {
+        this.secondaryType = secondaryType;
+    }
 
-    public void setHpEv(Integer hpEv) { this.hpEv = hpEv; }
-    public void setAtkEv(Integer atkEv) { this.atkEv = atkEv; }
-    public void setDefEv(Integer defEv) { this.defEv = defEv; }
-    public void setSpAtkEv(Integer spAtkEv) { this.spAtkEv = spAtkEv; }
-    public void setSpDefEv(Integer spDefEv) { this.spDefEv = spDefEv; }
-    public void setSpeedEv(Integer speedEv) { this.speedEv = speedEv; }
+    public void setItem(String item) {
+        this.item = item;
+    }
 
-    public void setFinalHp(Integer finalHp) { this.finalHp = finalHp; }
-    public void setFinalAtk(Integer finalAtk) { this.finalAtk = finalAtk; }
-    public void setFinalDef(Integer finalDef) { this.finalDef = finalDef; }
-    public void setFinalSpAtk(Integer finalSpAtk) { this.finalSpAtk = finalSpAtk; }
-    public void setFinalSpDef(Integer finalSpDef) { this.finalSpDef = finalSpDef; }
-    public void setFinalSpeed(Integer finalSpeed) { this.finalSpeed = finalSpeed; }
+    public void setAbility(String ability) {
+        this.ability = ability;
+    }
+
+    public void setMove1(String move1) {
+        this.move1 = move1;
+    }
+
+    public void setMove2(String move2) {
+        this.move2 = move2;
+    }
+
+    public void setMove3(String move3) {
+        this.move3 = move3;
+    }
+
+    public void setMove4(String move4) {
+        this.move4 = move4;
+    }
+
+    public void setHpIv(Integer hpIv) {
+        this.hpIv = hpIv;
+    }
+
+    public void setAtkIv(Integer atkIv) {
+        this.atkIv = atkIv;
+    }
+
+    public void setDefIv(Integer defIv) {
+        this.defIv = defIv;
+    }
+
+    public void setSpDefIv(Integer spDefIv) {
+        this.spDefIv = spDefIv;
+    }
+
+    public void setSpAtkIv(Integer spAtkIv) {
+        this.spAtkIv = spAtkIv;
+    }
+
+    public void setSpeedIv(Integer speedIv) {
+        this.speedIv = speedIv;
+    }
+
+    public void setHpEv(Integer hpEv) {
+        this.hpEv = hpEv;
+    }
+
+    public void setAtkEv(Integer atkEv) {
+        this.atkEv = atkEv;
+    }
+
+    public void setDefEv(Integer defEv) {
+        this.defEv = defEv;
+    }
+
+    public void setSpAtkEv(Integer spAtkEv) {
+        this.spAtkEv = spAtkEv;
+    }
+
+    public void setSpDefEv(Integer spDefEv) {
+        this.spDefEv = spDefEv;
+    }
+
+    public void setSpeedEv(Integer speedEv) {
+        this.speedEv = speedEv;
+    }
 }
