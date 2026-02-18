@@ -81,6 +81,14 @@ interface ApiService {
         @Body pokemon: PokemonDto
     ): PokemonDto
 
+    // Movimientos
+    @GET("pokemon/{id}/moves")
+    suspend fun getPokemonMoves(
+        @Path("id") id: Long
+    ): List<String>
+
+
+
     @GET("pokemon/id/{id}/abilities")
     suspend fun getPokemonAbilities(
         @Path("id") id: Long

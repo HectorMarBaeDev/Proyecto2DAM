@@ -1,14 +1,10 @@
 package com.example.pokemonapp.ui.pokemon
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,20 +27,27 @@ fun PokemonDetailScreen(
     var pokemon by remember { mutableStateOf<PokemonDto?>(null) }
 
     var abilityOptions by remember { mutableStateOf<List<String>>(emptyList()) }
-    var abilityExpanded by remember { mutableStateOf(false) }
-
     var itemOptions by remember { mutableStateOf<List<String>>(emptyList()) }
+    var moveOptions by remember { mutableStateOf<List<String>>(emptyList()) }
+
+    var abilityExpanded by remember { mutableStateOf(false) }
     var itemExpanded by remember { mutableStateOf(false) }
+
+    var showMoveDialog1 by remember { mutableStateOf(false) }
+    var showMoveDialog2 by remember { mutableStateOf(false) }
+    var showMoveDialog3 by remember { mutableStateOf(false) }
+    var showMoveDialog4 by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    // 🔥 ÚNICO LaunchedEffect
+    // -------- CARGA INICIAL --------
     LaunchedEffect(pokemonId) {
         try {
             pokemon = repository.getPokemonById(pokemonId)
             abilityOptions = repository.getPokemonAbilities(pokemonId)
             itemOptions = repository.getCompetitiveItems()
+            moveOptions = repository.getPokemonMoves(pokemonId)
         } catch (e: Exception) {
             error = "Error cargando Pokémon"
         } finally {
@@ -53,11 +56,7 @@ fun PokemonDetailScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Detalle Pokémon") }
-            )
-        }
+        topBar = { TopAppBar(title = { Text("Detalle Pokémon") }) }
     ) { padding ->
 
         Box(
@@ -74,6 +73,11 @@ fun PokemonDetailScreen(
 
                     var item by remember { mutableStateOf(pokemon!!.item ?: "") }
                     var ability by remember { mutableStateOf(pokemon!!.ability ?: "") }
+
+                    var move1 by remember { mutableStateOf(pokemon!!.move1 ?: "") }
+                    var move2 by remember { mutableStateOf(pokemon!!.move2 ?: "") }
+                    var move3 by remember { mutableStateOf(pokemon!!.move3 ?: "") }
+                    var move4 by remember { mutableStateOf(pokemon!!.move4 ?: "") }
 
                     var hpIv by remember { mutableStateOf(pokemon!!.hpIv?.toString() ?: "31") }
                     var atkIv by remember { mutableStateOf(pokemon!!.atkIv?.toString() ?: "31") }
@@ -104,8 +108,7 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // -------- ITEM DROPDOWN --------
-
+                        // ITEM
                         ExposedDropdownMenuBox(
                             expanded = itemExpanded,
                             onExpandedChange = { itemExpanded = !itemExpanded }
@@ -116,13 +119,9 @@ fun PokemonDetailScreen(
                                 readOnly = true,
                                 label = { Text("Item") },
                                 trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(
-                                        expanded = itemExpanded
-                                    )
+                                    ExposedDropdownMenuDefaults.TrailingIcon(itemExpanded)
                                 },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth()
+                                modifier = Modifier.menuAnchor().fillMaxWidth()
                             )
 
                             ExposedDropdownMenu(
@@ -145,8 +144,7 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // -------- ABILITY DROPDOWN --------
-
+                        // ABILITY
                         ExposedDropdownMenuBox(
                             expanded = abilityExpanded,
                             onExpandedChange = { abilityExpanded = !abilityExpanded }
@@ -157,13 +155,9 @@ fun PokemonDetailScreen(
                                 readOnly = true,
                                 label = { Text("Ability") },
                                 trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(
-                                        expanded = abilityExpanded
-                                    )
+                                    ExposedDropdownMenuDefaults.TrailingIcon(abilityExpanded)
                                 },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth()
+                                modifier = Modifier.menuAnchor().fillMaxWidth()
                             )
 
                             ExposedDropdownMenu(
@@ -185,37 +179,28 @@ fun PokemonDetailScreen(
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text("IVs", style = MaterialTheme.typography.titleMedium)
+
+                        Text("Movimientos", style = MaterialTheme.typography.titleMedium)
 
                         @Composable
-                        fun numberField(value: String, onChange: (String) -> Unit, label: String) {
-                            OutlinedTextField(
-                                value = value,
-                                onValueChange = onChange,
-                                label = { Text(label) },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        fun moveButton(text: String, onClick: () -> Unit) {
+                            Button(
+                                onClick = onClick,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
-                            )
+                            ) {
+                                Text(
+                                    if (text.isBlank()) "Seleccionar movimiento"
+                                    else text.replaceFirstChar { it.uppercase() }
+                                )
+                            }
                         }
 
-                        numberField(hpIv, { hpIv = it }, "HP IV")
-                        numberField(atkIv, { atkIv = it }, "Atk IV")
-                        numberField(defIv, { defIv = it }, "Def IV")
-                        numberField(spAtkIv, { spAtkIv = it }, "SpAtk IV")
-                        numberField(spDefIv, { spDefIv = it }, "SpDef IV")
-                        numberField(speedIv, { speedIv = it }, "Speed IV")
-
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text("EVs", style = MaterialTheme.typography.titleMedium)
-
-                        numberField(hpEv, { hpEv = it }, "HP EV")
-                        numberField(atkEv, { atkEv = it }, "Atk EV")
-                        numberField(defEv, { defEv = it }, "Def EV")
-                        numberField(spAtkEv, { spAtkEv = it }, "SpAtk EV")
-                        numberField(spDefEv, { spDefEv = it }, "SpDef EV")
-                        numberField(speedEv, { speedEv = it }, "Speed EV")
+                        moveButton(move1) { showMoveDialog1 = true }
+                        moveButton(move2) { showMoveDialog2 = true }
+                        moveButton(move3) { showMoveDialog3 = true }
+                        moveButton(move4) { showMoveDialog4 = true }
 
                         Spacer(modifier = Modifier.height(20.dp))
 
@@ -225,9 +210,13 @@ fun PokemonDetailScreen(
                                     try {
                                         isLoading = true
 
-                                        val updatedPokemon = pokemon!!.copy(
+                                        val updated = pokemon!!.copy(
                                             item = item.ifBlank { null },
                                             ability = ability.ifBlank { null },
+                                            move1 = move1.ifBlank { null },
+                                            move2 = move2.ifBlank { null },
+                                            move3 = move3.ifBlank { null },
+                                            move4 = move4.ifBlank { null },
                                             hpIv = hpIv.toIntOrNull() ?: 31,
                                             atkIv = atkIv.toIntOrNull() ?: 31,
                                             defIv = defIv.toIntOrNull() ?: 31,
@@ -242,7 +231,7 @@ fun PokemonDetailScreen(
                                             speedEv = speedEv.toIntOrNull() ?: 0
                                         )
 
-                                        pokemon = repository.updatePokemon(updatedPokemon)
+                                        pokemon = repository.updatePokemon(updated)
                                         error = null
 
                                     } catch (e: Exception) {
@@ -257,9 +246,20 @@ fun PokemonDetailScreen(
                             Text("Guardar")
                         }
                     }
+
+                    if (showMoveDialog1)
+                        MoveSelectionDialog(moveOptions, { showMoveDialog1 = false }) { move1 = it }
+
+                    if (showMoveDialog2)
+                        MoveSelectionDialog(moveOptions, { showMoveDialog2 = false }) { move2 = it }
+
+                    if (showMoveDialog3)
+                        MoveSelectionDialog(moveOptions, { showMoveDialog3 = false }) { move3 = it }
+
+                    if (showMoveDialog4)
+                        MoveSelectionDialog(moveOptions, { showMoveDialog4 = false }) { move4 = it }
                 }
             }
         }
     }
 }
-
