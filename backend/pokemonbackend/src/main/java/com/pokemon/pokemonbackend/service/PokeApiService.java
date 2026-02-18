@@ -144,4 +144,16 @@ public class PokeApiService {
 
         return cachedPokemonList;
     }
+
+    public Map<String, Object> getItemsList() {
+
+        String url = "https://pokeapi.co/api/v2/item?limit=2000";
+
+        try {
+            return restTemplate.getForObject(url, Map.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 }

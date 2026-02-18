@@ -296,6 +296,29 @@ public class PokemonController {
     }
 
 
+    @GetMapping("/items")
+    public ResponseEntity<List<String>> getAllItems() {
+
+        Map<String, Object> response =
+                pokeApiService.getItemsList();
+
+        if (response == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<Map<String, Object>> results =
+                (List<Map<String, Object>>) response.get("results");
+
+        List<String> items = new ArrayList<>();
+
+        for (Map<String, Object> item : results) {
+            items.add((String) item.get("name"));
+        }
+
+        return ResponseEntity.ok(items);
+    }
+
+
 
 
 }
