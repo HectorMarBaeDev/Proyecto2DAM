@@ -279,26 +279,11 @@ public class PokemonController {
 
     // ---------------- ITEMS PAGINATED ----------------
 
-    @GetMapping("/items")
-    public ResponseEntity<List<String>> getItemsPage(
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "200") int limit
-    ) {
-
-        Map<String, Object> response =
-                pokeApiService.getItemsPage(offset, limit);
-
-        if (response == null) return ResponseEntity.badRequest().build();
-
-        List<Map<String, Object>> results =
-                (List<Map<String, Object>>) response.get("results");
-
-        List<String> items = new ArrayList<>();
-
-        for (Map<String, Object> item : results) {
-            items.add((String) item.get("name"));
-        }
-
-        return ResponseEntity.ok(items);
+    @GetMapping("/competitive-items")
+    public ResponseEntity<List<String>> getCompetitiveItems() {
+        return ResponseEntity.ok(
+                pokeApiService.getCompetitiveItems()
+        );
     }
+
 }
