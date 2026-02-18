@@ -1,14 +1,10 @@
 package com.example.pokemonapp.ui.pokemon
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +41,7 @@ fun PokemonDetailScreen(
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    // --------- CARGA INICIAL ---------
+    // -------- CARGA INICIAL --------
     LaunchedEffect(pokemonId) {
         try {
             pokemon = repository.getPokemonById(pokemonId)
@@ -60,9 +56,7 @@ fun PokemonDetailScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Detalle Pokémon") })
-        }
+        topBar = { TopAppBar(title = { Text("Detalle Pokémon") }) }
     ) { padding ->
 
         Box(
@@ -114,8 +108,7 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // -------- ITEM --------
-
+                        // ITEM
                         ExposedDropdownMenuBox(
                             expanded = itemExpanded,
                             onExpandedChange = { itemExpanded = !itemExpanded }
@@ -137,7 +130,9 @@ fun PokemonDetailScreen(
                             ) {
                                 itemOptions.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(option.replaceFirstChar { it.uppercase() }) },
+                                        text = {
+                                            Text(option.replaceFirstChar { it.uppercase() })
+                                        },
                                         onClick = {
                                             item = option
                                             itemExpanded = false
@@ -149,8 +144,7 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // -------- ABILITY --------
-
+                        // ABILITY
                         ExposedDropdownMenuBox(
                             expanded = abilityExpanded,
                             onExpandedChange = { abilityExpanded = !abilityExpanded }
@@ -172,7 +166,9 @@ fun PokemonDetailScreen(
                             ) {
                                 abilityOptions.forEach { option ->
                                     DropdownMenuItem(
-                                        text = { Text(option.replaceFirstChar { it.uppercase() }) },
+                                        text = {
+                                            Text(option.replaceFirstChar { it.uppercase() })
+                                        },
                                         onClick = {
                                             ability = option
                                             abilityExpanded = false
@@ -184,11 +180,7 @@ fun PokemonDetailScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // -------- MOVES --------
-
                         Text("Movimientos", style = MaterialTheme.typography.titleMedium)
-
-                        Spacer(modifier = Modifier.height(8.dp))
 
                         @Composable
                         fun moveButton(text: String, onClick: () -> Unit) {
@@ -210,43 +202,6 @@ fun PokemonDetailScreen(
                         moveButton(move3) { showMoveDialog3 = true }
                         moveButton(move4) { showMoveDialog4 = true }
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // -------- IVs / EVs (igual que antes) --------
-
-                        @Composable
-                        fun numberField(value: String, onChange: (String) -> Unit, label: String) {
-                            OutlinedTextField(
-                                value = value,
-                                onValueChange = onChange,
-                                label = { Text(label) },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                            )
-                        }
-
-                        Text("IVs", style = MaterialTheme.typography.titleMedium)
-
-                        numberField(hpIv, { hpIv = it }, "HP IV")
-                        numberField(atkIv, { atkIv = it }, "Atk IV")
-                        numberField(defIv, { defIv = it }, "Def IV")
-                        numberField(spAtkIv, { spAtkIv = it }, "SpAtk IV")
-                        numberField(spDefIv, { spDefIv = it }, "SpDef IV")
-                        numberField(speedIv, { speedIv = it }, "Speed IV")
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text("EVs", style = MaterialTheme.typography.titleMedium)
-
-                        numberField(hpEv, { hpEv = it }, "HP EV")
-                        numberField(atkEv, { atkEv = it }, "Atk EV")
-                        numberField(defEv, { defEv = it }, "Def EV")
-                        numberField(spAtkEv, { spAtkEv = it }, "SpAtk EV")
-                        numberField(spDefEv, { spDefEv = it }, "SpDef EV")
-                        numberField(speedEv, { speedEv = it }, "Speed EV")
-
                         Spacer(modifier = Modifier.height(20.dp))
 
                         Button(
@@ -255,7 +210,7 @@ fun PokemonDetailScreen(
                                     try {
                                         isLoading = true
 
-                                        val updatedPokemon = pokemon!!.copy(
+                                        val updated = pokemon!!.copy(
                                             item = item.ifBlank { null },
                                             ability = ability.ifBlank { null },
                                             move1 = move1.ifBlank { null },
@@ -276,7 +231,7 @@ fun PokemonDetailScreen(
                                             speedEv = speedEv.toIntOrNull() ?: 0
                                         )
 
-                                        pokemon = repository.updatePokemon(updatedPokemon)
+                                        pokemon = repository.updatePokemon(updated)
                                         error = null
 
                                     } catch (e: Exception) {
@@ -291,8 +246,6 @@ fun PokemonDetailScreen(
                             Text("Guardar")
                         }
                     }
-
-                    // -------- DIALOGS --------
 
                     if (showMoveDialog1)
                         MoveSelectionDialog(moveOptions, { showMoveDialog1 = false }) { move1 = it }
@@ -310,5 +263,3 @@ fun PokemonDetailScreen(
         }
     }
 }
-
-

@@ -158,11 +158,9 @@ class PokemonRepository {
         return RetrofitInstance.createWithToken().getCompetitiveItems()
     }
 
-
     suspend fun getPokemonMoves(id: Long): List<String> {
         return RetrofitInstance.createWithToken().getPokemonMoves(id)
     }
-
 
 
 

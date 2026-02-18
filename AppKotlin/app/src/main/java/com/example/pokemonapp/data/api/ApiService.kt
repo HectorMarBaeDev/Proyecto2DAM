@@ -88,6 +88,7 @@ interface ApiService {
     ): List<String>
 
 
+
     @GET("pokemon/id/{id}/abilities")
     suspend fun getPokemonAbilities(
         @Path("id") id: Long
