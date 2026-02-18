@@ -281,9 +281,29 @@ public class PokemonController {
 
     @GetMapping("/competitive-items")
     public ResponseEntity<List<String>> getCompetitiveItems() {
-        return ResponseEntity.ok(
-                pokeApiService.getCompetitiveItems()
+
+        List<String> items = List.of(
+                "leftovers",
+                "choice-band",
+                "choice-scarf",
+                "choice-specs",
+                "life-orb",
+                "focus-sash",
+                "assault-vest",
+                "rocky-helmet",
+                "air-balloon",
+                "heavy-duty-boots",
+                "sitrus-berry",
+                "lum-berry",
+                "weakness-policy",
+                "eviolite",
+                "expert-belt",
+                "black-sludge",
+                "light-clay"
         );
+
+        return ResponseEntity.ok(items);
     }
+
 
 }
