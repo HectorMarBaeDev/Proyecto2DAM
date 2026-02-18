@@ -36,7 +36,8 @@ public class PokemonController {
         this.pokeApiService = pokeApiService;
     }
 
-    // Añadir Pokémon a un equipo
+    // ---------------- ADD ----------------
+
     @PostMapping
     public ResponseEntity<PokemonResponseDTO> addPokemon(
             @Valid @RequestBody PokemonRequestDTO request,
@@ -44,32 +45,20 @@ public class PokemonController {
     ) {
         Team team = teamRepository.findById(teamId).orElse(null);
 
-        if (team == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Máximo 6 Pokémon
-        if (pokemonRepository.findByTeam(team).size() >= 6) {
+        if (team == null) return ResponseEntity.notFound().build();
+        if (pokemonRepository.findByTeam(team).size() >= 6)
             return ResponseEntity.badRequest().build();
-        }
 
         Map<String, Object> data =
                 pokeApiService.getPokemonData(request.getIdentifier());
 
-        if (data == null) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
-        }
-
-        Integer pokedexNumber = (Integer) data.get("id");
-        String name = (String) data.get("name");
-        String image = pokeApiService.getImage(data);
+        if (data == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Pokemon pokemon = new Pokemon(
-                pokedexNumber,
-                name,
-                image,
+                (Integer) data.get("id"),
+                (String) data.get("name"),
+                pokeApiService.getImage(data),
                 pokeApiService.getPrimaryType(data),
                 pokeApiService.getSecondaryType(data),
                 team
@@ -88,15 +77,13 @@ public class PokemonController {
                 ));
     }
 
+    // ---------------- LIST TEAM ----------------
 
-    // Listar Pokémon de un equipo
     @GetMapping("/team/{teamId}")
     public ResponseEntity<List<PokemonResponseDTO>> getPokemonByTeam(@PathVariable Long teamId) {
-        Team team = teamRepository.findById(teamId).orElse(null);
 
-        if (team == null) {
-            return ResponseEntity.notFound().build();
-        }
+        Team team = teamRepository.findById(teamId).orElse(null);
+        if (team == null) return ResponseEntity.notFound().build();
 
         List<PokemonResponseDTO> response = pokemonRepository.findByTeam(team)
                 .stream()
@@ -113,33 +100,36 @@ public class PokemonController {
         return ResponseEntity.ok(response);
     }
 
-    // Eliminar Pokémon
-    @DeleteMapping("/{id}")
+    // ---------------- DELETE ----------------
+
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deletePokemon(@PathVariable Long id) {
-        if (!pokemonRepository.existsById(id)) {
+        if (!pokemonRepository.existsById(id))
             return ResponseEntity.notFound().build();
-        }
 
         pokemonRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    // ---------------- INDEX RANDOM ----------------
 
     @GetMapping("/index/page")
     public ResponseEntity<List<PokemonResponseDTO>> getIndexPokemonPage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int pageSize
     ) {
-        int totalPokemon = 1025;
 
-        // Calcular offset aleatorio si quieres que cambie cada recarga
+        int totalPokemon = 1025;
         Random random = new Random();
         int startId = random.nextInt(totalPokemon - pageSize + 1) + 1;
 
         List<PokemonResponseDTO> result = new ArrayList<>();
 
         for (int i = 0; i < pageSize; i++) {
-            int pokemonId = startId + i;
-            Map<String, Object> data = pokeApiService.getPokemonData(String.valueOf(pokemonId));
+
+            Map<String, Object> data =
+                    pokeApiService.getPokemonData(String.valueOf(startId + i));
+
             if (data == null) continue;
 
             result.add(new PokemonResponseDTO(
@@ -155,20 +145,20 @@ public class PokemonController {
         return ResponseEntity.ok(result);
     }
 
+    // ---------------- GET ALL ----------------
+
     @GetMapping
     public List<PokemonListItemDTO> getAllPokemon() {
         return pokeApiService.getAllPokemonBasic();
     }
 
-    // Obtener un Pokémon concreto por id
-    @GetMapping("/{id}")
+    // ---------------- GET BY ID ----------------
+
+    @GetMapping("/id/{id}")
     public ResponseEntity<PokemonResponseDTO> getPokemonById(@PathVariable Long id) {
 
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
-
-        if (pokemon == null) {
-            return ResponseEntity.notFound().build();
-        }
+        if (pokemon == null) return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(new PokemonResponseDTO(
                 pokemon.getId(),
@@ -198,20 +188,17 @@ public class PokemonController {
         ));
     }
 
-    // Actualizar build competitivo
-    @PutMapping("/{id}")
+    // ---------------- UPDATE ----------------
+
+    @PutMapping("/id/{id}")
     public ResponseEntity<PokemonResponseDTO> updatePokemon(
             @PathVariable Long id,
             @RequestBody PokemonResponseDTO dto
     ) {
 
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
+        if (pokemon == null) return ResponseEntity.notFound().build();
 
-        if (pokemon == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Solo actualizamos datos competitivos
         pokemon.setItem(dto.getItem());
         pokemon.setAbility(dto.getAbility());
         pokemon.setMove1(dto.getMove1());
@@ -263,22 +250,18 @@ public class PokemonController {
         ));
     }
 
+    // ---------------- ABILITIES ----------------
 
-    @GetMapping("/{id}/abilities")
+    @GetMapping("/id/{id}/abilities")
     public ResponseEntity<List<String>> getPokemonAbilities(@PathVariable Long id) {
 
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
-
-        if (pokemon == null) {
-            return ResponseEntity.notFound().build();
-        }
+        if (pokemon == null) return ResponseEntity.notFound().build();
 
         Map<String, Object> data =
                 pokeApiService.getPokemonData(pokemon.getName());
 
-        if (data == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        if (data == null) return ResponseEntity.badRequest().build();
 
         List<Map<String, Object>> abilities =
                 (List<Map<String, Object>>) data.get("abilities");
@@ -288,13 +271,13 @@ public class PokemonController {
         for (Map<String, Object> abilityEntry : abilities) {
             Map<String, Object> ability =
                     (Map<String, Object>) abilityEntry.get("ability");
-
             abilityNames.add((String) ability.get("name"));
         }
 
         return ResponseEntity.ok(abilityNames);
     }
 
+    // ---------------- ITEMS PAGINATED ----------------
 
     @GetMapping("/items")
     public ResponseEntity<List<String>> getItemsPage(
@@ -305,9 +288,7 @@ public class PokemonController {
         Map<String, Object> response =
                 pokeApiService.getItemsPage(offset, limit);
 
-        if (response == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        if (response == null) return ResponseEntity.badRequest().build();
 
         List<Map<String, Object>> results =
                 (List<Map<String, Object>>) response.get("results");
@@ -320,8 +301,4 @@ public class PokemonController {
 
         return ResponseEntity.ok(items);
     }
-
-
-
-
 }
