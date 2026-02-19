@@ -58,6 +58,12 @@ class PokemonRepository {
     // TEAMS
     // ======================
 
+
+    suspend fun deleteTeam(teamId: Long) {
+        val api = RetrofitInstance.createWithToken()
+        api.deleteTeam(teamId)
+    }
+
     suspend fun getTeamsByUser(): List<TeamDto> {
         val api = RetrofitInstance.createWithToken() // token en el header
         return api.getMyTeams()

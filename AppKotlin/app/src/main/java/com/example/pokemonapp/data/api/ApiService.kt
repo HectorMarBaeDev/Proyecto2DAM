@@ -44,6 +44,11 @@ interface ApiService {
     // TEAMS
     // ======================
 
+    @DELETE("teams/{id}")
+    suspend fun deleteTeam(
+        @Path("id") id: Long
+    )
+
     @GET("teams/me")
     suspend fun getMyTeams(): List<TeamDto>
 
@@ -112,4 +117,6 @@ interface ApiService {
 
     @GET("pokemon")
     suspend fun getAllPokemon(): List<PokemonListItemDto>
+
+
 }
