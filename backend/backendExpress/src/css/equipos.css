@@ -1,0 +1,34 @@
+body {
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+#equiposView {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.equipo-card {
+    transition: box-shadow 0.2s;
+    cursor: default;
+}
+
+.equipo-card:hover {
+    box-shadow: 0 4px 16px rgba(255, 82, 2, 0.25);
+}
+
+.equipo-pokemon-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.pokemon-preview img {
+    border-radius: 4px;
+    background: #f1f1f1;
+}
+
+/* Ajuste de altura con nuevo navbar */
+#equiposView {
+    max-height: calc(100vh - 95px);
+}
