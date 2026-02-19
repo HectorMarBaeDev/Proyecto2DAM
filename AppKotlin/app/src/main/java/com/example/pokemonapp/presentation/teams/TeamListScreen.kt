@@ -4,6 +4,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -36,6 +37,10 @@ fun TeamsScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    var showCreateSection by remember { mutableStateOf(false) }
+
+
 
     var teams by remember { mutableStateOf<List<TeamDto>>(emptyList()) }
     var newTeamName by remember { mutableStateOf("") }
@@ -80,13 +85,31 @@ fun TeamsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Mis Equipos", fontWeight = FontWeight.Bold)
+                    Column {
+                        Text(
+                            "Mis Equipos",
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            "${teams.size} equipos",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
                 actions = {
+                    IconButton(
+                        onClick = { showCreateSection = !showCreateSection }
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Añadir equipo")
+                    }
+
                     IconButton(onClick = {
                         imagePickerLauncher.launch("image/*")
                     }) {
-
                         if (userId != null) {
                             val imageUrl =
                                 "${RetrofitInstance.BASE_URL}users/$userId/profile-picture?v=$imageVersion"
@@ -95,18 +118,16 @@ fun TeamsScreen(
                                 model = imageUrl,
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .size(40.dp)
+                                    .size(36.dp)
                                     .clip(CircleShape)
                             )
                         } else {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription = null
-                            )
+                            Icon(Icons.Default.AccountCircle, null)
                         }
                     }
                 }
             )
+
         }
     )
  { padding ->
@@ -129,75 +150,82 @@ fun TeamsScreen(
 
             // ---------- CREAR EQUIPO ----------
 
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(6.dp)
+            AnimatedVisibility(
+                visible = showCreateSection
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Add, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            "Nuevo Equipo",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-
-                    OutlinedTextField(
-                        value = newTeamName,
-                        onValueChange = { newTeamName = it },
-                        label = { Text("Nombre del equipo") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Group, null)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp)
-                    )
-
-                    OutlinedTextField(
-                        value = newTeamFormat,
-                        onValueChange = { newTeamFormat = it },
-                        label = { Text("Formato (OU, VGC, etc)") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Settings, null)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(14.dp)
-                    )
-
-                    Button(
-                        onClick = {
-                            scope.launch {
-                                try {
-                                    val createdTeam = repository.createTeam(
-                                        name = newTeamName,
-                                        format = newTeamFormat
-                                    )
-                                    teams = repository.getTeamsByUser()
-                                    onTeamClick(createdTeam.id)
-                                    newTeamName = ""
-                                    newTeamFormat = ""
-                                } catch (e: Exception) {
-                                    errorMessage = "Error creando equipo"
-                                }
-                            }
-                        },
-                        enabled = newTeamName.isNotBlank() &&
-                                newTeamFormat.isNotBlank(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        shape = RoundedCornerShape(14.dp)
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                )
+                {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text("Crear equipo")
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "Nuevo Equipo",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        OutlinedTextField(
+                            value = newTeamName,
+                            onValueChange = { newTeamName = it },
+                            label = { Text("Nombre del equipo") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = newTeamFormat,
+                            onValueChange = { newTeamFormat = it },
+                            label = { Text("Formato") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    try {
+                                        val createdTeam = repository.createTeam(
+                                            name = newTeamName,
+                                            format = newTeamFormat
+                                        )
+
+                                        teams = repository.getTeamsByUser()
+                                        onTeamClick(createdTeam.id)
+
+                                        newTeamName = ""
+                                        newTeamFormat = ""
+
+                                        showCreateSection = false // 🔥 se cierra al crear
+
+                                    } catch (e: Exception) {
+                                        errorMessage = "Error creando equipo"
+                                    }
+                                }
+                            },
+                            enabled = newTeamName.isNotBlank() &&
+                                    newTeamFormat.isNotBlank(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            shape = RoundedCornerShape(14.dp)
+                        ) {
+                            Text("Crear equipo")
+                        }
                     }
                 }
             }
+
 
             // ---------- ERROR ----------
 
@@ -215,6 +243,10 @@ fun TeamsScreen(
             }
 
             // ---------- LISTA ----------
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
 
             Text(
                 "Tus Equipos",
@@ -224,7 +256,12 @@ fun TeamsScreen(
 
             if (teams.isEmpty()) {
 
-                Card(shape = RoundedCornerShape(20.dp)) {
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -234,14 +271,26 @@ fun TeamsScreen(
                         Icon(
                             Icons.Default.CatchingPokemon,
                             contentDescription = null,
-                            modifier = Modifier.size(48.dp)
+                            modifier = Modifier.size(56.dp),
+                            tint = MaterialTheme.colorScheme.primary
                         )
-                        Spacer(Modifier.height(12.dp))
-                        Text("Aún no tienes equipos")
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            "No tienes equipos todavía",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            "Pulsa + para crear tu primer equipo",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
             } else {
+
 
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -251,14 +300,18 @@ fun TeamsScreen(
 
                         Card(
                             modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(18.dp),
-                            elevation = CardDefaults.cardElevation(4.dp)
-                        ) {
+                            shape = RoundedCornerShape(22.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            elevation = CardDefaults.cardElevation(2.dp)
+                        )
+                        {
 
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(18.dp),
+                                    .padding(horizontal = 20.dp, vertical = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
@@ -286,43 +339,17 @@ fun TeamsScreen(
                                 Row {
                                     IconButton(
                                         onClick = {
-
-                                            scope.launch {
-
-                                                val removedTeam = team
-                                                teams = teams.filter { it.id != removedTeam.id }
-
-                                                val result = snackbarHostState.showSnackbar(
-                                                    message = "Equipo eliminado",
-                                                    actionLabel = "Deshacer",
-                                                    duration = SnackbarDuration.Short
-                                                )
-
-                                                if (result == SnackbarResult.ActionPerformed) {
-
-                                                    // RESTAURAR
-                                                    teams = teams + removedTeam
-
-                                                } else {
-
-                                                    // CONFIRMAR EN BACKEND
-                                                    try {
-                                                        repository.deleteTeam(removedTeam.id)
-                                                    } catch (e: Exception) {
-                                                        errorMessage = "Error eliminando equipo"
-                                                        teams = teams + removedTeam
-                                                    }
-                                                }
-                                            }
+                                            teamToDelete = team
                                         }
-                                    )
-                                    {
+                                    ) {
                                         Icon(
                                             imageVector = Icons.Default.Delete,
                                             contentDescription = "Eliminar",
                                             tint = MaterialTheme.colorScheme.error
                                         )
                                     }
+
+                                }
 
                                 }
                             }
@@ -374,5 +401,64 @@ fun TeamsScreen(
                 }
             )
         }
+    teamToDelete?.let { team ->
+
+        AlertDialog(
+            onDismissRequest = { teamToDelete = null },
+            title = {
+                Text("Eliminar equipo")
+            },
+            text = {
+                Text(
+                    "¿Seguro que quieres eliminar '${team.name}'? Esta acción no se puede deshacer."
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+
+                        val removedTeam = team
+                        teamToDelete = null   // 🔥 cerrar diálogo inmediatamente
+
+                        scope.launch {
+
+                            teams = teams.filter { it.id != removedTeam.id }
+
+                            val result = snackbarHostState.showSnackbar(
+                                message = "Equipo eliminado",
+                                actionLabel = "Deshacer",
+                                duration = SnackbarDuration.Short
+                            )
+
+                            if (result == SnackbarResult.ActionPerformed) {
+                                teams = teams + removedTeam
+                            } else {
+                                try {
+                                    repository.deleteTeam(removedTeam.id)
+                                } catch (e: Exception) {
+                                    errorMessage = "Error eliminando equipo"
+                                    teams = teams + removedTeam
+                                }
+                            }
+                        }
+                    }
+
+                ) {
+                    Text(
+                        "Eliminar",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { teamToDelete = null }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
+
 }
+
