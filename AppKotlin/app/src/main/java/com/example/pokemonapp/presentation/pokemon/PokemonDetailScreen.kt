@@ -1,19 +1,39 @@
 package com.example.pokemonapp.presentation.pokemon
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.pokemonapp.model.PokemonDto
 import com.example.pokemonapp.data.repository.PokemonRepository
+import coil.compose.AsyncImage
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,6 +41,7 @@ fun PokemonDetailScreen(
     pokemonId: Long,
     onPokemonUpdated: () -> Unit
 ) {
+
 
 
 
@@ -60,11 +81,34 @@ fun PokemonDetailScreen(
     Scaffold(
         topBar = { TopAppBar(title = { Text("Detalle Pokémon") }) }
     ) { padding ->
+        val backgroundBrush = if (pokemon != null) {
+            val primaryColor = typeColor(pokemon!!.primaryType)
+
+            if (pokemon!!.secondaryType != null) {
+                val secondaryColor = typeColor(pokemon!!.secondaryType!!)
+                Brush.verticalGradient(
+                    colors = listOf(primaryColor, secondaryColor)
+                )
+            } else {
+                Brush.verticalGradient(
+                    colors = listOf(primaryColor, primaryColor.copy(alpha = 0.7f))
+                )
+            }
+        } else {
+            Brush.verticalGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.background,
+                    MaterialTheme.colorScheme.background
+                )
+            )
+        }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(backgroundBrush)
                 .padding(padding),
+
             contentAlignment = Alignment.Center
         ) {
 
@@ -72,6 +116,9 @@ fun PokemonDetailScreen(
                 isLoading -> CircularProgressIndicator()
                 error != null -> Text(error!!)
                 pokemon != null -> {
+
+                    val primaryColor = typeColor(pokemon!!.primaryType)
+
 
                     var item by remember { mutableStateOf(pokemon!!.item ?: "") }
                     var ability by remember { mutableStateOf(pokemon!!.ability ?: "") }
@@ -114,12 +161,110 @@ fun PokemonDetailScreen(
                             .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(24.dp)
                     ) {
+                        // -------- IMAGEN --------
+                        // -------- IMAGEN --------
+                        // -------- HEADER --------
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn(animationSpec = tween(600)) +
+                                    slideInVertically(
+                                        initialOffsetY = { -200 },
+                                        animationSpec = tween(600)
+                                    )
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
 
-                        Text(
-                            text = pokemon!!.name.replaceFirstChar { it.uppercase() },
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold
-                        )
+                                // Animación flotante infinita
+                                val infiniteTransition = rememberInfiniteTransition(label = "floating")
+
+                                val offsetY by infiniteTransition.animateFloat(
+                                    initialValue = -6f,
+                                    targetValue = 6f,
+                                    animationSpec = infiniteRepeatable(
+                                        animation = tween(2000, easing = EaseInOut),
+                                        repeatMode = RepeatMode.Reverse
+                                    ),
+                                    label = "offsetY"
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .size(240.dp)
+                                        .offset { IntOffset(0, offsetY.roundToInt()) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+
+                                    // Glow circular detrás
+                                    Box(
+                                        modifier = Modifier
+                                            .size(200.dp)
+                                            .background(
+                                                brush = Brush.radialGradient(
+                                                    colors = listOf(
+                                                        primaryColor.copy(alpha = 0.6f),
+                                                        primaryColor.copy(alpha = 0.25f),
+                                                        Color.Transparent
+                                                    )
+                                                ),
+                                                shape = CircleShape
+                                            )
+                                    )
+
+                                    // Imagen Pokémon
+                                    Box(
+                                        modifier = Modifier
+                                            .size(200.dp)
+                                            .shadow(16.dp, CircleShape)
+                                            .clip(CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AsyncImage(
+                                            model = pokemon!!.image,
+                                            contentDescription = pokemon!!.name,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
+                                }
+
+
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                Text(
+                                    text = pokemon!!.name.replaceFirstChar { it.uppercase() },
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    PokemonTypeIcon(pokemon!!.primaryType)
+
+                                    pokemon!!.secondaryType?.let {
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        PokemonTypeIcon(it)
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                Text(
+                                    text = "ID: ${pokemon!!.id}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+
+
 
                         // -------- CONFIGURACIÓN --------
                         Card(shape = RoundedCornerShape(16.dp)) {
@@ -408,6 +553,32 @@ fun StatField(
         modifier = modifier
     )
 }
+
+
+
+fun typeColor(type: String): Color {
+    return when (type.lowercase()) {
+        "fire" -> Color(0xFFFF7043)
+        "water" -> Color(0xFF42A5F5)
+        "grass" -> Color(0xFF66BB6A)
+        "electric" -> Color(0xFFFFEE58)
+        "psychic" -> Color(0xFFEC407A)
+        "ice" -> Color(0xFF81D4FA)
+        "dragon" -> Color(0xFF7E57C2)
+        "dark" -> Color(0xFF616161)
+        "fairy" -> Color(0xFFF48FB1)
+        "fighting" -> Color(0xFF8D6E63)
+        "poison" -> Color(0xFFAB47BC)
+        "ground" -> Color(0xFFBCAAA4)
+        "flying" -> Color(0xFF90CAF9)
+        "bug" -> Color(0xFF9CCC65)
+        "rock" -> Color(0xFFA1887F)
+        "ghost" -> Color(0xFF7986CB)
+        "steel" -> Color(0xFFB0BEC5)
+        else -> Color(0xFFBDBDBD)
+    }
+}
+
 
 
 

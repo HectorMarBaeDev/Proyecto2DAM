@@ -13,6 +13,7 @@ foundationLayout = "1.10.2"
 navigation3Runtime = "1.0.0"
 navigation3Ui = "1.0.0"
 navigationRuntimeKtx = "2.9.7"
+animationCore = "1.10.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,7 @@ androidx-compose-foundation-layout = { group = "androidx.compose.foundation", na
 androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3Runtime" }
 androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3Ui" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-compose-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "animationCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

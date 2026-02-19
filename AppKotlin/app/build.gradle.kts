@@ -43,7 +43,9 @@ android {
 }
 
 dependencies {
-    // Retrofit
+
+    implementation("androidx.compose.material:material-icons-extended")
+
     implementation("io.coil-kt:coil-svg:2.6.0")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
@@ -63,6 +65,7 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.compose.animation.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
