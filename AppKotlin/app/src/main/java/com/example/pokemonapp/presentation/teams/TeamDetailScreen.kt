@@ -8,10 +8,15 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CatchingPokemon
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -32,6 +37,7 @@ fun TeamDetailScreen(
     onPokemonClick: (Long) -> Unit
 
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val repository = remember { PokemonRepository() }
     val scope = rememberCoroutineScope()
@@ -45,18 +51,23 @@ fun TeamDetailScreen(
 
     // Función para copiar al portapapeles
     fun handleExportTeam(pokemons: List<PokemonDto>) {
+
         val texto = pokemons.joinToString("\n\n") { pokemon ->
-            // Nombre + item (solo si existe)
-            val itemText = if (!pokemon.item.isNullOrEmpty()) " @ ${pokemon.item}" else ""
+
+            val itemText =
+                if (!pokemon.item.isNullOrEmpty())
+                    " @ ${pokemon.item}"
+                else ""
+
             val nameLine = "${pokemon.name}$itemText"
 
-            // Ability (si existe)
-            val abilityLine = if (!pokemon.ability.isNullOrEmpty()) "Ability: ${pokemon.ability}" else null
+            val abilityLine =
+                if (!pokemon.ability.isNullOrEmpty())
+                    "Ability: ${pokemon.ability}"
+                else null
 
-            // Tera Type → solo si lo añades a tu DTO; por ahora puedes usar null
             val teraLine = "Tera Type: Normal"
 
-            // EVs → solo si al menos uno está configurado
             val evsList = listOfNotNull(
                 pokemon.hpEv?.takeIf { it > 0 }?.let { "$it HP" },
                 pokemon.atkEv?.takeIf { it > 0 }?.let { "$it Atk" },
@@ -65,21 +76,40 @@ fun TeamDetailScreen(
                 pokemon.spDefEv?.takeIf { it > 0 }?.let { "$it SpD" },
                 pokemon.speedEv?.takeIf { it > 0 }?.let { "$it Spe" }
             )
-            val evsLine = if (evsList.isNotEmpty()) "EVs: ${evsList.joinToString(" / ")}" else null
 
-            // Movimientos → solo los no nulos
-            val moves = listOfNotNull(pokemon.move1, pokemon.move2, pokemon.move3, pokemon.move4)
+            val evsLine =
+                if (evsList.isNotEmpty())
+                    "EVs: ${evsList.joinToString(" / ")}"
+                else null
+
+            val moves = listOfNotNull(
+                pokemon.move1,
+                pokemon.move2,
+                pokemon.move3,
+                pokemon.move4
+            )
                 .takeIf { it.isNotEmpty() }
                 ?.joinToString("\n- ", prefix = "- ")
 
-            // Construir bloque de Pokémon
-            listOfNotNull(nameLine, abilityLine, teraLine, evsLine, moves)
-                .joinToString("\n")
+            listOfNotNull(
+                nameLine,
+                abilityLine,
+                teraLine,
+                evsLine,
+                moves
+            ).joinToString("\n")
         }
 
         clipboardManager.setText(AnnotatedString(texto))
-        Toast.makeText(context, "Equipo copiado al portapapeles", Toast.LENGTH_SHORT).show()
+
+        // 🔥 Snackbar en vez de Toast
+        scope.launch {
+            snackbarHostState.showSnackbar(
+                message = "Equipo copiado al portapapeles"
+            )
+        }
     }
+
 
 
 
@@ -93,31 +123,67 @@ fun TeamDetailScreen(
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Mi Equipo Pokémon",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    )
-                },
-                actions = {
-                    FilledTonalButton(
-                        onClick = { showDialog = true },
-                        modifier = Modifier.padding(end = 8.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        enabled = pokemonList.size < 6
-                    ) {
-                        Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.width(4.dp))
-                        Text("Añadir")
+                    Column {
+
+                        Text(
+                            "Mi Equipo",
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            Text(
+                                "${pokemonList.size}/6 Pokémon",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+
+                            if (pokemonList.size >= 6) {
+
+                                Spacer(Modifier.width(8.dp))
+
+                                Surface(
+                                    shape = RoundedCornerShape(50),
+                                    color = MaterialTheme.colorScheme.error,
+                                    tonalElevation = 2.dp
+                                ) {
+                                    Text(
+                                        "COMPLETO",
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 2.dp
+                                        ),
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onError,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
                     }
+
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                actions = {
+                    FilledTonalIconButton(
+                        onClick = { showDialog = true },
+                        enabled = pokemonList.size < 6
+                    ) {
+                        Icon(Icons.Default.Add, contentDescription = "Añadir")
+                    }
+                }
             )
+
         }
     ) { padding ->
 
@@ -125,7 +191,14 @@ fun TeamDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.surface
+                        )
+                    )
+                )
         ) {
 
             Column(
@@ -172,25 +245,46 @@ fun TeamDetailScreen(
                 }
 
                 // Lista
+                // Lista
                 if (pokemonList.isEmpty()) {
+
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                "No hay Pokémon en este equipo",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Medium
+                        Card(
+                            shape = RoundedCornerShape(24.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.secondaryContainer
                             )
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                "Toca el botón + para añadir uno",
-                                color = Color.Gray
-                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(40.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    Icons.Default.CatchingPokemon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(64.dp),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Spacer(Modifier.height(16.dp))
+                                Text(
+                                    "Tu equipo está vacío",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(Modifier.height(6.dp))
+                                Text(
+                                    "Pulsa + para empezar a construirlo",
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
+
                 } else {
+
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         modifier = Modifier
@@ -222,22 +316,26 @@ fun TeamDetailScreen(
                     }
                 }
 
+
                 if (isLoading) {
                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                 }
             }
 
             // Botón fijo abajo
-            Button(
+            ExtendedFloatingActionButton(
                 onClick = { handleExportTeam(pokemonList) },
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Exportar equipo")
-            }
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                icon = {
+                    Icon(Icons.Default.Share, contentDescription = null)
+                },
+                text = {
+                    Text("Exportar")
+                }
+            )
+
         }
     }
 

@@ -20,8 +20,8 @@ fun PokemonCard(
     pokemon: PokemonDto,
     onClick: () -> Unit,
     onDelete: () -> Unit
-)
- {
+) {
+
     val spriteUrl =
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.pokedexNumber}.png"
 
@@ -29,61 +29,53 @@ fun PokemonCard(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.75f),
-        shape = RoundedCornerShape(16.dp),
+            .aspectRatio(0.80f),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
+
         Column(
             modifier = Modifier
-                .padding(10.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .padding(horizontal = 14.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // SPRITE
+            // ---------- SPRITE ----------
             AsyncImage(
                 model = spriteUrl,
                 contentDescription = pokemon.name,
                 modifier = Modifier
-                    .size(70.dp)
-                    .weight(1f, fill = false)
+                    .size(90.dp)
             )
 
-            // NOMBRE Y NÚMERO
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(2.dp),
-                modifier = Modifier.padding(vertical = 4.dp)
-            ) {
-                Text(
-                    text = pokemon.name.replaceFirstChar { it.uppercase() },
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth()
-                )
+            Spacer(Modifier.height(10.dp))
 
-                Text(
-                    text = "Nº ${String.format("%03d", pokemon.pokedexNumber)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            // ---------- NOMBRE ----------
+            Text(
+                text = pokemon.name.replaceFirstChar { it.uppercase() },
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
 
-            // TIPOS
+            Text(
+                text = "Nº ${String.format("%03d", pokemon.pokedexNumber)}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            // ---------- TIPOS ----------
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(vertical = 4.dp)
-                    .height(32.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 PokemonTypeIcon(pokemon.primaryType)
 
@@ -92,19 +84,23 @@ fun PokemonCard(
                 }
             }
 
-            // BOTÓN ELIMINAR
+            Spacer(Modifier.weight(1f))
+
+            Divider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 0.5.dp
+            )
+
+            // ---------- ELIMINAR ----------
             TextButton(
                 onClick = onDelete,
-                contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp),
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = MaterialTheme.colorScheme.error
-                ),
-                modifier = Modifier.height(28.dp)
+                )
             ) {
                 Text(
                     text = "Eliminar",
-                    style = MaterialTheme.typography.labelSmall,
-                    fontSize = 11.sp,
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium
                 )
             }
