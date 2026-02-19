@@ -1,6 +1,6 @@
-package com.example.pokemonapp.navigation
+package com.example.pokemonapp.presentation.navigation
 
-import com.example.pokemonapp.ui.teams.TeamsScreen
+import com.example.pokemonapp.presentation.teams.TeamsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation3.runtime.NavKey
@@ -8,11 +8,11 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.example.pokemonapp.data.repository.PokemonRepository
-import com.example.pokemonapp.ui.login.LoginScreen
-import com.example.pokemonapp.ui.login.RegisterScreen
-import com.example.pokemonapp.ui.teams.TeamDetailScreen
+import com.example.pokemonapp.presentation.login.LoginScreen
+import com.example.pokemonapp.presentation.login.RegisterScreen
+import com.example.pokemonapp.presentation.teams.TeamDetailScreen
 import kotlinx.serialization.Serializable
-import com.example.pokemonapp.ui.pokemon.PokemonDetailScreen
+import com.example.pokemonapp.presentation.pokemon.PokemonDetailScreen
 
 
 @Serializable
@@ -84,9 +84,13 @@ fun NavigationRoot() {
             // -------------------- POKEMON DETAIL --------------------
             entry<PokemonDetailScreenKey> { key ->
                 PokemonDetailScreen(
-                    pokemonId = key.pokemonId
+                    pokemonId = key.pokemonId,
+                    onPokemonUpdated = {
+                        navBackStack.removeLastOrNull()
+                    }
                 )
             }
+
 
 
         }

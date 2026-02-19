@@ -1,6 +1,10 @@
 package com.example.pokemonapp.data.api
 
-import com.example.pokemonapp.data.model.*
+import com.example.pokemonapp.model.AuthResponseDto
+import com.example.pokemonapp.model.PokemonDto
+import com.example.pokemonapp.model.PokemonListItemDto
+import com.example.pokemonapp.model.TeamDto
+import com.example.pokemonapp.model.UserDto
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response

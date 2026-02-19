@@ -1,4 +1,4 @@
-package com.example.pokemonapp.ui.teams
+package com.example.pokemonapp.presentation.teams
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape

@@ -1,4 +1,4 @@
-package com.example.pokemonapp.data.model
+package com.example.pokemonapp.model
 
 data class AuthResponseDto(
     val token: String,

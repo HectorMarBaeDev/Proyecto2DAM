@@ -1,4 +1,4 @@
-package com.example.pokemonapp.ui.pokemon
+package com.example.pokemonapp.presentation.pokemon
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size

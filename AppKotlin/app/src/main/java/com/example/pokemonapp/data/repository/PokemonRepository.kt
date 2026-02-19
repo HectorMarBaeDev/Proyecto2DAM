@@ -3,11 +3,10 @@ package com.example.pokemonapp.data.repository
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.example.pokemonapp.data.api.ApiService
 import com.example.pokemonapp.data.auth.AuthManager
-import com.example.pokemonapp.data.model.PokemonDto
-import com.example.pokemonapp.data.model.PokemonListItemDto
-import com.example.pokemonapp.data.model.TeamDto
+import com.example.pokemonapp.model.PokemonDto
+import com.example.pokemonapp.model.PokemonListItemDto
+import com.example.pokemonapp.model.TeamDto
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody

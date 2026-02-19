@@ -1,4 +1,4 @@
-package com.example.pokemonapp.ui.teams
+package com.example.pokemonapp.presentation.teams
 
 import android.util.Log
 import android.widget.Toast
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,8 +20,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pokemonapp.data.model.PokemonDto
-import com.example.pokemonapp.data.model.PokemonListItemDto
+import com.example.pokemonapp.model.PokemonDto
+import com.example.pokemonapp.model.PokemonListItemDto
 import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
 
@@ -31,6 +30,7 @@ import kotlinx.coroutines.launch
 fun TeamDetailScreen(
     teamId: Long,
     onPokemonClick: (Long) -> Unit
+
 ) {
 
     val repository = remember { PokemonRepository() }

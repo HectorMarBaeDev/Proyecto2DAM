@@ -1,11 +1,9 @@
-package com.example.pokemonapp.ui.login
+package com.example.pokemonapp.presentation.login
 
 import com.example.pokemonapp.data.repository.PokemonRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,41 +13,28 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(
-    onRegisterSuccess: () -> Unit,
-    onBackToLogin: () -> Unit
+fun LoginScreen(
+    onLoginSuccess: (Long) -> Unit,
+    onGoToRegister: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val repository = remember { PokemonRepository() }
 
-
-    //  Validaciones derivadas
-
-    val passwordsMatch = password == confirmPassword
-    val isEmailValid = email.contains("@")
-    val isFormValid =
-        username.isNotBlank() &&
-                email.isNotBlank() &&
-                isEmailValid &&
-                password.length >= 8 &&
-                passwordsMatch
-
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "Crear Cuenta",
+                        "Iniciar Sesión",
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp
                     )
@@ -60,7 +45,6 @@ fun RegisterScreen(
             )
         }
     ) { padding ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,19 +52,16 @@ fun RegisterScreen(
                 .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center
         ) {
-
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(24.dp),
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -90,13 +71,13 @@ fun RegisterScreen(
                 ) {
 
                     Text(
-                        text = "Únete ahora",
+                        text = "Bienvenido",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Usuario
+                    // Campo Usuario
                     OutlinedTextField(
                         value = username,
                         onValueChange = {
@@ -107,33 +88,14 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-
-                    // Email
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = {
-                            email = it
-                            errorMessage = null
-                        },
-                        label = { Text("Email") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        enabled = !isLoading,
-                        isError = email.isNotBlank() && !isEmailValid,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-
-                    if (email.isNotBlank() && !isEmailValid) {
-                        Text(
-                            text = "Email inválido",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
-                    }
+                    )
 
-                    // Contraseña
+                    // Campo Contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = {
@@ -145,34 +107,14 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-
-                    // Confirmar contraseña
-                    OutlinedTextField(
-                        value = confirmPassword,
-                        onValueChange = {
-                            confirmPassword = it
-                            errorMessage = null
-                        },
-                        label = { Text("Confirmar contraseña") },
-                        visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        enabled = !isLoading,
-                        isError = confirmPassword.isNotBlank() && !passwordsMatch,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-
-                    if (confirmPassword.isNotBlank() && !passwordsMatch) {
-                        Text(
-                            text = "Las contraseñas no coinciden",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall
+                        shape = RoundedCornerShape(12.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
                         )
-                    }
+                    )
 
-                    // Error general backend
+                    // Mensaje de error
                     errorMessage?.let { error ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -192,18 +134,23 @@ fun RegisterScreen(
 
                     Spacer(Modifier.height(8.dp))
 
-                    // Botón Registro
+                    // Botón Login
                     Button(
                         onClick = {
                             scope.launch {
                                 try {
                                     isLoading = true
                                     errorMessage = null
-                                    repository.register(username, email, password)
-                                    onRegisterSuccess()
-                                } catch (e: retrofit2.HttpException) {
+
+                                    val cleanUsername = username.trim().replace(Regex("\\s+"), " ")
+                                    val cleanPassword = password.trim()
+
+                                    val userId = repository.login(cleanUsername, cleanPassword)
+
+                                    onLoginSuccess(userId)
+                                } catch (e: HttpException) {
                                     when (e.code()) {
-                                        409 -> errorMessage = "El usuario o email ya existe"
+                                        401 -> errorMessage = "Usuario o contraseña incorrectos"
                                         else -> errorMessage = "Error en el servidor"
                                     }
                                 } catch (e: Exception) {
@@ -213,7 +160,7 @@ fun RegisterScreen(
                                 }
                             }
                         },
-                        enabled = !isLoading && isFormValid,
+                        enabled = username.isNotBlank() && password.isNotBlank() && !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
@@ -227,14 +174,14 @@ fun RegisterScreen(
                             )
                         } else {
                             Text(
-                                "Registrarse",
+                                "Entrar",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }
                     }
 
-                    // Separador
+                    // Divider
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -244,14 +191,15 @@ fun RegisterScreen(
                         Text(
                             "o",
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium
                         )
                         HorizontalDivider(modifier = Modifier.weight(1f))
                     }
 
-                    // Volver login
+                    // Botón Registro
                     OutlinedButton(
-                        onClick = onBackToLogin,
+                        onClick = onGoToRegister,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
@@ -259,7 +207,7 @@ fun RegisterScreen(
                         enabled = !isLoading
                     ) {
                         Text(
-                            "Ya tengo cuenta",
+                            "Crear cuenta nueva",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold
                         )

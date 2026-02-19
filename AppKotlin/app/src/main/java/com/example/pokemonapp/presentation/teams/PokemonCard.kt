@@ -1,4 +1,4 @@
-package com.example.pokemonapp.ui.teams
+package com.example.pokemonapp.presentation.teams
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,8 +12,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.pokemonapp.data.model.PokemonDto
-import com.example.pokemonapp.ui.pokemon.PokemonTypeIcon
+import com.example.pokemonapp.model.PokemonDto
+import com.example.pokemonapp.presentation.pokemon.PokemonTypeIcon
 
 @Composable
 fun PokemonCard(
