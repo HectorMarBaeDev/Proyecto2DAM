@@ -1,19 +1,26 @@
 package com.example.pokemonapp.presentation.login
 
-import com.example.pokemonapp.data.repository.PokemonRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,63 +28,69 @@ fun LoginScreen(
     onLoginSuccess: (Long) -> Unit,
     onGoToRegister: () -> Unit
 ) {
+
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val repository = remember { PokemonRepository() }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Iniciar Sesión",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
-        }
-    ) { padding ->
+    Scaffold { padding ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .background(MaterialTheme.colorScheme.surface),
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.surface
+                        )
+                    )
+                )
+                .padding(padding),
             contentAlignment = Alignment.Center
         ) {
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
-                shape = RoundedCornerShape(20.dp),
+                    .padding(horizontal = 24.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(28.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
 
+                    // Cabecera
                     Text(
-                        text = "Bienvenido",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
+                        text = "PokeBuilder",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Text(
+                        text = "Inicia sesión para continuar",
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    // Campo Usuario
+                    Spacer(Modifier.height(8.dp))
+
+                    // Usuario
                     OutlinedTextField(
                         value = username,
                         onValueChange = {
@@ -85,17 +98,16 @@ fun LoginScreen(
                             errorMessage = null
                         },
                         label = { Text("Usuario") },
+                        leadingIcon = {
+                            Icon(Icons.Default.Person, contentDescription = null)
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        shape = RoundedCornerShape(14.dp)
                     )
 
-                    // Campo Contraseña
+                    // Contraseña
                     OutlinedTextField(
                         value = password,
                         onValueChange = {
@@ -103,18 +115,37 @@ fun LoginScreen(
                             errorMessage = null
                         },
                         label = { Text("Contraseña") },
-                        visualTransformation = PasswordVisualTransformation(),
+                        leadingIcon = {
+                            Icon(Icons.Default.Lock, contentDescription = null)
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = { passwordVisible = !passwordVisible }
+                            ) {
+                                Icon(
+                                    imageVector = if (passwordVisible)
+                                        Icons.Default.Visibility
+                                    else
+                                        Icons.Default.VisibilityOff,
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        visualTransformation =
+                            if (passwordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password
+                        ),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        shape = RoundedCornerShape(14.dp)
                     )
 
-                    // Mensaje de error
+                    // Error
                     errorMessage?.let { error ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -142,30 +173,43 @@ fun LoginScreen(
                                     isLoading = true
                                     errorMessage = null
 
-                                    val cleanUsername = username.trim().replace(Regex("\\s+"), " ")
+                                    val cleanUsername =
+                                        username.trim().replace(Regex("\\s+"), " ")
                                     val cleanPassword = password.trim()
 
-                                    val userId = repository.login(cleanUsername, cleanPassword)
+                                    val userId =
+                                        repository.login(cleanUsername, cleanPassword)
 
                                     onLoginSuccess(userId)
+
                                 } catch (e: HttpException) {
                                     when (e.code()) {
-                                        401 -> errorMessage = "Usuario o contraseña incorrectos"
-                                        else -> errorMessage = "Error en el servidor"
+                                        401 -> errorMessage =
+                                            "Usuario o contraseña incorrectos"
+                                        else -> errorMessage =
+                                            "Error en el servidor"
                                     }
                                 } catch (e: Exception) {
-                                    errorMessage = "Error de conexión. Verifica tu internet"
+                                    errorMessage =
+                                        "Error de conexión. Verifica tu internet"
                                 } finally {
                                     isLoading = false
                                 }
                             }
                         },
-                        enabled = username.isNotBlank() && password.isNotBlank() && !isLoading,
+                        enabled = username.isNotBlank() &&
+                                password.isNotBlank() &&
+                                !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
                     ) {
+
                         if (isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
@@ -181,29 +225,27 @@ fun LoginScreen(
                         }
                     }
 
-                    // Divider
+                    // Separador
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         HorizontalDivider(modifier = Modifier.weight(1f))
                         Text(
                             "o",
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         HorizontalDivider(modifier = Modifier.weight(1f))
                     }
 
-                    // Botón Registro
+                    // Registro
                     OutlinedButton(
                         onClick = onGoToRegister,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .height(56.dp),
+                        shape = RoundedCornerShape(14.dp),
                         enabled = !isLoading
                     ) {
                         Text(
