@@ -1,19 +1,22 @@
 package com.example.pokemonapp.presentation.login
 
-import com.example.pokemonapp.data.repository.PokemonRepository
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -23,18 +26,20 @@ fun RegisterScreen(
     onRegisterSuccess: () -> Unit,
     onBackToLogin: () -> Unit
 ) {
+
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+
+    var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
+
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val repository = remember { PokemonRepository() }
-
-
-    //  Validaciones derivadas
 
     val passwordsMatch = password == confirmPassword
     val isEmailValid = email.contains("@")
@@ -45,57 +50,58 @@ fun RegisterScreen(
                 password.length >= 8 &&
                 passwordsMatch
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Crear Cuenta",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
-        }
-    ) { padding ->
+    Scaffold { padding ->
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .background(MaterialTheme.colorScheme.surface),
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            MaterialTheme.colorScheme.surface
+                        )
+                    )
+                )
+                .padding(padding),
             contentAlignment = Alignment.Center
         ) {
 
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(horizontal = 24.dp)
                     .verticalScroll(rememberScrollState()),
-                shape = RoundedCornerShape(20.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
             ) {
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(28.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
 
+                    // Cabecera
                     Text(
-                        text = "Únete ahora",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
+                        text = "Crear Cuenta",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Text(
+                        text = "Únete a Pokémon Manager",
+                        style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+
+                    Spacer(Modifier.height(8.dp))
 
                     // Usuario
                     OutlinedTextField(
@@ -105,10 +111,13 @@ fun RegisterScreen(
                             errorMessage = null
                         },
                         label = { Text("Usuario") },
+                        leadingIcon = {
+                            Icon(Icons.Default.Person, contentDescription = null)
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     // Email
@@ -119,11 +128,14 @@ fun RegisterScreen(
                             errorMessage = null
                         },
                         label = { Text("Email") },
+                        leadingIcon = {
+                            Icon(Icons.Default.Email, contentDescription = null)
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
                         isError = email.isNotBlank() && !isEmailValid,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     if (email.isNotBlank() && !isEmailValid) {
@@ -141,12 +153,32 @@ fun RegisterScreen(
                             password = it
                             errorMessage = null
                         },
-                        label = { Text("Contraseña") },
-                        visualTransformation = PasswordVisualTransformation(),
+                        label = { Text("Contraseña (mín. 8 caracteres)") },
+                        leadingIcon = {
+                            Icon(Icons.Default.Lock, contentDescription = null)
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = { passwordVisible = !passwordVisible }
+                            ) {
+                                Icon(
+                                    imageVector = if (passwordVisible)
+                                        Icons.Default.Visibility
+                                    else
+                                        Icons.Default.VisibilityOff,
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        visualTransformation =
+                            if (passwordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     // Confirmar contraseña
@@ -157,12 +189,36 @@ fun RegisterScreen(
                             errorMessage = null
                         },
                         label = { Text("Confirmar contraseña") },
-                        visualTransformation = PasswordVisualTransformation(),
+                        leadingIcon = {
+                            Icon(Icons.Default.Lock, contentDescription = null)
+                        },
+                        trailingIcon = {
+                            IconButton(
+                                onClick = {
+                                    confirmPasswordVisible =
+                                        !confirmPasswordVisible
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = if (confirmPasswordVisible)
+                                        Icons.Default.Visibility
+                                    else
+                                        Icons.Default.VisibilityOff,
+                                    contentDescription = null
+                                )
+                            }
+                        },
+                        visualTransformation =
+                            if (confirmPasswordVisible)
+                                VisualTransformation.None
+                            else
+                                PasswordVisualTransformation(),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         enabled = !isLoading,
-                        isError = confirmPassword.isNotBlank() && !passwordsMatch,
-                        shape = RoundedCornerShape(12.dp)
+                        isError =
+                            confirmPassword.isNotBlank() && !passwordsMatch,
+                        shape = RoundedCornerShape(14.dp)
                     )
 
                     if (confirmPassword.isNotBlank() && !passwordsMatch) {
@@ -173,7 +229,7 @@ fun RegisterScreen(
                         )
                     }
 
-                    // Error general backend
+                    // Error backend
                     errorMessage?.let { error ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -185,7 +241,6 @@ fun RegisterScreen(
                             Text(
                                 text = error,
                                 color = MaterialTheme.colorScheme.onErrorContainer,
-                                style = MaterialTheme.typography.bodyMedium,
                                 modifier = Modifier.padding(12.dp)
                             )
                         }
@@ -201,20 +256,29 @@ fun RegisterScreen(
                                     isLoading = true
                                     errorMessage = null
 
-                                    val cleanUsername = username.trim().replace(Regex("\\s+"), " ")
+                                    val cleanUsername =
+                                        username.trim().replace(Regex("\\s+"), " ")
                                     val cleanEmail = email.trim()
                                     val cleanPassword = password.trim()
 
-                                    repository.register(cleanUsername, cleanEmail, cleanPassword)
+                                    repository.register(
+                                        cleanUsername,
+                                        cleanEmail,
+                                        cleanPassword
+                                    )
 
                                     onRegisterSuccess()
+
                                 } catch (e: HttpException) {
                                     when (e.code()) {
-                                        409 -> errorMessage = "El usuario o email ya existe"
-                                        else -> errorMessage = "Error en el servidor"
+                                        409 -> errorMessage =
+                                            "El usuario o email ya existe"
+                                        else -> errorMessage =
+                                            "Error en el servidor"
                                     }
                                 } catch (e: Exception) {
-                                    errorMessage = "Error de conexión. Verifica tu internet"
+                                    errorMessage =
+                                        "Error de conexión. Verifica tu internet"
                                 } finally {
                                     isLoading = false
                                 }
@@ -223,9 +287,13 @@ fun RegisterScreen(
                         enabled = !isLoading && isFormValid,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
+
                         if (isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
@@ -241,28 +309,24 @@ fun RegisterScreen(
                         }
                     }
 
-                    // Separador
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         HorizontalDivider(modifier = Modifier.weight(1f))
                         Text(
                             "o",
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            modifier = Modifier.padding(horizontal = 16.dp)
                         )
                         HorizontalDivider(modifier = Modifier.weight(1f))
                     }
 
-                    // Volver login
                     OutlinedButton(
                         onClick = onBackToLogin,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp),
-                        shape = RoundedCornerShape(12.dp),
+                            .height(56.dp),
+                        shape = RoundedCornerShape(14.dp),
                         enabled = !isLoading
                     ) {
                         Text(

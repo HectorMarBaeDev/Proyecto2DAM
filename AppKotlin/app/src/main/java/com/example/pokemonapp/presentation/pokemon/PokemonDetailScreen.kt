@@ -33,6 +33,8 @@ import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonDetailScreen(
@@ -115,6 +117,8 @@ fun PokemonDetailScreen(
                 error != null -> Text(error!!)
                 pokemon != null -> {
 
+                    val primaryColor = typeColor(pokemon!!.primaryType)
+
 
                     var item by remember { mutableStateOf(pokemon!!.item ?: "") }
                     var ability by remember { mutableStateOf(pokemon!!.ability ?: "") }
@@ -188,18 +192,44 @@ fun PokemonDetailScreen(
 
                                 Box(
                                     modifier = Modifier
-                                        .size(220.dp)
-                                        .offset { IntOffset(0, offsetY.roundToInt()) }
-                                        .shadow(16.dp, CircleShape)
-                                        .clip(CircleShape),
+                                        .size(240.dp)
+                                        .offset { IntOffset(0, offsetY.roundToInt()) },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    AsyncImage(
-                                        model = pokemon!!.image,
-                                        contentDescription = pokemon!!.name,
-                                        modifier = Modifier.fillMaxSize()
+
+                                    // Glow circular detrás
+                                    Box(
+                                        modifier = Modifier
+                                            .size(200.dp)
+                                            .background(
+                                                brush = Brush.radialGradient(
+                                                    colors = listOf(
+                                                        primaryColor.copy(alpha = 0.6f),
+                                                        primaryColor.copy(alpha = 0.25f),
+                                                        Color.Transparent
+                                                    )
+                                                ),
+                                                shape = CircleShape
+                                            )
                                     )
+
+                                    // Imagen Pokémon
+                                    Box(
+                                        modifier = Modifier
+                                            .size(200.dp)
+                                            .shadow(16.dp, CircleShape)
+                                            .clip(CircleShape),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        AsyncImage(
+                                            model = pokemon!!.image,
+                                            contentDescription = pokemon!!.name,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
                                 }
+
+
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
