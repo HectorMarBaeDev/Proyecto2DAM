@@ -555,5 +555,6 @@ searchInput.addEventListener('input', () => {
 });
 
 
+
 // 🔥 Primera carga
 cargarPagina(1);

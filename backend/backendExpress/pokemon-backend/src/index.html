@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/styles.css">
     <script src="./js/bootstrap.bundle.js" defer></script>
-    <script src="./js/functions.js" defer></script>
+    <script src="./js/index_functions.js" defer></script>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
             <h1 id="tituloApp">PokeBuild</h1>
         </div>
         <div class="container-fluid nav-menu">
-            <a class="navbar-brand" href="inicio.html">Inicio</a>
+            <a class="navbar-brand" href="inicio_sesion.html">Inicio</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -35,9 +35,9 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">Mi cuenta</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Mi equipo</a></li>
-                            <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                        <ul class="dropdown-menu p-0">
+                            <li id="miEquipo"><a class="dropdown-item p-3" href="#">Mi equipo</a></li>
+                            <li id="cerrarSesion"><a class="dropdown-item p-3" href="#">Cerrar sesión</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -55,7 +55,7 @@
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-
+        <div id="areaPersonal" class="d-flex"></div>
         <div id="cardsContainer" class="d-grid align-items-baseline"></div>
         <div id="paginationContainer" class="mt-2 mb-2"></div>
     </div>
