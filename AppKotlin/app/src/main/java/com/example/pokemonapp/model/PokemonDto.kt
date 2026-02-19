@@ -29,5 +29,8 @@ val atkEv: Int?,
 val defEv: Int?,
 val spAtkEv: Int?,
 val spDefEv: Int?,
-val speedEv: Int?
+val speedEv: Int?,
+
+    val teraType: String?,
+
 )

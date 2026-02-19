@@ -56,63 +56,90 @@ fun TeamDetailScreen(
     // Función para copiar al portapapeles
     fun handleExportTeam(pokemons: List<PokemonDto>) {
 
-        val texto = pokemons.joinToString("\n\n") { pokemon ->
-
-            val itemText =
-                if (!pokemon.item.isNullOrEmpty())
-                    " @ ${pokemon.item}"
-                else ""
-
-            val nameLine = "${pokemon.name}$itemText"
-
-            val abilityLine =
-                if (!pokemon.ability.isNullOrEmpty())
-                    "Ability: ${pokemon.ability}"
-                else null
-
-            val teraLine = "Tera Type: Normal"
-
-            val evsList = listOfNotNull(
-                pokemon.hpEv?.takeIf { it > 0 }?.let { "$it HP" },
-                pokemon.atkEv?.takeIf { it > 0 }?.let { "$it Atk" },
-                pokemon.defEv?.takeIf { it > 0 }?.let { "$it Def" },
-                pokemon.spAtkEv?.takeIf { it > 0 }?.let { "$it SpA" },
-                pokemon.spDefEv?.takeIf { it > 0 }?.let { "$it SpD" },
-                pokemon.speedEv?.takeIf { it > 0 }?.let { "$it Spe" }
-            )
-
-            val evsLine =
-                if (evsList.isNotEmpty())
-                    "EVs: ${evsList.joinToString(" / ")}"
-                else null
-
-            val moves = listOfNotNull(
-                pokemon.move1,
-                pokemon.move2,
-                pokemon.move3,
-                pokemon.move4
-            )
-                .takeIf { it.isNotEmpty() }
-                ?.joinToString("\n- ", prefix = "- ")
-
-            listOfNotNull(
-                nameLine,
-                abilityLine,
-                teraLine,
-                evsLine,
-                moves
-            ).joinToString("\n")
-        }
-
-        clipboardManager.setText(AnnotatedString(texto))
-
-        // 🔥 Snackbar en vez de Toast
         scope.launch {
-            snackbarHostState.showSnackbar(
-                message = "Equipo copiado al portapapeles"
-            )
+
+            try {
+
+                // 🔥 Traer versión completa de cada Pokémon
+                val fullPokemonList = pokemons.map { basic ->
+                    repository.getPokemonById(basic.id)
+                }
+
+                val teamText = fullPokemonList.joinToString("\n\n") { pokemon ->
+
+                    val lines = mutableListOf<String>()
+
+                    val name = pokemon.name.replaceFirstChar { it.uppercase() }
+
+                    if (!pokemon.item.isNullOrBlank()) {
+                        lines.add("$name @ ${pokemon.item}")
+                    } else {
+                        lines.add(name)
+                    }
+
+                    pokemon.ability
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { lines.add("Ability: $it") }
+
+                    lines.add("Tera Type: Normal")
+
+                    val evs = listOfNotNull(
+                        pokemon.hpEv?.takeIf { it > 0 }?.let { "$it HP" },
+                        pokemon.atkEv?.takeIf { it > 0 }?.let { "$it Atk" },
+                        pokemon.defEv?.takeIf { it > 0 }?.let { "$it Def" },
+                        pokemon.spAtkEv?.takeIf { it > 0 }?.let { "$it SpA" },
+                        pokemon.spDefEv?.takeIf { it > 0 }?.let { "$it SpD" },
+                        pokemon.speedEv?.takeIf { it > 0 }?.let { "$it Spe" }
+                    )
+
+                    if (evs.isNotEmpty()) {
+                        lines.add("EVs: ${evs.joinToString(" / ")}")
+                    }
+
+                    // ---------- IVs ----------
+                    val ivs = listOfNotNull(
+                        pokemon.hpIv?.takeIf { it != 31 }?.let { "$it HP" },
+                        pokemon.atkIv?.takeIf { it != 31 }?.let { "$it Atk" },
+                        pokemon.defIv?.takeIf { it != 31 }?.let { "$it Def" },
+                        pokemon.spAtkIv?.takeIf { it != 31 }?.let { "$it SpA" },
+                        pokemon.spDefIv?.takeIf { it != 31 }?.let { "$it SpD" },
+                        pokemon.speedIv?.takeIf { it != 31 }?.let { "$it Spe" }
+                    )
+
+                    if (ivs.isNotEmpty()) {
+                        lines.add("IVs: ${ivs.joinToString(" / ")}")
+                    }
+
+
+                    listOfNotNull(
+                        pokemon.move1,
+                        pokemon.move2,
+                        pokemon.move3,
+                        pokemon.move4
+                    )
+                        .filter { it.isNotBlank() }
+                        .forEach { move ->
+                            lines.add("- $move")
+                        }
+
+                    lines.joinToString("\n")
+                }
+
+                clipboardManager.setText(AnnotatedString(teamText))
+
+                snackbarHostState.showSnackbar(
+                    message = "Equipo exportado en formato Showdown"
+                )
+
+            } catch (e: Exception) {
+                snackbarHostState.showSnackbar(
+                    message = "Error exportando equipo"
+                )
+            }
         }
     }
+
+
 
 
 
