@@ -38,6 +38,8 @@ public class PokeApiService {
         }
     }
 
+
+
     @SuppressWarnings("unchecked")
     public String getImage(Map<String, Object> data) {
         if (data == null) return null;
@@ -172,6 +174,18 @@ public class PokeApiService {
                 "z-crystals"
         ).contains(category);
     }
+
+    public Map<String, Object> getMoveData(String moveName) {
+        String url = "https://pokeapi.co/api/v2/move/" + moveName;
+
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            return restTemplate.getForObject(url, Map.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
 }
 

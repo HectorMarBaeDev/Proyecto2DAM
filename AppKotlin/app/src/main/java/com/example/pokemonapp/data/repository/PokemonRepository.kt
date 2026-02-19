@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.example.pokemonapp.data.auth.AuthManager
+import com.example.pokemonapp.model.MoveDto
 import com.example.pokemonapp.model.PokemonDto
 import com.example.pokemonapp.model.PokemonListItemDto
 import com.example.pokemonapp.model.TeamDto
@@ -163,9 +164,10 @@ class PokemonRepository {
         return RetrofitInstance.createWithToken().getCompetitiveItems()
     }
 
-    suspend fun getPokemonMoves(id: Long): List<String> {
+    suspend fun getPokemonMoves(id: Long): List<MoveDto> {
         return RetrofitInstance.createWithToken().getPokemonMoves(id)
     }
+
 
 
 

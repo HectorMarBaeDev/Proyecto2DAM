@@ -1,5 +1,6 @@
 package com.pokemon.pokemonbackend.controller;
 
+import com.pokemon.pokemonbackend.dto.MoveResponseDTO;
 import com.pokemon.pokemonbackend.dto.PokemonListItemDTO;
 import com.pokemon.pokemonbackend.dto.PokemonRequestDTO;
 import com.pokemon.pokemonbackend.dto.PokemonResponseDTO;
@@ -305,38 +306,54 @@ public class PokemonController {
     // MOVES
 
     @GetMapping("/{id}/moves")
-    public ResponseEntity<List<String>> getPokemonMoves(@PathVariable Long id) {
+    public ResponseEntity<List<MoveResponseDTO>> getPokemonMoves(@PathVariable Long id) {
 
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
-
-        if (pokemon == null) {
-            return ResponseEntity.notFound().build();
-        }
+        if (pokemon == null) return ResponseEntity.notFound().build();
 
         Map<String, Object> data =
                 pokeApiService.getPokemonData(pokemon.getName());
 
-        if (data == null) {
-            return ResponseEntity.badRequest().build();
-        }
+        if (data == null) return ResponseEntity.badRequest().build();
 
         List<Map<String, Object>> moves =
                 (List<Map<String, Object>>) data.get("moves");
 
-        Set<String> moveNames = new HashSet<>();
+        List<MoveResponseDTO> result = new ArrayList<>();
 
         for (Map<String, Object> moveEntry : moves) {
+
             Map<String, Object> move =
                     (Map<String, Object>) moveEntry.get("move");
 
-            moveNames.add((String) move.get("name"));
+            String moveName = (String) move.get("name");
+
+            Map<String, Object> moveData =
+                    pokeApiService.getMoveData(moveName);
+
+            if (moveData == null) continue;
+
+            String type = (String)
+                    ((Map<String, Object>) moveData.get("type")).get("name");
+
+            String category = (String)
+                    ((Map<String, Object>) moveData.get("damage_class")).get("name");
+
+            Integer power = (Integer) moveData.get("power");
+
+            result.add(new MoveResponseDTO(
+                    moveName,
+                    type,
+                    category,
+                    power
+            ));
         }
 
-        List<String> result = new ArrayList<>(moveNames);
-        Collections.sort(result);
+        result.sort(Comparator.comparing(MoveResponseDTO::getName));
 
         return ResponseEntity.ok(result);
     }
+
 
 
 

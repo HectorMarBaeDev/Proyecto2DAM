@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
-
+import com.example.pokemonapp.model.MoveDto
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,6 +43,7 @@ fun PokemonDetailScreen(
 ) {
 
 
+    var moveOptions by remember { mutableStateOf<List<MoveDto>>(emptyList()) }
 
 
     val repository = remember { PokemonRepository() }
@@ -52,7 +53,6 @@ fun PokemonDetailScreen(
 
     var abilityOptions by remember { mutableStateOf<List<String>>(emptyList()) }
     var itemOptions by remember { mutableStateOf<List<String>>(emptyList()) }
-    var moveOptions by remember { mutableStateOf<List<String>>(emptyList()) }
 
     var abilityExpanded by remember { mutableStateOf(false) }
     var itemExpanded by remember { mutableStateOf(false) }
@@ -118,6 +118,7 @@ fun PokemonDetailScreen(
                 pokemon != null -> {
 
                     val primaryColor = typeColor(pokemon!!.primaryType)
+
 
 
                     var item by remember { mutableStateOf(pokemon!!.item ?: "") }
@@ -484,13 +485,37 @@ fun PokemonDetailScreen(
                     }
 
                     if (showMoveDialog1)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog1 = false }) { move1 = it }
+                        MoveSelectionDialog(
+                            moves = moveOptions,
+                            onDismiss = { showMoveDialog1 = false }
+                        ) { selectedMove ->
+                            move1 = selectedMove.name
+                        }
+
                     if (showMoveDialog2)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog2 = false }) { move2 = it }
+                        MoveSelectionDialog(
+                            moves = moveOptions,
+                            onDismiss = { showMoveDialog1 = false }
+                        ) { selectedMove ->
+                            move1 = selectedMove.name
+                        }
+
                     if (showMoveDialog3)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog3 = false }) { move3 = it }
+                        MoveSelectionDialog(
+                            moves = moveOptions,
+                            onDismiss = { showMoveDialog1 = false }
+                        ) { selectedMove ->
+                            move1 = selectedMove.name
+                        }
+
                     if (showMoveDialog4)
-                        MoveSelectionDialog(moveOptions, { showMoveDialog4 = false }) { move4 = it }
+                        MoveSelectionDialog(
+                            moves = moveOptions,
+                            onDismiss = { showMoveDialog1 = false }
+                        ) { selectedMove ->
+                            move1 = selectedMove.name
+                        }
+
                 }
             }
         }

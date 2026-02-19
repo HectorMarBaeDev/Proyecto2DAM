@@ -1,6 +1,7 @@
 package com.example.pokemonapp.data.api
 
 import com.example.pokemonapp.model.AuthResponseDto
+import com.example.pokemonapp.model.MoveDto
 import com.example.pokemonapp.model.PokemonDto
 import com.example.pokemonapp.model.PokemonListItemDto
 import com.example.pokemonapp.model.TeamDto
@@ -92,9 +93,8 @@ interface ApiService {
 
     // Movimientos
     @GET("pokemon/{id}/moves")
-    suspend fun getPokemonMoves(
-        @Path("id") id: Long
-    ): List<String>
+    suspend fun getPokemonMoves(@Path("id") id: Long): List<MoveDto>
+
 
 
 
