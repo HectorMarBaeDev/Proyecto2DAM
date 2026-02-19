@@ -3,7 +3,7 @@
 ═══════════════════════════════════════════════ */
 body {
     overflow: hidden;
-    background: #f4f4f4;
+    background-color: #1a1a2e;
 }
 
 /* ═══════════════════════════════════════════════
@@ -199,6 +199,7 @@ body {
     height: calc(100vh - 95px);
     overflow-y: auto;
     padding: 1rem;
+    background-color: #1a1a2e;
 }
 
 /* ═══════════════════════════════════════════════
@@ -212,6 +213,11 @@ body {
     display: flex;
     justify-content: center;
     padding: 10px;
+}
+
+.card {
+    background-color: #373759;
+    color: white;
 }
 
 .card_img { width: 70%; }
@@ -350,5 +356,5 @@ body {
 }
 
 .pokeballSVG{
-    width: 100px;
+    width: 24px;
 }

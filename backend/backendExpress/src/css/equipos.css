@@ -1,6 +1,7 @@
 body {
     overflow-y: auto;
-    background: #f8f9fa;
+    background-color: #1a1a2e;
+    color: white;
 }
 
 #equiposView {
@@ -31,4 +32,9 @@ body {
 /* Ajuste de altura con nuevo navbar */
 #equiposView {
     max-height: calc(100vh - 95px);
+}
+
+.modalTeam{
+    background-color: #252533;
+    color: white;
 }

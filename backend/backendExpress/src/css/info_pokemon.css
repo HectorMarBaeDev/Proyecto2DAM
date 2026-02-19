@@ -1,6 +1,8 @@
 body {
   opacity: 0;
   animation: fadeIn 0.4s ease-in forwards;
+  background-color: #1a1a2e;
+  min-height: 100vh;
 }
 
 @keyframes fadeIn {
@@ -9,42 +11,254 @@ body {
   }
 }
 
-#imgPokemon{
-    width: 350px;
-    padding: 15px;
+/* ─── Colores por tipo ─────────────────────────────────────── */
+:root {
+  --primary-type: #888;
+  --primary-type-light: #bbb;
 }
 
-.recorte {
-    border-radius: 4px;
-    width: 38px;
-    overflow: hidden;  
-}
-
-.recorte img {
-    width: 150px; /* más grande */
-}
-
-#pTipos {
-    display: contents;
+/* ─── Header ───────────────────────────────────────────────── */
+h1 {
+  color: #fff !important;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 #detalleContainer {
-    min-height: 80vh;           /* Ocupa toda la altura de la pantalla */
-    display: flex;                /* Activa Flexbox */
-    justify-content: center;      /* Centra horizontalmente */
-    align-items: center;          /* Centra verticalmente */
-    padding: 1rem;                /* Espaciado interno */
-    flex-direction: column;       /* Para que el contenido se apile verticalmente */
-    background-color: #f8f9fa;    /* Opcional: fondo claro */
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+  flex-direction: column;
 }
 
-#divBotones{
-    width: 30%;
-    flex-direction: row;
-    justify-content: space-between;
+/* ─── Card principal ───────────────────────────────────────── */
+.pokemon-card {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-type) 60%, #1a1a2e) 0%, #1a1a2e 70%);
+  border: none;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(255, 255, 255, 0.08) inset;
+  max-width: 820px;
+  width: 100%;
+  overflow: hidden;
+  color: #fff;
+  position: relative;
 }
 
-.card{
-    width: -webkit-fill-available;
+/* Decoración pokébola de fondo */
+.pokemon-card::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  border: 0px solid rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  background-image: url(../sources/pokeball.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 10%;
 }
 
+/* ─── Sección imagen ───────────────────────────────────────── */
+.pokemon-img-section {
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-width: 220px;
+}
+
+#imgPokemon {
+  width: 220px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.6));
+  transition: transform 0.3s ease;
+}
+
+#imgPokemon:hover {
+  transform: scale(1.07) translateY(-4px);
+}
+
+.pokemon-id-badge {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+}
+
+/* ─── Tipos badges ─────────────────────────────────────────── */
+.tipo-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 4px 12px 4px 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+.recorte {
+  border-radius: 4px;
+  width: 36px;
+  overflow: hidden;
+}
+
+.recorte img {
+  width: 150px;
+}
+
+/* ─── Sección info ─────────────────────────────────────────── */
+.pokemon-info-section {
+  padding: 1.8rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pokemon-name {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.info-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.info-group {
+  margin-bottom: 0.8rem;
+}
+
+/* ─── Stats ────────────────────────────────────────────────── */
+.stats-section {
+  padding: 1.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.stats-section h6 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.stat-name {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+  width: 80px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.stat-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.stat-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stat-bar {
+  height: 100%;
+  border-radius: 10px;
+  background: var(--primary-type-light);
+  transition: width 0.8s ease;
+}
+
+/* ─── Botones ──────────────────────────────────────────────── */
+#divBotones {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 820px;
+  margin-top: 1.5rem;
+}
+
+#divBotones .btn {
+  flex: 1;
+  border-radius: 50px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 0.75rem;
+  border: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#divBotones .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+.btn-volver {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.btn-volver:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+}
+
+.btn-anadir {
+  background: var(--primary-type) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.btn-anadir:hover {
+  filter: brightness(1.2);
+  color: #fff !important;
+}

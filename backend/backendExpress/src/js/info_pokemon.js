@@ -18,6 +18,26 @@ const typeIcons = {
     "Agua":"11.png","Planta":"12.png","Eléctrico":"13.png","Psíquico":"14.png",
     "Hielo":"15.png","Dragón":"16.png","Siniestro":"17.png","Hada":"18.png"
 };
+const typeColors = {
+    "Normal":     { base: "#9a9a7a", light: "#ccc8a0" },
+    "Lucha":      { base: "#b03020", light: "#e06050" },
+    "Volador":    { base: "#8ba8f0", light: "#b8ccff" },
+    "Veneno":     { base: "#903890", light: "#c070c0" },
+    "Tierra":     { base: "#d4a840", light: "#f0d080" },
+    "Roca":       { base: "#a89830", light: "#d0c060" },
+    "Bicho":      { base: "#88a010", light: "#b8d040" },
+    "Fantasma":   { base: "#6050a0", light: "#9070d0" },
+    "Acero":      { base: "#9898c0", light: "#c8c8e8" },
+    "Fuego":      { base: "#e06820", light: "#f0a060" },
+    "Agua":       { base: "#4878d8", light: "#80a8f8" },
+    "Planta":     { base: "#50a830", light: "#80d060" },
+    "Eléctrico":  { base: "#d8b010", light: "#f8e040" },
+    "Psíquico":   { base: "#d84870", light: "#f880a0" },
+    "Hielo":      { base: "#60c8c8", light: "#98e8e8" },
+    "Dragón":     { base: "#5018e8", light: "#8060ff" },
+    "Siniestro":  { base: "#584840", light: "#907870" },
+    "Hada":       { base: "#d870a0", light: "#f0a8c8" },
+};
 
 let pokemonName = null;
 let bsModalInfo = null;
@@ -37,50 +57,94 @@ async function cargarDetalle(id) {
         const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
         if (!res.ok) throw new Error("No encontrado");
         const pokemon = await res.json();
-        pokemonName   = pokemon.name;
+        pokemonName = pokemon.name;
 
         const speciesRes  = await fetch(pokemon.species.url);
         const speciesData = await speciesRes.json();
         const nombreES    = speciesData.names.find(n => n.language.name === "es")?.name || pokemon.name;
 
-        const SEP = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16"><path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>`;
+        // Tipo primario para los colores
+        const tipoPrimarioEN = pokemon.types[0].type.name;
+        const tipoPrimarioES = Object.keys(tiposEN).find(k => tiposEN[k] === tipoPrimarioEN) || tipoPrimarioEN;
+        const colores = typeColors[tipoPrimarioES] || { base: "#888", light: "#bbb" };
+
+        // Aplicar variables CSS de color al :root
+        document.documentElement.style.setProperty("--primary-type", colores.base);
+        document.documentElement.style.setProperty("--primary-type-light", colores.light);
+
+        // Badges de tipos
         const tiposHTML = pokemon.types.map(t => {
             const nombre = Object.keys(tiposEN).find(k => tiposEN[k] === t.type.name) || t.type.name;
-            return `<div class="d-flex align-items-center gap-1"><div class="recorte"><img src="./assets/types/${typeIcons[nombre]||'1.png'}" class="tipo-icon"></div><span>${nombre}</span></div>`;
-        }).join(SEP);
+            return `<div class="tipo-badge"><div class="recorte"><img src="./assets/types/${typeIcons[nombre]||'1.png'}"></div><span>${nombre}</span></div>`;
+        }).join(`<span class="tipo-sep">·</span>`);
+
+        // Stats
+        const statsData = [
+            { name: "PS",      key: "hp" },
+            { name: "Ataque",  key: "attack" },
+            { name: "Defensa", key: "defense" },
+            { name: "Atq. Esp", key: "special-attack" },
+            { name: "Def. Esp", key: "special-defense" },
+            { name: "Veloc.",  key: "speed" },
+        ];
+        const statsHTML = statsData.map(s => {
+            const val = pokemon.stats.find(x => x.stat.name === s.key)?.base_stat ?? 0;
+            const pct = Math.min(100, Math.round(val / 255 * 100));
+            return `
+            <div class="stat-row">
+                <span class="stat-name">${s.name}</span>
+                <span class="stat-val">${val}</span>
+                <div class="stat-bar-bg"><div class="stat-bar" style="width:${pct}%"></div></div>
+            </div>`;
+        }).join("");
+
+        // Imagen de mayor resolución si está disponible
+        const imgSrc = pokemon.sprites.other?.["official-artwork"]?.front_default
+                    || pokemon.sprites.front_default;
 
         container.innerHTML = `
-            <div class="card mx-auto">
-                <div class="d-flex gap-4 flex-wrap">
-                    <img src="${pokemon.sprites.front_default}" class="card-img-top" alt="${nombreES}" id="imgPokemon">
-                    <div class="card-body d-grid align-items-start gap-2">
-                        <h5 class="card-title h2">${nombreES}</h5>
-                        <p><strong>ID Pokédex:</strong> ${pokemon.id}</p>
-                        <div class="d-flex gap-2 flex-wrap align-items-center mb-3">
-                            <p id="pTipos" class="mb-0"><strong>Tipo/s:</strong></p>${tiposHTML}
-                        </div>
-                        <p><strong>Altura:</strong> ${pokemon.height/10} m</p>
-                        <p><strong>Peso:</strong> ${pokemon.weight/10} kg</p>
+            <div class="pokemon-card mx-auto">
+                <div class="d-flex flex-wrap">
+                    <!-- Columna imagen -->
+                    <div class="pokemon-img-section">
+                        <img src="${imgSrc}" alt="${nombreES}" id="imgPokemon">
+                        <span class="pokemon-id-badge">#${String(pokemon.id).padStart(3,"0")}</span>
                     </div>
-                    <div class="card-body d-grid align-items-start gap-2">
-                        <h5 class="card-title">Estadísticas base</h5>
-                        <p><strong>PS:</strong> ${pokemon.stats.find(s=>s.stat.name==="hp").base_stat}</p>
-                        <p><strong>Velocidad:</strong> ${pokemon.stats.find(s=>s.stat.name==="speed").base_stat}</p>
-                        <p><strong>Ataque:</strong> ${pokemon.stats.find(s=>s.stat.name==="attack").base_stat}</p>
-                        <p><strong>Defensa:</strong> ${pokemon.stats.find(s=>s.stat.name==="defense").base_stat}</p>
-                        <p><strong>Ataque especial:</strong> ${pokemon.stats.find(s=>s.stat.name==="special-attack").base_stat}</p>
-                        <p><strong>Defensa especial:</strong> ${pokemon.stats.find(s=>s.stat.name==="special-defense").base_stat}</p>
+
+                    <!-- Columna info -->
+                    <div class="pokemon-info-section">
+                        <h2 class="pokemon-name">${nombreES}</h2>
+
+                        <div class="d-flex gap-2 flex-wrap align-items-center info-group">
+                            ${tiposHTML}
+                        </div>
+
+                        <div class="info-group">
+                            <div class="info-label">Altura</div>
+                            <div class="info-value">${pokemon.height / 10} m</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Peso</div>
+                            <div class="info-value">${pokemon.weight / 10} kg</div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Stats -->
+                <div class="stats-section">
+                    <h6>Estadísticas base</h6>
+                    ${statsHTML}
+                </div>
             </div>
-            <div class="d-flex mt-4 gap-2" id="divBotones">
-                <a href="./index.html"><button class="btn btn-secondary btn-lg">Volver</button></a>
-                <button class="btn btn-primary btn-lg" id="btnAnadirEquipo">Añadir al equipo</button>
+
+            <div class="d-flex mt-3 gap-2" id="divBotones">
+                <a href="./index.html" class="btn btn-volver btn-lg">← Volver</a>
+                <button class="btn btn-anadir btn-lg" id="btnAnadirEquipo">Añadir al equipo</button>
             </div>`;
 
         document.getElementById("btnAnadirEquipo").addEventListener("click", abrirModalEquipos);
 
-    } catch(err) { container.innerHTML = `<p>Error al cargar el Pokémon: ${err.message}</p>`; }
+    } catch(err) { container.innerHTML = `<p class="text-white">Error al cargar el Pokémon: ${err.message}</p>`; }
 }
 
 function crearModalEquipos() {
