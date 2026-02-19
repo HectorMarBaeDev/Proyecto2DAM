@@ -1,4 +1,4 @@
-package com.example.pokemonapp.ui.teams
+package com.example.pokemonapp.presentation.teams
 
 import android.net.Uri
 import android.util.Log
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokemonapp.data.auth.AuthManager
-import com.example.pokemonapp.data.model.TeamDto
+import com.example.pokemonapp.model.TeamDto
 import com.example.pokemonapp.data.repository.PokemonRepository
 import kotlinx.coroutines.launch
 

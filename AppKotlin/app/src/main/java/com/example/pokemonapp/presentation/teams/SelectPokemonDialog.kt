@@ -1,4 +1,4 @@
-package com.example.pokemonapp.ui.teams
+package com.example.pokemonapp.presentation.teams
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,9 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.example.pokemonapp.data.model.PokemonListItemDto
+import com.example.pokemonapp.model.PokemonListItemDto
 import com.example.pokemonapp.data.repository.PokemonRepository
-import com.example.pokemonapp.ui.pokemon.PokemonTypeIcon
+import com.example.pokemonapp.presentation.pokemon.PokemonTypeIcon
 import kotlinx.coroutines.launch
 
 @Composable
