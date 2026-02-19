@@ -2,6 +2,8 @@ package com.example.pokemonapp.presentation.teams
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.pokemonapp.model.PokemonDto
 import com.example.pokemonapp.presentation.pokemon.PokemonTypeIcon
@@ -19,6 +20,7 @@ import com.example.pokemonapp.presentation.pokemon.PokemonTypeIcon
 fun PokemonCard(
     pokemon: PokemonDto,
     onClick: () -> Unit,
+    showDelete: Boolean,
     onDelete: () -> Unit
 ) {
 
@@ -37,72 +39,69 @@ fun PokemonCard(
         )
     ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 14.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Box {
 
-            // ---------- SPRITE ----------
-            AsyncImage(
-                model = spriteUrl,
-                contentDescription = pokemon.name,
+            Column(
                 modifier = Modifier
-                    .size(90.dp)
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            // ---------- NOMBRE ----------
-            Text(
-                text = pokemon.name.replaceFirstChar { it.uppercase() },
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = "Nº ${String.format("%03d", pokemon.pokedexNumber)}",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            // ---------- TIPOS ----------
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(horizontal = 14.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                PokemonTypeIcon(pokemon.primaryType)
 
-                pokemon.secondaryType?.let {
-                    PokemonTypeIcon(it)
+                // ---------- SPRITE ----------
+                AsyncImage(
+                    model = spriteUrl,
+                    contentDescription = pokemon.name,
+                    modifier = Modifier.size(90.dp)
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                // ---------- NOMBRE ----------
+                Text(
+                    text = pokemon.name.replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = "Nº ${String.format("%03d", pokemon.pokedexNumber)}",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                // ---------- TIPOS ----------
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PokemonTypeIcon(pokemon.primaryType)
+
+                    pokemon.secondaryType?.let {
+                        PokemonTypeIcon(it)
+                    }
                 }
+
+                Spacer(Modifier.weight(1f))
             }
 
-            Spacer(Modifier.weight(1f))
-
-            Divider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                thickness = 0.5.dp
-            )
-
-            // ---------- ELIMINAR ----------
-            TextButton(
-                onClick = onDelete,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Text(
-                    text = "Eliminar",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Medium
-                )
+            // ---------- ICONO ELIMINAR (SOLO EN MODO EDICIÓN) ----------
+            if (showDelete) {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         }
     }

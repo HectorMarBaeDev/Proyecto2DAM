@@ -37,6 +37,10 @@ fun TeamDetailScreen(
     onPokemonClick: (Long) -> Unit
 
 ) {
+    var editMode by remember { mutableStateOf(false) }
+
+    var pokemonToDelete by remember { mutableStateOf<PokemonDto?>(null) }
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     val repository = remember { PokemonRepository() }
@@ -175,13 +179,21 @@ fun TeamDetailScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 actions = {
+
+                    TextButton(
+                        onClick = { editMode = !editMode }
+                    ) {
+                        Text(if (editMode) "Listo" else "Editar")
+                    }
+
                     FilledTonalIconButton(
                         onClick = { showDialog = true },
-                        enabled = pokemonList.size < 6
+                        enabled = pokemonList.size < 6 && !editMode
                     ) {
                         Icon(Icons.Default.Add, contentDescription = "Añadir")
                     }
                 }
+
             )
 
         }
@@ -297,21 +309,18 @@ fun TeamDetailScreen(
                         items(pokemonList) { pokemon ->
                             PokemonCard(
                                 pokemon = pokemon,
-                                onClick = { onPokemonClick(pokemon.id) },
-                                onDelete = {
-                                    scope.launch {
-                                        try {
-                                            isLoading = true
-                                            repository.deletePokemon(pokemon.id)
-                                            pokemonList = repository.getPokemonByTeam(teamId)
-                                        } catch (e: Exception) {
-                                            errorMessage = "Error al eliminar el Pokémon"
-                                        } finally {
-                                            isLoading = false
-                                        }
+                                onClick = {
+                                    if (!editMode) {
+                                        onPokemonClick(pokemon.id)
                                     }
+                                },
+                                showDelete = editMode,
+                                onDelete = {
+                                    pokemonToDelete = pokemon
                                 }
+
                             )
+
                         }
                     }
                 }
@@ -338,6 +347,50 @@ fun TeamDetailScreen(
 
         }
     }
+
+    pokemonToDelete?.let { pokemon ->
+
+        AlertDialog(
+            onDismissRequest = { pokemonToDelete = null },
+            title = { Text("Eliminar Pokémon") },
+            text = {
+                Text(
+                    "¿Seguro que quieres eliminar a ${pokemon.name.replaceFirstChar { it.uppercase() }} del equipo?"
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        scope.launch {
+                            try {
+                                isLoading = true
+                                repository.deletePokemon(pokemon.id)
+                                pokemonList = repository.getPokemonByTeam(teamId)
+                            } catch (e: Exception) {
+                                errorMessage = "Error al eliminar el Pokémon"
+                            } finally {
+                                isLoading = false
+                                pokemonToDelete = null
+                            }
+                        }
+                    }
+                ) {
+                    Text(
+                        "Eliminar",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { pokemonToDelete = null }
+                ) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+
 
     // NUEVO DIALOGO DE SELECCIÓN
     if (showDialog) {
