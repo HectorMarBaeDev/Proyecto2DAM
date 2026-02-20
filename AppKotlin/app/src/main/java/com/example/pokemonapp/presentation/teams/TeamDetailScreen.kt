@@ -174,7 +174,7 @@ fun TeamDetailScreen(
                             Text(
                                 "${pokemonList.size}/6 Pokémon",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = Color.White
                             )
 
                             if (pokemonList.size >= 6) {
@@ -365,10 +365,11 @@ fun TeamDetailScreen(
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
                 icon = {
-                    Icon(Icons.Default.Share, contentDescription = null)
+                    Icon(Icons.Default.Share, contentDescription = null, tint = Color.White)
                 },
                 text = {
-                    Text("Exportar")
+                    Text("Exportar",
+                        color = Color.White)
                 }
             )
 

@@ -33,4 +33,6 @@ val speedEv: Int?,
 
     val teraType: String?,
 
+    val cry: String?,
+
 )
