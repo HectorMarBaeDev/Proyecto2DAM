@@ -56,6 +56,7 @@ function createWindow() {
     win.webContents.openDevTools();
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => { session.defaultSession.clearCache().then(createWindow); });
 app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
 app.commandLine.appendSwitch('allow-insecure-localhost', 'true');
+app.commandLine.appendSwitch('disable-cache', 'true');

@@ -9,26 +9,6 @@ const API = "https://pokemon-backend-849x.onrender.com/api";
 
 async function initEquipos() {
 
-    // ── Traducción tipos EN→ES (igual que index) ─────────
-    const TIPOS_ES = {
-        "normal":"Normal","fighting":"Lucha","flying":"Volador","poison":"Veneno",
-        "ground":"Tierra","rock":"Roca","bug":"Bicho","ghost":"Fantasma","steel":"Acero",
-        "fire":"Fuego","water":"Agua","grass":"Planta","electric":"Eléctrico",
-        "psychic":"Psíquico","ice":"Hielo","dragon":"Dragón","dark":"Siniestro","fairy":"Hada"
-    };
-    const TIPO_COLORES = {
-        "normal":"#9fa19f","fighting":"#ff8000","flying":"#81b9ef","poison":"#9141cb",
-        "ground":"#915121","rock":"#afa981","bug":"#91a119","ghost":"#704170",
-        "steel":"#60a1b8","fire":"#e62829","water":"#2980ef","grass":"#3fa129",
-        "electric":"#fac000","psychic":"#ef4179","ice":"#3dcef3","dragon":"#5060e1",
-        "dark":"#624d4e","fairy":"#ef70ef"
-    };
-    function tipoBadge(typeEn) {
-        const es = TIPOS_ES[typeEn] || typeEn;
-        const color = TIPO_COLORES[typeEn] || "#666";
-        return `<span class="tipo-badge-pkm" style="background:${color}22;border:1px solid ${color}66;color:${color};">${es}</span>`;
-    }
-
     const editItem = document.getElementById("editItem");
     const editAbility = document.getElementById("editAbility");
 
@@ -437,63 +417,6 @@ async function guardarEdicionPokemon(pokemonId) {
 
             await navigator.clipboard.writeText(teamText);
             mostrarToast("Equipo exportado en formato Showdown.", "success");
-
-        } catch (err) {
-            console.error(err);
-            mostrarToast("Error al exportar el equipo.", "danger");
-        }
-    }
-
-    // ── Exportar equipo (formato Showdown) ───────────────
-    async function exportarEquipo(teamId) {
-        try {
-            const listRes = await window.api.fetchWithAuth(`${API}/pokemon/team/${teamId}`);
-            if (!listRes.ok || !listRes.data.length) { mostrarToast("El equipo no tiene Pokémon.", "warning"); return; }
-
-            const fullPokemons = await Promise.all(
-                listRes.data.map(p => window.api.fetchWithAuth(`${API}/pokemon/id/${p.id}`).then(r => r.data))
-            );
-
-            const teamText = fullPokemons.map(p => {
-                const lines = [];
-                const name = p.name.charAt(0).toUpperCase() + p.name.slice(1);
-
-                if (p.item) lines.push(`${name} @ ${p.item}`);
-                else        lines.push(name);
-
-                if (p.ability) lines.push(`Ability: ${p.ability}`);
-
-                lines.push("Tera Type: Normal");
-
-                const evs = [
-                    p.hpEv    > 0 ? `${p.hpEv} HP`      : null,
-                    p.atkEv   > 0 ? `${p.atkEv} Atk`    : null,
-                    p.defEv   > 0 ? `${p.defEv} Def`    : null,
-                    p.spAtkEv > 0 ? `${p.spAtkEv} SpA`  : null,
-                    p.spDefEv > 0 ? `${p.spDefEv} SpD`  : null,
-                    p.speedEv > 0 ? `${p.speedEv} Spe`  : null
-                ].filter(Boolean);
-                if (evs.length) lines.push(`EVs: ${evs.join(" / ")}`);
-
-                const ivs = [
-                    p.hpIv    !== 31 ? `${p.hpIv} HP`      : null,
-                    p.atkIv   !== 31 ? `${p.atkIv} Atk`    : null,
-                    p.defIv   !== 31 ? `${p.defIv} Def`    : null,
-                    p.spAtkIv !== 31 ? `${p.spAtkIv} SpA`  : null,
-                    p.spDefIv !== 31 ? `${p.spDefIv} SpD`  : null,
-                    p.speedIv !== 31 ? `${p.speedIv} Spe`  : null
-                ].filter(Boolean);
-                if (ivs.length) lines.push(`IVs: ${ivs.join(" / ")}`);
-
-                [p.move1, p.move2, p.move3, p.move4]
-                    .filter(m => m && m.trim())
-                    .forEach(m => lines.push(`- ${m}`));
-
-                return lines.join("\n");
-            }).join("\n\n");
-
-            await navigator.clipboard.writeText(teamText);
-            mostrarToast("¡Equipo copiado en al portapapeles correctamente!", "success");
 
         } catch (err) {
             console.error(err);
