@@ -1,18 +1,22 @@
 body {
-    overflow-y: auto;
+    overflow: hidden;
     background-color: #1a1a2e;
     color: white;
+    min-height: 100vh;
 }
 
 #equiposView {
-    max-height: calc(100vh - 120px);
+    height: calc(100vh - 95px);
     overflow-y: auto;
-    margin-top: 10px;
+    overflow-x: hidden;
+    padding: 1.5rem;
+    scroll-behavior: smooth;
 }
 
 .equipo-card {
     transition: box-shadow 0.2s;
     cursor: default;
+    height: 36.5vh !important;
 }
 
 .equipo-card:hover {
@@ -30,22 +34,18 @@ body {
     margin: 6px;
 }
 
-/* Ajuste de altura con nuevo navbar */
-#equiposView {
-    max-height: calc(100vh - 95px);
-}
-
-.modalTeam{
+.modalTeam {
     background-color: #252533;
     color: white;
 }
 
 .pokemon-preview {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas */
-    grid-template-rows: repeat(2, 1fr);    /* 2 filas */
-    gap: 0;                                /* sin espacio */
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0;
     margin: 0 auto;
+    min-height: 60px;
 }
 
 .pokemon-preview img,
@@ -53,4 +53,41 @@ body {
     width: 60px;
     height: 60px;
     object-fit: contain;
+}
+
+/* Filas de cards con altura uniforme */
+.equipos-fila {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.equipos-fila .equipo-card-wrap {
+    min-width: 0;
+}
+
+/* Paginación con tema oscuro */
+#paginacionEquipos .page-link {
+    background-color: #252533;
+    border-color: #444;
+    color: #ccc;
+}
+
+#paginacionEquipos .page-item.active .page-link {
+    background-color: #ff5202;
+    border-color: #ff5202;
+    color: #fff;
+}
+
+#paginacionEquipos .page-item:not(.disabled) .page-link:hover {
+    background-color: #3a3a50;
+    border-color: #666;
+    color: #fff;
+}
+
+#paginacionEquipos .page-item.disabled .page-link {
+    background-color: #1a1a2e;
+    border-color: #333;
+    color: #555;
 }

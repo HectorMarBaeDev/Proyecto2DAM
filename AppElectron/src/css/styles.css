@@ -225,10 +225,10 @@ body {
 
 .recorte {
     border-radius: 4px;
-    width: 38px;
+    width: 31px;
     overflow: hidden;
 }
-.recorte img { width: 150px; }
+.recorte img { width: 125px; }
 
 /* ═══════════════════════════════════════════════
    SPINNER
@@ -397,7 +397,7 @@ body {
 }
 
 .cardPokemon:hover .card {
-    box-shadow: 0 18px 40px rgba(0,0,0,.6);
+    box-shadow: 0 0px 40px #466cca;
 }
 
 /* ── Imagen Pokémon ── */
