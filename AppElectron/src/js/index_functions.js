@@ -99,7 +99,7 @@
                     <div class="card-text d-flex gap-2 flex-wrap align-items-center mb-3">${tiposHTML}</div>
                     <div class="d-flex justify-content-between">
                         <button class="btn btn-primary btn-anadir">Añadir</button>
-                        <a href="info_pokemon.html?id=${p.id}" class="btn btn-secondary">Ver info</a>
+                        <a href="info_pokemon.html?id=${p.id}" class="btn btn-secondary">Ver información</a>
                     </div>
                 </div>
             </div>`;
