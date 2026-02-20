@@ -46,11 +46,8 @@ public class PokemonController {
         if (pokemonRepository.findByTeam(team).size() >= 6)
             return ResponseEntity.badRequest().build();
 
-        Map<String, Object> data =
-                pokeApiService.getPokemonData(request.getIdentifier());
-
-        if (data == null)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        Map<String, Object> data = pokeApiService.getPokemonData(request.getIdentifier());
+        if (data == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Pokemon pokemon = new Pokemon(
                 (Integer) data.get("id"),
@@ -82,7 +79,6 @@ public class PokemonController {
 
     @GetMapping("/team/{teamId}")
     public ResponseEntity<List<PokemonResponseDTO>> getPokemonByTeam(@PathVariable Long teamId) {
-
         Team team = teamRepository.findById(teamId).orElse(null);
         if (team == null) return ResponseEntity.notFound().build();
 
@@ -105,9 +101,7 @@ public class PokemonController {
 
     @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deletePokemon(@PathVariable Long id) {
-        if (!pokemonRepository.existsById(id))
-            return ResponseEntity.notFound().build();
-
+        if (!pokemonRepository.existsById(id)) return ResponseEntity.notFound().build();
         pokemonRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
@@ -119,20 +113,14 @@ public class PokemonController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "9") int pageSize
     ) {
-
         int totalPokemon = 1025;
         Random random = new Random();
         int startId = random.nextInt(totalPokemon - pageSize + 1) + 1;
-
         List<PokemonResponseDTO> result = new ArrayList<>();
 
         for (int i = 0; i < pageSize; i++) {
-
-            Map<String, Object> data =
-                    pokeApiService.getPokemonData(String.valueOf(startId + i));
-
+            Map<String, Object> data = pokeApiService.getPokemonData(String.valueOf(startId + i));
             if (data == null) continue;
-
             result.add(new PokemonResponseDTO(
                     (Integer) data.get("id"),
                     (Integer) data.get("id"),
@@ -157,17 +145,11 @@ public class PokemonController {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<PokemonResponseDTO> getPokemonById(@PathVariable Long id) {
-
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
         if (pokemon == null) return ResponseEntity.notFound().build();
 
-        Map<String, Object> data =
-                pokeApiService.getPokemonData(pokemon.getName());
-
-        String cry = null;
-        if (data != null) {
-            cry = pokeApiService.getPokemonCry(data);
-        }
+        Map<String, Object> data = pokeApiService.getPokemonData(pokemon.getName());
+        String cry = data != null ? pokeApiService.getPokemonCry(data) : null;
 
         return ResponseEntity.ok(new PokemonResponseDTO(
                 pokemon.getId(),
@@ -197,6 +179,7 @@ public class PokemonController {
                 cry
         ));
     }
+
     // ---------------- UPDATE ----------------
 
     @PutMapping("/id/{id}")
@@ -204,7 +187,6 @@ public class PokemonController {
             @PathVariable Long id,
             @RequestBody PokemonResponseDTO dto
     ) {
-
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
         if (pokemon == null) return ResponseEntity.notFound().build();
 
@@ -214,14 +196,12 @@ public class PokemonController {
         pokemon.setMove2(dto.getMove2());
         pokemon.setMove3(dto.getMove3());
         pokemon.setMove4(dto.getMove4());
-
         pokemon.setHpIv(dto.getHpIv());
         pokemon.setAtkIv(dto.getAtkIv());
         pokemon.setDefIv(dto.getDefIv());
         pokemon.setSpAtkIv(dto.getSpAtkIv());
         pokemon.setSpDefIv(dto.getSpDefIv());
         pokemon.setSpeedIv(dto.getSpeedIv());
-
         pokemon.setHpEv(dto.getHpEv());
         pokemon.setAtkEv(dto.getAtkEv());
         pokemon.setDefEv(dto.getDefEv());
@@ -231,13 +211,8 @@ public class PokemonController {
 
         Pokemon saved = pokemonRepository.save(pokemon);
 
-        Map<String, Object> data =
-                pokeApiService.getPokemonData(saved.getName());
-
-        String cry = null;
-        if (data != null) {
-            cry = pokeApiService.getPokemonCry(data);
-        }
+        Map<String, Object> data = pokeApiService.getPokemonData(saved.getName());
+        String cry = data != null ? pokeApiService.getPokemonCry(data) : null;
 
         return ResponseEntity.ok(new PokemonResponseDTO(
                 saved.getId(),
@@ -268,97 +243,62 @@ public class PokemonController {
         ));
     }
 
-    // ---------------- ABILITIES ----------------
-
     @GetMapping("/id/{id}/abilities")
     public ResponseEntity<List<String>> getPokemonAbilities(@PathVariable Long id) {
-
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
         if (pokemon == null) return ResponseEntity.notFound().build();
 
-        Map<String, Object> data =
-                pokeApiService.getPokemonData(pokemon.getName());
-
+        Map<String, Object> data = pokeApiService.getPokemonData(pokemon.getName());
         if (data == null) return ResponseEntity.badRequest().build();
 
-        List<Map<String, Object>> abilities =
-                (List<Map<String, Object>>) data.get("abilities");
-
+        List<Map<String, Object>> abilities = (List<Map<String, Object>>) data.get("abilities");
         List<String> abilityNames = new ArrayList<>();
 
         for (Map<String, Object> abilityEntry : abilities) {
-            Map<String, Object> ability =
-                    (Map<String, Object>) abilityEntry.get("ability");
-            abilityNames.add((String) ability.get("name"));
+            Map<String, Object> ability = (Map<String, Object>) abilityEntry.get("ability");
+            String nameEN = (String) ability.get("name");
+            abilityNames.add(pokeApiService.getAbilityNameES(nameEN));
         }
 
         return ResponseEntity.ok(abilityNames);
     }
 
-    // ---------------- ITEMS PAGINATED ----------------
-
     @GetMapping("/competitive-items")
     public ResponseEntity<List<String>> getCompetitiveItems() {
-
-        List<String> items = List.of(
-                "leftovers",
-                "choice-band",
-                "choice-scarf",
-                "choice-specs",
-                "life-orb",
-                "focus-sash",
-                "assault-vest",
-                "rocky-helmet",
-                "air-balloon",
-                "heavy-duty-boots",
-                "sitrus-berry",
-                "lum-berry",
-                "weakness-policy",
-                "eviolite",
-                "expert-belt",
-                "black-sludge",
-                "light-clay"
+        List<String> itemsEN = List.of(
+                "leftovers", "choice-band", "choice-scarf", "choice-specs",
+                "life-orb", "focus-sash", "assault-vest", "rocky-helmet",
+                "air-balloon", "heavy-duty-boots", "sitrus-berry", "lum-berry",
+                "weakness-policy", "eviolite", "expert-belt", "black-sludge", "light-clay"
         );
 
-        return ResponseEntity.ok(items);
-    }
+        List<String> itemsES = itemsEN.stream()
+                .map(pokeApiService::getItemNameES)
+                .toList();
 
-    // MOVES
+        return ResponseEntity.ok(itemsES);
+    }
 
     @GetMapping("/{id}/moves")
     public ResponseEntity<List<String>> getPokemonMoves(@PathVariable Long id) {
-
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
+        if (pokemon == null) return ResponseEntity.notFound().build();
 
-        if (pokemon == null) {
-            return ResponseEntity.notFound().build();
-        }
+        Map<String, Object> data = pokeApiService.getPokemonData(pokemon.getName());
+        if (data == null) return ResponseEntity.badRequest().build();
 
-        Map<String, Object> data =
-                pokeApiService.getPokemonData(pokemon.getName());
-
-        if (data == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        List<Map<String, Object>> moves =
-                (List<Map<String, Object>>) data.get("moves");
-
-        Set<String> moveNames = new HashSet<>();
+        List<Map<String, Object>> moves = (List<Map<String, Object>>) data.get("moves");
+        Set<String> moveNamesES = new HashSet<>();
 
         for (Map<String, Object> moveEntry : moves) {
-            Map<String, Object> move =
-                    (Map<String, Object>) moveEntry.get("move");
-
-            moveNames.add((String) move.get("name"));
+            Map<String, Object> move = (Map<String, Object>) moveEntry.get("move");
+            String nameEN = (String) move.get("name");
+            moveNamesES.add(pokeApiService.getMoveNameES(nameEN));
         }
 
-        List<String> result = new ArrayList<>(moveNames);
+        List<String> result = new ArrayList<>(moveNamesES);
         Collections.sort(result);
 
         return ResponseEntity.ok(result);
     }
-
-
-
 }

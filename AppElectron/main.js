@@ -53,7 +53,7 @@ function createWindow() {
 
     win.loadFile(path.join(__dirname, 'src/inicio_sesion.html'));
     win.removeMenu();
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
 }
 
 app.whenReady().then(() => { session.defaultSession.clearCache().then(createWindow); });

@@ -25,26 +25,73 @@ public class PokeApiService {
     }
 
     public Map<String, Object> getPokemonData(String identifier) {
-
         String normalized = identifier.trim().toLowerCase();
-
         try {
-            return restTemplate.getForObject(
-                    POKEAPI_URL + normalized,
-                    Map.class
-            );
+            return restTemplate.getForObject(POKEAPI_URL + normalized, Map.class);
         } catch (HttpClientErrorException e) {
             return null;
         }
     }
 
     @SuppressWarnings("unchecked")
+    public String getAbilityNameES(String nameEN) {
+        try {
+            Map<String, Object> data = restTemplate.getForObject(
+                    "https://pokeapi.co/api/v2/ability/" + nameEN, Map.class);
+            if (data == null) return nameEN;
+            List<Map<String, Object>> names = (List<Map<String, Object>>) data.get("names");
+            if (names == null) return nameEN;
+            return names.stream()
+                    .filter(n -> "es".equals(((Map<?, ?>) n.get("language")).get("name")))
+                    .map(n -> (String) n.get("name"))
+                    .findFirst()
+                    .orElse(nameEN);
+        } catch (Exception e) {
+            return nameEN;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public String getMoveNameES(String nameEN) {
+        try {
+            Map<String, Object> data = restTemplate.getForObject(
+                    "https://pokeapi.co/api/v2/move/" + nameEN, Map.class);
+            if (data == null) return nameEN;
+            List<Map<String, Object>> names = (List<Map<String, Object>>) data.get("names");
+            if (names == null) return nameEN;
+            return names.stream()
+                    .filter(n -> "es".equals(((Map<?, ?>) n.get("language")).get("name")))
+                    .map(n -> (String) n.get("name"))
+                    .findFirst()
+                    .orElse(nameEN);
+        } catch (Exception e) {
+            return nameEN;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public String getItemNameES(String nameEN) {
+        try {
+            Map<String, Object> data = restTemplate.getForObject(
+                    "https://pokeapi.co/api/v2/item/" + nameEN, Map.class);
+            if (data == null) return nameEN;
+            List<Map<String, Object>> names = (List<Map<String, Object>>) data.get("names");
+            if (names == null) return nameEN;
+            return names.stream()
+                    .filter(n -> "es".equals(((Map<?, ?>) n.get("language")).get("name")))
+                    .map(n -> (String) n.get("name"))
+                    .findFirst()
+                    .orElse(nameEN);
+        } catch (Exception e) {
+            return nameEN;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     public String getImage(Map<String, Object> data) {
         if (data == null) return null;
-
         Map<String, Object> sprites = (Map<String, Object>) data.get("sprites");
         if (sprites == null) return null;
-
         return (String) sprites.get("front_default");
     }
 
@@ -58,72 +105,45 @@ public class PokeApiService {
 
     @SuppressWarnings("unchecked")
     private String getTypeBySlot(Map<String, Object> data, int slot) {
-
-        List<Map<String, Object>> types =
-                (List<Map<String, Object>>) data.get("types");
-
+        List<Map<String, Object>> types = (List<Map<String, Object>>) data.get("types");
         if (types == null) return null;
-
         for (Map<String, Object> typeEntry : types) {
-
             Integer typeSlot = (Integer) typeEntry.get("slot");
-
             if (typeSlot != null && typeSlot == slot) {
-
-                Map<String, Object> type =
-                        (Map<String, Object>) typeEntry.get("type");
-
+                Map<String, Object> type = (Map<String, Object>) typeEntry.get("type");
                 return (String) type.get("name");
             }
         }
-
         return null;
     }
 
     @SuppressWarnings("unchecked")
     public List<PokemonListItemDTO> getAllPokemonBasic() {
-
-        if (cachedPokemonList != null) {
-            return cachedPokemonList;
-        }
+        if (cachedPokemonList != null) return cachedPokemonList;
 
         String baseUrl = "https://pokeapi.co/api/v2/pokemon?limit=1";
-
-        Map<String, Object> countResponse =
-                restTemplate.getForObject(baseUrl, Map.class);
-
+        Map<String, Object> countResponse = restTemplate.getForObject(baseUrl, Map.class);
         Integer total = (Integer) countResponse.get("count");
 
         String url = "https://pokeapi.co/api/v2/pokemon?limit=" + total;
-
-        Map<String, Object> response =
-                restTemplate.getForObject(url, Map.class);
-
-        List<Map<String, Object>> results =
-                (List<Map<String, Object>>) response.get("results");
+        Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+        List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
 
         List<PokemonListItemDTO> pokemonList = new ArrayList<>();
 
         for (Map<String, Object> pokemon : results) {
-
             String name = (String) pokemon.get("name");
             String pokemonUrl = (String) pokemon.get("url");
-
             Map<String, Object> fullData;
-
             try {
-                fullData = restTemplate.getForObject(
-                        pokemonUrl,
-                        Map.class
-                );
+                fullData = restTemplate.getForObject(pokemonUrl, Map.class);
             } catch (Exception e) {
-                continue; // si uno falla, seguimos
+                continue;
             }
 
             String primaryType = getPrimaryType(fullData);
             String secondaryType = getSecondaryType(fullData);
 
-            // Extraer número real desde la URL
             String[] parts = pokemonUrl.split("/");
             int pokedexNumber = Integer.parseInt(
                     parts[parts.length - 1].isEmpty()
@@ -131,28 +151,15 @@ public class PokeApiService {
                             : parts[parts.length - 1]
             );
 
-            pokemonList.add(
-                    new PokemonListItemDTO(
-                            pokedexNumber,
-                            name,
-                            primaryType,
-                            secondaryType
-                    )
-            );
+            pokemonList.add(new PokemonListItemDTO(pokedexNumber, name, primaryType, secondaryType));
         }
 
         cachedPokemonList = pokemonList;
-
         return cachedPokemonList;
     }
 
-
-
     public Map<String, Object> getItemsPage(int offset, int limit) {
-
-        String url = "https://pokeapi.co/api/v2/item?offset="
-                + offset + "&limit=" + limit;
-
+        String url = "https://pokeapi.co/api/v2/item?offset=" + offset + "&limit=" + limit;
         try {
             return restTemplate.getForObject(url, Map.class);
         } catch (Exception e) {
@@ -161,27 +168,16 @@ public class PokeApiService {
     }
 
     private boolean isCompetitiveCategory(String category) {
-
         return List.of(
-                "held-items",
-                "choice-items",
-                "type-enhancement",
-                "plates",
-                "mega-stones",
-                "memories",
-                "z-crystals"
+                "held-items", "choice-items", "type-enhancement",
+                "plates", "mega-stones", "memories", "z-crystals"
         ).contains(category);
     }
 
+    @SuppressWarnings("unchecked")
     public String getPokemonCry(Map<String, Object> data) {
-
-        Map<String, Object> cries =
-                (Map<String, Object>) data.get("cries");
-
+        Map<String, Object> cries = (Map<String, Object>) data.get("cries");
         if (cries == null) return null;
-
         return (String) cries.get("latest");
     }
-
 }
-
