@@ -31,10 +31,28 @@ public class PokemonResponseDTO {
     private Integer spDefEv;
     private Integer speedEv;
 
-    public PokemonResponseDTO() {
+    private String cry; // ← al final
+
+    public PokemonResponseDTO() {}
+
+    // Constructor básico (listados)
+    public PokemonResponseDTO(
+            int id,
+            int pokedexNumber,
+            String name,
+            String image,
+            String primaryType,
+            String secondaryType
+    ) {
+        this.id = id;
+        this.pokedexNumber = pokedexNumber;
+        this.name = name;
+        this.image = image;
+        this.primaryType = primaryType;
+        this.secondaryType = secondaryType;
     }
 
-
+    // Constructor completo
     public PokemonResponseDTO(
             int id,
             int pokedexNumber,
@@ -59,7 +77,8 @@ public class PokemonResponseDTO {
             Integer defEv,
             Integer spAtkEv,
             Integer spDefEv,
-            Integer speedEv
+            Integer speedEv,
+            String cry
     ) {
         this.id = id;
         this.pokedexNumber = pokedexNumber;
@@ -85,24 +104,10 @@ public class PokemonResponseDTO {
         this.spAtkEv = spAtkEv;
         this.spDefEv = spDefEv;
         this.speedEv = speedEv;
+        this.cry = cry;
     }
 
-    // Constructor básico (para listados)
-    public PokemonResponseDTO(
-            int id,
-            int pokedexNumber,
-            String name,
-            String image,
-            String primaryType,
-            String secondaryType
-    ) {
-        this.id = id;
-        this.pokedexNumber = pokedexNumber;
-        this.name = name;
-        this.image = image;
-        this.primaryType = primaryType;
-        this.secondaryType = secondaryType;
-    }
+    public String getCry() { return cry; }
 
 
     public int getId() { return id; }
@@ -228,5 +233,9 @@ public class PokemonResponseDTO {
 
     public void setSpeedEv(Integer speedEv) {
         this.speedEv = speedEv;
+    }
+
+    public void setCry(String cry) {
+        this.cry = cry;
     }
 }
