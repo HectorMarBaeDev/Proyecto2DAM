@@ -543,11 +543,16 @@ async function initEquipos() {
             if (!pokemonRes.ok) return;
             const p = pokemonRes.data;
 
-            // Nombre del pokémon en el título
+            // Nombre e imagen del pokémon en el header
             const tituloEl = document.getElementById("editarPokemonTitulo");
-            const subtitleEl = document.getElementById("editarPokemonSubtitle");
-            if (tituloEl) tituloEl.textContent = "Editar Pokémon";
-            if (subtitleEl) subtitleEl.textContent = p.name ? p.name.charAt(0).toUpperCase() + p.name.slice(1) : "";
+            const imgEl = document.getElementById("editarPokemonImg");
+            const nombreCapitalizado = p.name ? p.name.charAt(0).toUpperCase() + p.name.slice(1) : "Pokémon";
+            if (tituloEl) tituloEl.textContent = nombreCapitalizado;
+            if (imgEl && p.image) {
+                imgEl.src = p.image;
+                imgEl.alt = nombreCapitalizado;
+                imgEl.classList.remove("d-none");
+            }
 
             // Poner options en inglés primero (carga rápida)
             rellenarSelectTraducido("editItem", itemsRes.data, {}, p.item);

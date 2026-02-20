@@ -495,3 +495,267 @@ body {
 .dropdown-menu {
     z-index: 1100;
 }
+/* ════════════════════════════════════════════════════════
+   MODAL FILTROS REDISEÑADO
+   ════════════════════════════════════════════════════════ */
+
+.filtro-modal-content {
+    background: linear-gradient(145deg, #1a1a2e, #13132b) !important;
+    border: 1px solid rgba(70, 108, 202, 0.25) !important;
+    border-radius: 20px !important;
+    color: white !important;
+    overflow: hidden;
+}
+
+.filtro-modal-header {
+    background: rgba(70, 108, 202, 0.07);
+    border-bottom: 1px solid rgba(70, 108, 202, 0.18) !important;
+    padding: 1rem 1.25rem;
+}
+
+.filtro-header-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(70, 108, 202, 0.18);
+    border: 1px solid rgba(70, 108, 202, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8ba5e8;
+    flex-shrink: 0;
+}
+
+/* Chip "N activos" en el header */
+.filtro-activos-chip {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    background: rgba(255, 82, 2, 0.18);
+    border: 1px solid rgba(255, 82, 2, 0.35);
+    color: #ff7d3b;
+    border-radius: 20px;
+    padding: 0.15rem 0.6rem;
+}
+
+.filtro-modal-body {
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.filtro-modal-body::-webkit-scrollbar { width: 5px; }
+.filtro-modal-body::-webkit-scrollbar-track { background: transparent; }
+.filtro-modal-body::-webkit-scrollbar-thumb { background: rgba(70,108,202,0.3); border-radius: 99px; }
+
+.filtro-modal-footer {
+    background: rgba(70, 108, 202, 0.05);
+    border-top: 1px solid rgba(70, 108, 202, 0.18) !important;
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ── Secciones internas ───────────────────────────────── */
+.filtro-seccion {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(70, 108, 202, 0.12);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+}
+
+.filtro-seccion-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #8892b0;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ── Chips de tipo ────────────────────────────────────── */
+.filtro-tipos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.filtro-tipo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem 0.3rem 0.4rem;
+    border-radius: 20px;
+    border: 1px solid color-mix(in srgb, var(--tc) 40%, transparent);
+    background: color-mix(in srgb, var(--tc) 12%, transparent);
+    color: color-mix(in srgb, var(--tc) 80%, #fff);
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s, border-color 0.18s, transform 0.15s, box-shadow 0.18s;
+    white-space: nowrap;
+    --tc: #666;
+}
+
+.filtro-tipo-chip:hover {
+    background: color-mix(in srgb, var(--tc) 22%, transparent);
+    border-color: color-mix(in srgb, var(--tc) 65%, transparent);
+    transform: translateY(-1px);
+}
+
+.filtro-tipo-chip.activo {
+    background: color-mix(in srgb, var(--tc) 35%, transparent);
+    border-color: var(--tc);
+    color: #fff;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--tc) 40%, transparent);
+}
+
+.filtro-tipo-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* ── Cards de generación ──────────────────────────────── */
+.filtro-gen-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.filtro-gen-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.55rem 0.5rem;
+    border-radius: 10px;
+    border: 1px solid rgba(70, 108, 202, 0.2);
+    background: rgba(70, 108, 202, 0.06);
+    color: #8892b0;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    line-height: 1.3;
+}
+
+.filtro-gen-card:hover {
+    border-color: rgba(70, 108, 202, 0.45);
+    background: rgba(70, 108, 202, 0.14);
+    color: #c8d0e8;
+    transform: translateY(-1px);
+}
+
+.filtro-gen-card.activo {
+    border-color: #466cca;
+    background: rgba(70, 108, 202, 0.25);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(70, 108, 202, 0.3);
+}
+
+.filtro-gen-num {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.filtro-gen-rango {
+    font-size: 0.65rem;
+    font-weight: 500;
+    opacity: 0.7;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Botones de orden ─────────────────────────────────── */
+.filtro-orden-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.filtro-orden-btn {
+    padding: 0.38rem 0.85rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    color: #8892b0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.filtro-orden-btn:hover {
+    border-color: rgba(70, 108, 202, 0.4);
+    background: rgba(70, 108, 202, 0.1);
+    color: #c8d0e8;
+}
+
+.filtro-orden-btn.active {
+    border-color: #466cca;
+    background: rgba(70, 108, 202, 0.22);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(70, 108, 202, 0.25);
+}
+
+/* ── Botones footer ───────────────────────────────────── */
+.btn-filtro-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(220, 53, 69, 0.3) !important;
+    background: rgba(220, 53, 69, 0.08);
+    color: #e07080;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-filtro-reset:hover {
+    background: rgba(220, 53, 69, 0.18);
+    color: #f08090;
+    border-color: rgba(220, 53, 69, 0.5) !important;
+}
+
+.btn-filtro-aplicar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.3rem;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #466cca, #5a7fd4);
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 3px 14px rgba(70, 108, 202, 0.35);
+    transition: all 0.2s;
+}
+.btn-filtro-aplicar:hover {
+    background: linear-gradient(135deg, #5278d8, #6b8fd8);
+    box-shadow: 0 5px 20px rgba(70, 108, 202, 0.5);
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+/* ── Recorte tipo en chips del modal filtros ─────────── */
+.filtro-recorte {
+    border-radius: 3px;
+    width: 20px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.filtro-tipo-icon-img {
+    width: 78px;       /* mismo ratio que .recorte img (125px en 31px = ~4x) */
+    display: block;
+    margin-left: 0px; /* centrar la parte visible del sprite */
+}

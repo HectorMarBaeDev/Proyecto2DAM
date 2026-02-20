@@ -72,14 +72,85 @@
         });
 
         // ── Filtros ──────────────────────────────────────────
+        const TIPO_COLOR = {
+            "Normal":"#9fa19f","Lucha":"#ff8000","Volador":"#81b9ef","Veneno":"#9141cb",
+            "Tierra":"#915121","Roca":"#afa981","Bicho":"#91a119","Fantasma":"#704170",
+            "Acero":"#60a1b8","Fuego":"#e62829","Agua":"#2980ef","Planta":"#3fa129",
+            "Eléctrico":"#fac000","Psíquico":"#ef4179","Hielo":"#3dcef3",
+            "Dragón":"#5060e1","Siniestro":"#624d4e","Hada":"#ef70ef"
+        };
         const tiposContainer = document.getElementById("filtroTipos");
         const genContainer = document.getElementById("filtroGeneraciones");
+        const tiposVisual = document.getElementById("filtroTiposVisual");
+        const genVisual = document.getElementById("filtroGeneracionesVisual");
+
+        // Checkboxes ocultos (lógica existente intacta)
         tiposDisponibles.forEach(tipo => {
-            tiposContainer.innerHTML += `<div class="form-check"><input class="form-check-input filtro-tipo" type="checkbox" value="${tipo}" id="tipo-${tipo}"><label class="form-check-label" for="tipo-${tipo}">${tipo}</label></div>`;
+            tiposContainer.innerHTML += `<input class="filtro-tipo" type="checkbox" value="${tipo}" id="tipo-${tipo}">`;
         });
         generaciones.forEach((gen, i) => {
-            genContainer.innerHTML += `<div class="form-check"><input class="form-check-input filtro-gen" type="checkbox" value="${i}" id="gen-${i}"><label class="form-check-label" for="gen-${i}">${gen.nombre}</label></div>`;
+            genContainer.innerHTML += `<input class="filtro-gen" type="checkbox" value="${i}" id="gen-${i}">`;
         });
+
+        // Chips visuales de tipo
+        tiposDisponibles.forEach(tipo => {
+            const color = TIPO_COLOR[tipo] || "#666";
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "filtro-tipo-chip";
+            chip.dataset.tipo = tipo;
+            chip.style.setProperty("--tc", color);
+            chip.innerHTML = `
+                <div class="filtro-recorte"><img src="./assets/types/${typeIcons[tipo]}" alt="" class="filtro-tipo-icon-img"></div>
+                <span>${tipo}</span>`;
+            chip.addEventListener("click", () => {
+                chip.classList.toggle("activo");
+                const cb = document.getElementById("tipo-${tipo}".replace("${tipo}", tipo));
+                if (cb) cb.checked = chip.classList.contains("activo");
+                actualizarChipCount();
+            });
+            tiposVisual.appendChild(chip);
+        });
+
+        // Cards visuales de generación
+        const GEN_RANGO = ["1–151","152–251","252–386","387–493","494–649","650–721","722–809","810–905","906–1025"];
+        generaciones.forEach((gen, i) => {
+            const card = document.createElement("button");
+            card.type = "button";
+            card.className = "filtro-gen-card";
+            card.dataset.gen = i;
+            card.innerHTML = `<span class="filtro-gen-num">${gen.nombre}</span><span class="filtro-gen-rango">#${GEN_RANGO[i]}</span>`;
+            card.addEventListener("click", () => {
+                card.classList.toggle("activo");
+                const cb = document.getElementById(`gen-${i}`);
+                if (cb) cb.checked = card.classList.contains("activo");
+                actualizarChipCount();
+            });
+            genVisual.appendChild(card);
+        });
+
+        // Botones de orden
+        document.querySelectorAll(".filtro-orden-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".filtro-orden-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.getElementById("ordenSelect").value = btn.dataset.orden;
+            });
+        });
+
+        // Contador de filtros activos en el chip del header
+        function actualizarChipCount() {
+            const tipos = [...document.querySelectorAll(".filtro-tipo:checked")].length;
+            const gens = [...document.querySelectorAll(".filtro-gen:checked")].length;
+            const total = tipos + gens;
+            const chip = document.getElementById("filtrosActivosChip");
+            if (total > 0) {
+                chip.textContent = `${total} activo${total > 1 ? "s" : ""}`;
+                chip.classList.remove("d-none");
+            } else {
+                chip.classList.add("d-none");
+            }
+        }
 
         // ── Render card ──────────────────────────────────────
         const SEP = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16"><path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0M7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0m-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0m3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/></svg>`;
@@ -376,10 +447,24 @@
         }
 
         document.getElementById("resetFiltros").addEventListener("click", resetFilter);
+
+        // Logo: click vuelve al inicio (reset filtros + página 1)
+        document.getElementById("imgLogo").addEventListener("click", () => {
+            resetFilter();
+            filteredPokemonList = null;
+            searchInput.value = "";
+            cargarPagina(1);
+        });
         function resetFilter() {
             document.querySelectorAll(".filtro-tipo").forEach(el => el.checked = false);
             document.querySelectorAll(".filtro-gen").forEach(el => el.checked = false);
             document.getElementById("ordenSelect").value = "";
+            document.querySelectorAll(".filtro-tipo-chip").forEach(el => el.classList.remove("activo"));
+            document.querySelectorAll(".filtro-gen-card").forEach(el => el.classList.remove("activo"));
+            document.querySelectorAll(".filtro-orden-btn").forEach(b => b.classList.remove("active"));
+            document.querySelector('.filtro-orden-btn[data-orden=""]')?.classList.add("active");
+            const chip = document.getElementById("filtrosActivosChip");
+            if (chip) chip.classList.add("d-none");
         }
 
         function extraerID(url) { const p = url.split("/"); return parseInt(p[p.length - 2]); }
