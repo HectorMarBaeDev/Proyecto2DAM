@@ -358,3 +358,131 @@ body {
 .pokeballSVG{
     width: 24px;
 }
+
+/* ═══════════════════════════════════════════════
+   MEJORAS VISUALES PROFESIONALES (NO ROMPE JS)
+═══════════════════════════════════════════════ */
+
+/* ── Fondo más profundo ── */
+body {
+    background: radial-gradient(circle at top, #23233a 0%, #141421 70%);
+    color: #fff;
+}
+
+/* ── Grid responsive moderno ── */
+#cardsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)) !important;
+    gap: 24px;
+    padding-bottom: 40px;
+}
+
+/* ── Card contenedor animado ── */
+.cardPokemon {
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.cardPokemon:hover {
+    transform: translateY(-8px);
+}
+
+/* ── Card mejorada ── */
+.cardPokemon .card {
+    background: linear-gradient(145deg, #2a2a4a, #1c1c2f);
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45);
+    overflow: hidden;
+    transition: all .25s ease;
+}
+
+.cardPokemon:hover .card {
+    box-shadow: 0 18px 40px rgba(0,0,0,.6);
+}
+
+/* ── Imagen Pokémon ── */
+.card_img {
+    width: 140px;
+    margin-top: 18px;
+    transition: transform .3s ease;
+}
+
+.cardPokemon:hover .card_img {
+    transform: scale(1.08);
+}
+
+/* ── Nombre Pokémon ── */
+.card-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: .5px;
+}
+
+
+/* ── Botones más estilizados ── */
+.card .btn-primary {
+    background: #ffcb05;
+    border: none;
+    color: #000;
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+.card .btn-primary:hover {
+    background: #ffd633;
+}
+
+.card .btn-secondary {
+    border-radius: 10px;
+}
+
+/* ── Paginación mejorada ── */
+#paginationContainer .btn {
+    border-radius: 10px;
+    padding: 6px 14px;
+}
+
+#paginationContainer .btn-primary {
+    background: #ffcb05;
+    border: none;
+    color: black;
+    font-weight: 600;
+}
+
+/* ── Scroll más suave ── */
+#divPrincipal {
+    scroll-behavior: smooth;
+}
+
+/* ── Spinner más moderno ── */
+#spinnerIndex {
+    width: 70px;
+    height: 70px;
+}
+
+/* ── Modal más oscuro (si usas Bootstrap modals) ── */
+.modal-content {
+    background: #1e1e2f;
+    color: white;
+    border-radius: 16px;
+    border: none;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: rgba(255,255,255,0.1);
+}
+
+/* ── Animación suave al cargar página ── */
+.fade-in {
+    animation: fadeIn .35s ease forwards;
+}
+
+.fade-out {
+    animation: fadeOut .25s ease forwards;
+}
+
+/* ── Micro efecto glass navbar ── */
+.navPrincipal {
+    backdrop-filter: blur(8px);
+}

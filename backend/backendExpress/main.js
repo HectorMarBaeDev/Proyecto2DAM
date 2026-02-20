@@ -34,19 +34,26 @@ function createWindow() {
     });
 
     let win = new BrowserWindow({
-        width: 1300,
-        height: 1000,
-        webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true,
-            preload: path.join(__dirname, 'src/js/preload.js')
-        }
-    });
+    width: 1300,
+    height: 1000,
+
+    minWidth: 1300,
+    minHeight: 1000,
+
+    resizable: true,
+    maximizable: true,
+    fullscreenable: true,
+
+    webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'src/js/preload.js')
+    }
+});
 
     win.loadFile(path.join(__dirname, 'src/inicio_sesion.html'));
     win.removeMenu();
     win.webContents.openDevTools();
-    win.resizable = false;
 }
 
 app.whenReady().then(createWindow);
