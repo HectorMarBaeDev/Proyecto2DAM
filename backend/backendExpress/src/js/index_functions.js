@@ -20,7 +20,7 @@ async function init() {
     const filtrar             = document.getElementById("filtrar");
 
     const totalPokemon = 1025;
-    const pageSize     = 9;
+    const pageSize     = 10;
     const totalPages   = Math.ceil(totalPokemon / pageSize);
 
     let currentPage         = 1;
