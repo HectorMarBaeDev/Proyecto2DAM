@@ -67,27 +67,23 @@ body {
     min-width: 0;
 }
 
-/* Paginación con tema oscuro */
-#paginacionEquipos .page-link {
-    background-color: #252533;
-    border-color: #444;
-    color: #ccc;
+/* Paginación - mismos estilos que index */
+#paginacionEquipos .btn-outline-primary {
+    color: #fff;
+    border-color: #466cca;
 }
-
-#paginacionEquipos .page-item.active .page-link {
-    background-color: #ff5202;
-    border-color: #ff5202;
+#paginacionEquipos .btn-outline-primary:hover {
+    background-color: #466cca;
     color: #fff;
 }
-
-#paginacionEquipos .page-item:not(.disabled) .page-link:hover {
-    background-color: #3a3a50;
-    border-color: #666;
-    color: #fff;
+#paginacionEquipos .btn-primary {
+    background-color: #466cca;
+    border-color: #466cca;
 }
-
-#paginacionEquipos .page-item.disabled .page-link {
-    background-color: #1a1a2e;
-    border-color: #333;
-    color: #555;
+#paginacionEquipos .btn-secondary {
+    background-color: #333f5c;
+    border-color: #333f5c;
+}
+#paginacionEquipos .btn-secondary:hover {
+    background-color: #415785;
 }

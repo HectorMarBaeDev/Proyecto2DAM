@@ -156,6 +156,26 @@
         <p id="sinEquipos" class="text-center text-muted fs-5 d-none">No tienes ningún equipo. ¡Crea uno!</p>
     </div>
 
+    <!-- Modal salto de página -->
+    <div class="modal fade" id="modalSaltoPaginaEquipos" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ir a página</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" class="form-control" id="inputPaginaEquipos" placeholder="Número de página">
+                    <small id="errorPaginaEquipos" class="text-danger d-none">Número inválido</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnIrPaginaEquipos">Ir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal detalle de equipo -->
     <div class="modal fade" id="modalEquipo" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered">

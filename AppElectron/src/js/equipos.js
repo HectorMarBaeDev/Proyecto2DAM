@@ -115,46 +115,106 @@ async function initEquipos() {
         lista.querySelectorAll(".btn-borrar").forEach(btn =>
             btn.addEventListener("click", () => eliminarEquipo(btn.dataset.id)));
 
-        renderizarPaginacion();
+        crearPaginacion();
     }
 
-    function renderizarPaginacion() {
+    // ── Modal salto de página (igual que index) ──────────
+    const modalSaltoEquipos = new bootstrap.Modal(document.getElementById("modalSaltoPaginaEquipos"));
+    const inputPaginaEquipos = document.getElementById("inputPaginaEquipos");
+    const errorPaginaEquipos = document.getElementById("errorPaginaEquipos");
+    const btnIrPaginaEquipos = document.getElementById("btnIrPaginaEquipos");
+
+    function mostrarModalSaltoEquipos() {
+        inputPaginaEquipos.value = "";
+        errorPaginaEquipos.classList.add("d-none");
+        modalSaltoEquipos.show();
+    }
+
+    inputPaginaEquipos.addEventListener("keypress", e => { if (e.key === "Enter") btnIrPaginaEquipos.click(); });
+    btnIrPaginaEquipos.addEventListener("click", () => {
+        const page = parseInt(inputPaginaEquipos.value);
+        const total = Math.ceil(todosLosEquipos.length / EQUIPOS_POR_PAGINA);
+        if (!isNaN(page) && page >= 1 && page <= total) {
+            modalSaltoEquipos.hide();
+            irAPagina(page);
+        } else {
+            errorPaginaEquipos.classList.remove("d-none");
+        }
+    });
+
+    function irAPagina(page) {
+        paginaActual = page;
+        renderizarPagina();
+        equiposView.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function crearPaginacion() {
         let paginacion = document.getElementById("paginacionEquipos");
         if (!paginacion) {
-            paginacion = document.createElement("nav");
+            paginacion = document.createElement("div");
             paginacion.id = "paginacionEquipos";
             paginacion.className = "d-flex justify-content-center mt-2 pb-4";
             document.getElementById("equiposView").appendChild(paginacion);
         }
+        paginacion.innerHTML = "";
 
-        const totalPaginas = Math.ceil(todosLosEquipos.length / EQUIPOS_POR_PAGINA);
+        const total = Math.ceil(todosLosEquipos.length / EQUIPOS_POR_PAGINA);
+        if (total <= 1) return;
 
-        if (totalPaginas <= 1) { paginacion.innerHTML = ""; return; }
+        const container = document.createElement("div");
+        container.className = "d-flex align-items-center gap-2 flex-wrap justify-content-center";
 
-        let html = `<ul class="pagination mb-0">`;
-        html += `<li class="page-item ${paginaActual === 1 ? 'disabled' : ''}">
-            <a class="page-link" href="#" data-page="${paginaActual - 1}">&laquo;</a></li>`;
-        for (let i = 1; i <= totalPaginas; i++) {
-            html += `<li class="page-item ${i === paginaActual ? 'active' : ''}">
-                <a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+        // Botón anterior
+        const prev = document.createElement("button");
+        prev.className = "btn btn-secondary";
+        prev.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/></svg>`;
+        prev.disabled = paginaActual === 1;
+        prev.onclick = () => irAPagina(paginaActual - 1);
+        container.appendChild(prev);
+
+        // Lógica de páginas con "..." igual que index
+        const pages = [];
+
+        if (total === 1) {
+            pages.push(1);
+        } else {
+            pages.push(1);
+            if (paginaActual === total) {
+                pages.push("...");
+                pages.push(total);
+            } else {
+                if (paginaActual > 1) pages.push(paginaActual);
+                if (paginaActual < total) pages.push("...");
+                pages.push(total);
+            }
         }
-        html += `<li class="page-item ${paginaActual === totalPaginas ? 'disabled' : ''}">
-            <a class="page-link" href="#" data-page="${paginaActual + 1}">&raquo;</a></li></ul>`;
 
-        paginacion.innerHTML = html;
-
-        paginacion.querySelectorAll(".page-link").forEach(link => {
-            link.addEventListener("click", e => {
-                e.preventDefault();
-                const nuevaPagina = parseInt(link.dataset.page);
-                const totalPag = Math.ceil(todosLosEquipos.length / EQUIPOS_POR_PAGINA);
-                if (nuevaPagina >= 1 && nuevaPagina <= totalPag) {
-                    paginaActual = nuevaPagina;
-                    renderizarPagina();
-                    equiposView.scrollTo({ top: 0, behavior: "smooth" });
-                }
-            });
+        pages.forEach(p => {
+            if (p === "...") {
+                const b = document.createElement("button");
+                b.className = "btn btn-outline-primary";
+                b.textContent = "...";
+                b.onclick = mostrarModalSaltoEquipos;
+                container.appendChild(b);
+            } else {
+                const b = document.createElement("button");
+                b.className = p === paginaActual ? "btn btn-primary" : "btn btn-outline-primary";
+                b.textContent = p;
+                b.disabled = p === paginaActual;
+                b.onclick = () => irAPagina(p);
+                container.appendChild(b);
+            }
         });
+
+        // Botón siguiente
+        const next = document.createElement("button");
+        next.className = "btn btn-secondary";
+        next.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/></svg>`;
+        next.disabled = paginaActual === total;
+        next.onclick = () => irAPagina(paginaActual + 1);
+        container.appendChild(next);
+
+        paginacion.appendChild(container);
     }
 
     async function cargarEquipos() {

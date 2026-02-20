@@ -1,73 +1,341 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Nunito:wght@400;500;600&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --dark-bg:    #0f0f1a;
+    --dark-card:  #16162a;
+    --dark-panel: #1e1e35;
+    --border:     rgba(70, 108, 202, 0.35);
+    --blue-main:  #466cca;
+    --blue-light: #6b8fd8;
+    --orange:     #ff5202;
+    --text:       #e8eaf6;
+    --text-muted: #8892b0;
+}
+
+/* ── Fondo ───────────────────────────────────────────── */
 body {
-    margin: 0;
     height: 100vh;
-    background: linear-gradient(-45deg, #b4d5e2, #099de2, #04609e, #aee5ff);
-    background-size: 400% 400%;
-    animation: cieloAnimado 15s ease infinite;
+    overflow: hidden;
+    background-color: var(--dark-bg);
+    background-image:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(70, 108, 202, 0.18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(255, 82, 2, 0.12) 0%, transparent 55%);
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
 }
 
-
-@keyframes cieloAnimado {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.25) 0%, transparent 100%),
+        radial-gradient(1px 1px at 42% 68%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 15%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 88% 55%, rgba(255,255,255,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 82%, rgba(255,255,255,0.15) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 60% 40%, rgba(70,108,202,0.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 25% 50%, rgba(70,108,202,0.4) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 80% 75%, rgba(255,82,2,0.4) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
 }
 
-#imgLogo {
-    width: 12%;
-    border-radius: 20%;
-    border: solid 2px black;
-}
-
-.animar-entrada {
-    animation: fadeIn 0.4s ease forwards;
-}
-
-.animar-salida {
-    animation: fadeOut 0.4s ease forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-15px);
-    }
-}
-
-.oculto {
-    display: none !important;
+/* ── Layout principal ────────────────────────────────── */
+.container-fluid {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Centrado vertical pero que permita scroll si el contenido no cabe */
+    padding: 1.5rem 1rem;
 }
 
 #bloquePrincipal {
-    max-width: 620px;
+    max-width: 480px;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: fadeSlideIn 0.6s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+    /* Permite que el bloque crezca sin quedar cortado */
+    min-height: min-content;
+    margin: auto;
 }
 
+/* ── Header ──────────────────────────────────────────── */
 #bloqueHeader {
     transform: scale(1);
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-bottom: 0.5rem;
 }
 
+/* Mismo efecto shrink que el index al aparecer el form */
 .header-pequeño {
-    transform: scale(0.85);
+    transform: scale(0.72) translateY(-16px);
 }
 
-#titApp {
-    font-weight: bold;
-    -webkit-text-stroke: 1px rgb(227 227 227);
+#imgLogo {
+    width: 96px;
+    height: 96px;
+    border-radius: 24px;
+    border: 2px solid var(--border);
+    box-shadow:
+        0 0 0 4px rgba(70, 108, 202, 0.1),
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    display: block;
+    margin: 0 auto 1.2rem;
 }
+
+#imgLogo:hover {
+    box-shadow:
+        0 0 0 6px rgba(70, 108, 202, 0.25),
+        0 24px 64px rgba(0, 0, 0, 0.6),
+        0 0 40px rgba(70, 108, 202, 0.3);
+    transform: translateY(-3px);
+}
+
+/* ── Título con gradiente animado en carrusel ────────── */
+#titApp {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 3.4rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+
+    /* Gradiente extendido para que el desplazamiento sea suave */
+    background: linear-gradient(
+        90deg,
+        #ffffff       0%,
+        var(--blue-light) 15%,
+        var(--blue-main)  30%,
+        var(--orange)     45%,
+        #ff9966       55%,
+        var(--blue-main)  70%,
+        var(--blue-light) 82%,
+        #ffffff       100%
+    );
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    animation: carruselColor 5s linear infinite;
+}
+
+@keyframes carruselColor {
+    0%   { background-position: 100% 50%; }
+    100% { background-position:   0% 50%; }
+}
+
+#bloqueHeader p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    margin-top: 0.4rem;
+}
+
+/* ── Botones de inicio ───────────────────────────────── */
+#botonesInicio {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+#botonesInicio .btn {
+    padding: 0.75rem 2.2rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#botonesInicio .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.08);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+#botonesInicio .btn:hover::after { opacity: 1; }
+
+#iniciarSesion {
+    background: linear-gradient(135deg, var(--blue-main), #5a7fd4);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(70, 108, 202, 0.4);
+}
+#iniciarSesion:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(70, 108, 202, 0.55);
+}
+
+#registrarse {
+    background: linear-gradient(135deg, var(--orange), #ff7433);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(255, 82, 2, 0.35);
+}
+#registrarse:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(255, 82, 2, 0.5);
+}
+
+/* ── Formulario (inyectado por JS) ───────────────────── */
+#contenedorForm {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+#contenedorForm .card {
+    background: var(--dark-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 18px !important;
+    box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255,255,255,0.04) inset;
+    color: var(--text) !important;
+    width: 100% !important;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 1.6rem !important;
+}
+
+#contenedorForm h4 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+    margin-bottom: 1.2rem !important;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.6rem;
+}
+
+#contenedorForm .form-label {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+}
+
+#contenedorForm .mb-3 {
+    margin-bottom: 0.75rem !important;
+}
+
+#contenedorForm .form-control {
+    background: var(--dark-panel) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
+    color: var(--text) !important;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#contenedorForm .form-control::placeholder {
+    color: rgba(136, 146, 176, 0.5);
+}
+
+#contenedorForm .form-control:focus {
+    background: var(--dark-panel) !important;
+    border-color: var(--blue-main) !important;
+    box-shadow: 0 0 0 3px rgba(70, 108, 202, 0.2) !important;
+    color: var(--text) !important;
+    outline: none;
+}
+
+/* Botones dentro del form */
+#contenedorForm .btn {
+    padding: 0.6rem 1rem;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+#contenedorForm .btn-success {
+    background: linear-gradient(135deg, var(--blue-main), #5a7fd4);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(70, 108, 202, 0.35);
+}
+#contenedorForm .btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(70, 108, 202, 0.5);
+    background: linear-gradient(135deg, #5278d8, #6b8fd8);
+}
+
+#contenedorForm .btn-outline-secondary {
+    background: transparent;
+    border: 1px solid var(--border) !important;
+    color: var(--text-muted);
+}
+#contenedorForm .btn-outline-secondary:hover {
+    background: var(--dark-panel);
+    color: var(--text);
+    border-color: rgba(70, 108, 202, 0.5) !important;
+}
+
+/* Alertas */
+#contenedorForm .alert-danger {
+    background: rgba(220, 53, 69, 0.15) !important;
+    border: 1px solid rgba(220, 53, 69, 0.3) !important;
+    color: #f08090 !important;
+    border-radius: 10px !important;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem !important;
+}
+
+#contenedorForm .alert-success {
+    background: rgba(45, 186, 126, 0.15) !important;
+    border: 1px solid rgba(45, 186, 126, 0.3) !important;
+    color: #5de0a8 !important;
+    border-radius: 10px !important;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem !important;
+}
+
+/* ── Animaciones ─────────────────────────────────────── */
+.animar-entrada {
+    animation: fadeSlideIn 0.4s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+}
+
+.animar-salida {
+    animation: fadeSlideOut 0.3s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes fadeSlideOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(-12px) scale(0.97); }
+}
+
+.oculto { display: none !important; }
