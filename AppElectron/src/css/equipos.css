@@ -27,6 +27,7 @@ body {
 .pokemon-preview img {
     border-radius: 4px;
     background: #f1f1f1;
+    margin: 6px;
 }
 
 /* Ajuste de altura con nuevo navbar */
@@ -37,4 +38,19 @@ body {
 .modalTeam{
     background-color: #252533;
     color: white;
+}
+
+.pokemon-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+    grid-template-rows: repeat(2, 1fr);    /* 2 filas */
+    gap: 0;                                /* sin espacio */
+    margin: 0 auto;
+}
+
+.pokemon-preview img,
+.pokemon-preview .pokemon-slot {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
 }

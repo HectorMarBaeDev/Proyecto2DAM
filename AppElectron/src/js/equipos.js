@@ -47,10 +47,10 @@ async function initEquipos() {
             col.className = "col-md-4";
             col.innerHTML = `
                 <div class="card h-100 equipo-card">
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body d-flex flex-column" id="card-equipos">
                         <h5 class="card-title">${eq.name}</h5>
                         <p class="card-text mb-3">Formato: ${eq.format || "Sin formato"}</p>
-                        <div class="pokemon-preview d-flex gap-1 flex-wrap mb-3" id="preview-${eq.id}">
+                        <div class="pokemon-preview mb-3" id="preview-${eq.id}">
                             <div class="spinner-border spinner-border-sm text-warning"></div>
                         </div>
                         <div class="mt-auto d-flex gap-2">
@@ -79,7 +79,6 @@ async function initEquipos() {
         res.data.forEach(p => {
             const img = document.createElement("img");
             img.src = p.image; img.alt = p.name; img.title = p.name;
-            img.style.cssText = "width:48px;height:48px;object-fit:contain;";
             el.appendChild(img);
         });
     }
