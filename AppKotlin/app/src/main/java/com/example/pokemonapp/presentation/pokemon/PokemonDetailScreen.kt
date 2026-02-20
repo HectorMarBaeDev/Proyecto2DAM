@@ -32,6 +32,13 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
+import android.media.MediaPlayer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
 
 
 
@@ -116,6 +123,14 @@ fun PokemonDetailScreen(
                 isLoading -> CircularProgressIndicator()
                 error != null -> Text(error!!)
                 pokemon != null -> {
+
+                    val context = LocalContext.current
+                    var mediaPlayer by remember { mutableStateOf<MediaPlayer?>(null) }
+                    DisposableEffect(Unit) {
+                        onDispose {
+                            mediaPlayer?.release()
+                        }
+                    }
 
                     val primaryColor = typeColor(pokemon!!.primaryType)
 
@@ -228,16 +243,44 @@ fun PokemonDetailScreen(
                                         )
                                     }
                                 }
-
-
+                                
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
-                                Text(
-                                    text = pokemon!!.name.replaceFirstChar { it.uppercase() },
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+
+                                    Text(
+                                        text = pokemon!!.name.replaceFirstChar { it.uppercase() },
+                                        style = MaterialTheme.typography.headlineLarge,
+                                        fontWeight = FontWeight.Bold
+                                    )
+
+                                    pokemon!!.cry?.let { cryUrl ->
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        IconButton(
+                                            onClick = {
+                                                mediaPlayer?.release()
+                                                mediaPlayer = MediaPlayer().apply {
+                                                    setDataSource(cryUrl)
+                                                    setOnPreparedListener { start() }
+                                                    prepareAsync()
+                                                }
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.VolumeUp,
+                                                contentDescription = "Play Cry",
+                                                tint = Color.White
+                                            )
+                                        }
+                                    }
+                                }
 
                                 Spacer(modifier = Modifier.height(12.dp))
 
