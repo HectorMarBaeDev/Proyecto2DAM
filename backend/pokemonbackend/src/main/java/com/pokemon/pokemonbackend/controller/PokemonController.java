@@ -70,7 +70,11 @@ public class PokemonController {
                         saved.getName(),
                         saved.getImage(),
                         saved.getPrimaryType(),
-                        saved.getSecondaryType()
+                        saved.getSecondaryType(),
+                        null, null, null, null, null, null,
+                        null, null, null, null, null, null,
+                        null, null, null, null, null, null,
+                        pokeApiService.getPokemonCry(data)
                 ));
     }
 
@@ -157,6 +161,14 @@ public class PokemonController {
         Pokemon pokemon = pokemonRepository.findById(id).orElse(null);
         if (pokemon == null) return ResponseEntity.notFound().build();
 
+        Map<String, Object> data =
+                pokeApiService.getPokemonData(pokemon.getName());
+
+        String cry = null;
+        if (data != null) {
+            cry = pokeApiService.getPokemonCry(data);
+        }
+
         return ResponseEntity.ok(new PokemonResponseDTO(
                 pokemon.getId(),
                 pokemon.getPokedexNumber(),
@@ -181,10 +193,10 @@ public class PokemonController {
                 pokemon.getDefEv(),
                 pokemon.getSpAtkEv(),
                 pokemon.getSpDefEv(),
-                pokemon.getSpeedEv()
+                pokemon.getSpeedEv(),
+                cry
         ));
     }
-
     // ---------------- UPDATE ----------------
 
     @PutMapping("/id/{id}")
@@ -219,6 +231,14 @@ public class PokemonController {
 
         Pokemon saved = pokemonRepository.save(pokemon);
 
+        Map<String, Object> data =
+                pokeApiService.getPokemonData(saved.getName());
+
+        String cry = null;
+        if (data != null) {
+            cry = pokeApiService.getPokemonCry(data);
+        }
+
         return ResponseEntity.ok(new PokemonResponseDTO(
                 saved.getId(),
                 saved.getPokedexNumber(),
@@ -243,7 +263,8 @@ public class PokemonController {
                 saved.getDefEv(),
                 saved.getSpAtkEv(),
                 saved.getSpDefEv(),
-                saved.getSpeedEv()
+                saved.getSpeedEv(),
+                cry
         ));
     }
 

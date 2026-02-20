@@ -173,5 +173,15 @@ public class PokeApiService {
         ).contains(category);
     }
 
+    public String getPokemonCry(Map<String, Object> data) {
+
+        Map<String, Object> cries =
+                (Map<String, Object>) data.get("cries");
+
+        if (cries == null) return null;
+
+        return (String) cries.get("latest");
+    }
+
 }
 
