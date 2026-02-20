@@ -486,3 +486,12 @@ body {
 .navPrincipal {
     backdrop-filter: blur(8px);
 }
+
+.navPrincipal {
+    position: relative;
+    z-index: 1050;
+}
+
+.dropdown-menu {
+    z-index: 1100;
+}

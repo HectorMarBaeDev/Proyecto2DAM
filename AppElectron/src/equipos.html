@@ -194,6 +194,90 @@
         </div>
     </div>
 
+<!-- Modal editar Pokémon -->
+<div class="modal fade" id="modalEditarPokemon" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Pokémon competitivo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row g-4">
+
+                    <!-- Columna izquierda -->
+                    <div class="col-md-6">
+
+                        <div class="mb-3">
+                            <label class="form-label">Objeto</label>
+                            <select id="editItem" class="form-select"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Habilidad</label>
+                            <select id="editAbility" class="form-select"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Movimientos</label>
+
+                            <select id="move1" class="form-select mb-2"></select>
+                            <select id="move2" class="form-select mb-2"></select>
+                            <select id="move3" class="form-select mb-2"></select>
+                            <select id="move4" class="form-select"></select>
+                        </div>
+
+                    </div>
+
+                    <!-- Columna derecha -->
+                    <div class="col-md-6">
+
+                        <h6>EVs (máx 510 total)</h6>
+                        <div class="row g-2 mb-3">
+                            <div class="col-4"><input type="number" id="evHp"  min="0" max="252" class="form-control" placeholder="HP"></div>
+                            <div class="col-4"><input type="number" id="evAtk" min="0" max="252" class="form-control" placeholder="Atk"></div>
+                            <div class="col-4"><input type="number" id="evDef" min="0" max="252" class="form-control" placeholder="Def"></div>
+                            <div class="col-4"><input type="number" id="evSpA" min="0" max="252" class="form-control" placeholder="SpA"></div>
+                            <div class="col-4"><input type="number" id="evSpD" min="0" max="252" class="form-control" placeholder="SpD"></div>
+                            <div class="col-4"><input type="number" id="evSpe" min="0" max="252" class="form-control" placeholder="Spe"></div>
+                        </div>
+
+                        <h6>IVs (máx 31)</h6>
+                        <div class="row g-2">
+                            <div class="col-4"><input type="number" id="ivHp"  min="0" max="31" class="form-control" placeholder="HP"></div>
+                            <div class="col-4"><input type="number" id="ivAtk" min="0" max="31" class="form-control" placeholder="Atk"></div>
+                            <div class="col-4"><input type="number" id="ivDef" min="0" max="31" class="form-control" placeholder="Def"></div>
+                            <div class="col-4"><input type="number" id="ivSpA" min="0" max="31" class="form-control" placeholder="SpA"></div>
+                            <div class="col-4"><input type="number" id="ivSpD" min="0" max="31" class="form-control" placeholder="SpD"></div>
+                            <div class="col-4"><input type="number" id="ivSpe" min="0" max="31" class="form-control" placeholder="Spe"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="mt-3">
+                    <small id="errorEditarPokemon" class="text-danger d-none"></small>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnGuardarEdicionPokemon">
+                    Guardar cambios
+                </button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 </body>
 
 </html>

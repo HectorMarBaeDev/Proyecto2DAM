@@ -9,6 +9,28 @@ const API = "https://pokemon-backend-849x.onrender.com/api";
 
 async function initEquipos() {
 
+    const editItem = document.getElementById("editItem");
+    const editAbility = document.getElementById("editAbility");
+
+    const move1 = document.getElementById("move1");
+    const move2 = document.getElementById("move2");
+    const move3 = document.getElementById("move3");
+    const move4 = document.getElementById("move4");
+
+    const evHp  = document.getElementById("evHp");
+    const evAtk = document.getElementById("evAtk");
+    const evDef = document.getElementById("evDef");
+    const evSpA = document.getElementById("evSpA");
+    const evSpD = document.getElementById("evSpD");
+    const evSpe = document.getElementById("evSpe");
+
+    const ivHp  = document.getElementById("ivHp");
+    const ivAtk = document.getElementById("ivAtk");
+    const ivDef = document.getElementById("ivDef");
+    const ivSpA = document.getElementById("ivSpA");
+    const ivSpD = document.getElementById("ivSpD");
+    const ivSpe = document.getElementById("ivSpe");
+
     document.getElementById("cerrarSesion").querySelector("a").addEventListener("click", async e => {
         e.preventDefault();
         await window.api.clearToken();
@@ -104,24 +126,39 @@ async function initEquipos() {
         if (!res.ok) { container.innerHTML = `<p class="text-danger">Error al cargar.</p>`; return; }
         if (!res.data.length) { container.innerHTML = `<p class="text-muted w-100 text-center">Este equipo no tiene Pokémon.</p>`; return; }
 
-        res.data.forEach(p => {
-            const col = document.createElement("div");
-            col.className = "col-md-4";
-            col.innerHTML = `
-                <div class="card p-2 text-center equipo-pokemon-card">
-                    <img src="${p.image}" alt="${p.name}" style="width:80px;margin:auto;">
-                    <p class="mb-1 fw-semibold text-capitalize">${p.name}</p>
-                    <div class="d-flex justify-content-center gap-2 flex-wrap mb-2">
-                        ${p.primaryType ? `<span class="badge bg-secondary">${p.primaryType}</span>` : ""}
-                        ${p.secondaryType ? `<span class="badge bg-secondary">${p.secondaryType}</span>` : ""}
-                    </div>
-                    <button class="btn btn-sm btn-danger btn-quitar" data-id="${p.id}">Quitar</button>
-                </div>`;
-            container.appendChild(col);
-        });
+    res.data.forEach(p => {
+        const col = document.createElement("div");
+        col.className = "col-md-4";
+
+        col.innerHTML = `
+            <div class="card p-2 text-center equipo-pokemon-card">
+                <img src="${p.image}" alt="${p.name}" style="width:80px;margin:auto;">
+                <p class="mb-1 fw-semibold text-capitalize">${p.name}</p>
+
+                <div class="d-flex justify-content-center gap-2 flex-wrap mb-2">
+                    ${p.primaryType ? `<span class="badge bg-secondary">${p.primaryType}</span>` : ""}
+                    ${p.secondaryType ? `<span class="badge bg-secondary">${p.secondaryType}</span>` : ""}
+                </div>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-sm btn-warning btn-editar" data-id="${p.id}">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-sm btn-danger btn-quitar" data-id="${p.id}">
+                        Quitar
+                    </button>
+                </div>
+            </div>`;
+
+        container.appendChild(col);
+    });
 
         container.querySelectorAll(".btn-quitar").forEach(btn =>
             btn.addEventListener("click", () => quitarPokemon(btn.dataset.id)));
+
+        container.querySelectorAll(".btn-editar").forEach(btn =>
+            btn.addEventListener("click", () => abrirModalEditar(btn.dataset.id)));
     }
 
     async function quitarPokemon(pkId) {
@@ -190,7 +227,139 @@ async function initEquipos() {
         } else { errEl.textContent = "Error al crear el equipo."; errEl.classList.remove("d-none"); }
     });
 
-    cargarEquipos();
+    let bsModalEditar = null;
+
+        async function abrirModalEditar(pokemonId) {
+
+            if (!bsModalEditar) {
+                bsModalEditar = new bootstrap.Modal(
+                    document.getElementById("modalEditarPokemon")
+                );
+            }
+
+            try {
+
+                const [pokemonRes, abilitiesRes, movesRes, itemsRes] = await Promise.all([
+                    window.api.fetchWithAuth(`${API}/pokemon/id/${pokemonId}`),
+                    window.api.fetchWithAuth(`${API}/pokemon/id/${pokemonId}/abilities`),
+                    window.api.fetchWithAuth(`${API}/pokemon/${pokemonId}/moves`),
+                    window.api.fetchWithAuth(`${API}/pokemon/competitive-items`)
+                ]);
+
+                if (!pokemonRes.ok) return;
+
+                const p = pokemonRes.data;
+
+                rellenarSelect("editItem", itemsRes.data, p.item);
+                rellenarSelect("editAbility", abilitiesRes.data, p.ability);
+
+                rellenarSelect("move1", movesRes.data, p.move1);
+                rellenarSelect("move2", movesRes.data, p.move2);
+                rellenarSelect("move3", movesRes.data, p.move3);
+                rellenarSelect("move4", movesRes.data, p.move4);
+
+                evHp.value = p.hpEv ?? 0;
+                evAtk.value = p.atkEv ?? 0;
+                evDef.value = p.defEv ?? 0;
+                evSpA.value = p.spAtkEv ?? 0;
+                evSpD.value = p.spDefEv ?? 0;
+                evSpe.value = p.speedEv ?? 0;
+
+                ivHp.value = p.hpIv ?? 31;
+                ivAtk.value = p.atkIv ?? 31;
+                ivDef.value = p.defIv ?? 31;
+                ivSpA.value = p.spAtkIv ?? 31;
+                ivSpD.value = p.spDefIv ?? 31;
+                ivSpe.value = p.speedIv ?? 31;
+
+                document.getElementById("btnGuardarEdicionPokemon")
+                    .onclick = () => guardarEdicionPokemon(pokemonId);
+
+                bsModalEditar.show();
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function rellenarSelect(id, opciones, seleccionado) {
+            const select = document.getElementById(id);
+            select.innerHTML = "";
+
+            opciones.forEach(op => {
+                const option = document.createElement("option");
+                option.value = op;
+                option.textContent = op;
+                if (op === seleccionado) option.selected = true;
+                select.appendChild(option);
+            });
+        }
+async function guardarEdicionPokemon(pokemonId) {
+
+    const valoresEV = [
+        +evHp.value,
+        +evAtk.value,
+        +evDef.value,
+        +evSpA.value,
+        +evSpD.value,
+        +evSpe.value
+    ];
+
+    // 🔹 Validación individual (0 - 252)
+    for (let ev of valoresEV) {
+        if (ev < 0 || ev > 252) {
+            const err = document.getElementById("errorEditarPokemon");
+            err.textContent = "Cada stat puede tener máximo 252 EVs";
+            err.classList.remove("d-none");
+            return;
+        }
+    }
+
+    // 🔹 Validación total (máx 510)
+    const totalEV = valoresEV.reduce((a, b) => a + b, 0);
+
+    if (totalEV > 510) {
+        const err = document.getElementById("errorEditarPokemon");
+        err.textContent = "Máximo total 510 EVs";
+        err.classList.remove("d-none");
+        return;
+    }
+
+    // 🔹 Si pasa validaciones, guardar
+    await window.api.fetchWithAuth(
+        `${API}/pokemon/id/${pokemonId}`,
+        {
+            method: "PUT",
+            body: JSON.stringify({
+                item: editItem.value,
+                ability: editAbility.value,
+                move1: move1.value,
+                move2: move2.value,
+                move3: move3.value,
+                move4: move4.value,
+                hpEv: +evHp.value,
+                atkEv: +evAtk.value,
+                defEv: +evDef.value,
+                spAtkEv: +evSpA.value,
+                spDefEv: +evSpD.value,
+                speedEv: +evSpe.value,
+                hpIv: +ivHp.value,
+                atkIv: +ivAtk.value,
+                defIv: +ivDef.value,
+                spAtkIv: +ivSpA.value,
+                spDefIv: +ivSpD.value,
+                speedIv: +ivSpe.value
+            })
+        }
+    );
+
+    bsModalEditar.hide();
+    await cargarPokemonModal(equipoActualId);
+    await cargarPreview(equipoActualId);
 }
 
+
+    cargarEquipos();
+}
+    
 })();
