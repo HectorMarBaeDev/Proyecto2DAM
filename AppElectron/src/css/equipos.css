@@ -1,3 +1,4 @@
+/* ── Base ─────────────────────────────────────────────── */
 body {
     overflow: hidden;
     background-color: #1a1a2e;
@@ -9,65 +10,241 @@ body {
     height: calc(100vh - 95px);
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 1.5rem;
+    padding: 1.5rem 2rem 2rem;
     scroll-behavior: smooth;
 }
 
-.equipo-card {
-    transition: box-shadow 0.2s;
-    cursor: default;
-    height: 36.5vh !important;
-}
-
-.equipo-card:hover {
-    box-shadow: 0 4px 16px rgba(255, 82, 2, 0.25);
-}
-
-.equipo-pokemon-card {
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-}
-
-.pokemon-preview img {
-    border-radius: 4px;
-    background: #f1f1f1;
-    margin: 6px;
-}
-
-.modalTeam {
-    background-color: #252533;
-    color: white;
-}
-
-.pokemon-preview {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 0;
-    margin: 0 auto;
-    min-height: 60px;
-}
-
-.pokemon-preview img,
-.pokemon-preview .pokemon-slot {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-}
-
-/* Filas de cards con altura uniforme */
+/* ── Grid de filas ───────────────────────────────────── */
 .equipos-fila {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
 }
 
 .equipos-fila .equipo-card-wrap {
     min-width: 0;
 }
 
-/* Paginación - mismos estilos que index */
+/* ── Card equipo ─────────────────────────────────────── */
+.equipo-card {
+    background: linear-gradient(145deg, #1e1e35, #16162a) !important;
+    border: 1px solid rgba(70, 108, 202, 0.2) !important;
+    border-radius: 16px !important;
+    color: white !important;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    cursor: default;
+    height: 100%;
+}
+
+.equipo-card:hover {
+    box-shadow: 0 8px 32px rgba(70, 108, 202, 0.25), 0 0 0 1px rgba(70, 108, 202, 0.35);
+    border-color: rgba(70, 108, 202, 0.45) !important;
+    transform: translateY(-3px);
+}
+
+.equipo-card .card-body {
+    padding: 1.2rem;
+}
+
+.equipo-card .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #fff;
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.equipo-card .card-text {
+    font-size: 0.78rem;
+    color: #8892b0;
+    margin-bottom: 0 !important;
+}
+
+/* Badge de formato */
+.equipo-formato {
+    display: inline-block;
+    background: rgba(70, 108, 202, 0.18);
+    border: 1px solid rgba(70, 108, 202, 0.3);
+    color: #8ba5e8;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 0.15rem 0.55rem;
+    border-radius: 20px;
+    margin-top: 0.35rem;
+}
+
+/* ── Preview de pokémon ──────────────────────────────── */
+.pokemon-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 2px;
+    margin: 0.75rem 0;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 4px;
+    min-height: 128px;
+}
+
+.pokemon-preview img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    justify-self: center;
+    align-self: center;
+    transition: transform 0.2s ease;
+}
+
+.pokemon-preview img:hover {
+    transform: scale(1.15);
+}
+
+/* ── Estado vacío ────────────────────────────────────── */
+.preview-vacio {
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.75rem;
+    color: #4a5068;
+}
+
+.preview-vacio svg {
+    opacity: 0.4;
+}
+
+.preview-vacio span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #4a5068;
+}
+
+/* ── Botones de la card ──────────────────────────────── */
+.equipo-card .btn-ver {
+    background: linear-gradient(135deg, #466cca, #5a7fd4);
+    border: none;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 10px rgba(70, 108, 202, 0.3);
+}
+
+.equipo-card .btn-ver:hover {
+    background: linear-gradient(135deg, #5278d8, #6b8fd8);
+    box-shadow: 0 4px 16px rgba(70, 108, 202, 0.45);
+    transform: translateY(-1px);
+}
+
+.equipo-card .btn-borrar {
+    background: rgba(220, 53, 69, 0.12);
+    border: 1px solid rgba(220, 53, 69, 0.25) !important;
+    color: #e07080;
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    transition: all 0.2s ease;
+}
+
+.equipo-card .btn-borrar:hover {
+    background: rgba(220, 53, 69, 0.25);
+    border-color: rgba(220, 53, 69, 0.5) !important;
+    color: #f08090;
+}
+
+/* ── Card del modal de pokémon ───────────────────────── */
+.equipo-pokemon-card {
+    background: #1e1e35 !important;
+    border: 1px solid rgba(70, 108, 202, 0.2) !important;
+    border-radius: 12px !important;
+    color: white !important;
+    transition: box-shadow 0.2s;
+}
+
+.equipo-pokemon-card:hover {
+    box-shadow: 0 4px 16px rgba(70, 108, 202, 0.2);
+}
+
+/* ── Modal de equipo ─────────────────────────────────── */
+.modalTeam {
+    background: linear-gradient(145deg, #1e1e35, #16162a);
+    color: white;
+    border: 1px solid rgba(70, 108, 202, 0.2);
+    border-radius: 16px !important;
+}
+
+.modalTeam .modal-header {
+    border-bottom-color: rgba(70, 108, 202, 0.2);
+}
+
+.modalTeam .modal-footer {
+    border-top-color: rgba(70, 108, 202, 0.2);
+}
+
+/* ── Header de equipos ───────────────────────────────── */
+#equiposView h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #fff;
+}
+
+#equiposView .btn-success {
+    background: linear-gradient(135deg, #2dba7e, #25a06c);
+    border: none;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 3px 12px rgba(45, 186, 126, 0.3);
+    transition: all 0.2s;
+}
+
+#equiposView .btn-success:hover {
+    box-shadow: 0 5px 18px rgba(45, 186, 126, 0.45);
+    transform: translateY(-1px);
+}
+
+/* ── Formulario nuevo equipo ─────────────────────────── */
+#formNuevoEquipo {
+    background: linear-gradient(145deg, #1e1e35, #16162a) !important;
+    border: 1px solid rgba(70, 108, 202, 0.25) !important;
+    border-radius: 14px !important;
+    color: white !important;
+}
+
+#formNuevoEquipo .form-control {
+    background: #0f0f1a !important;
+    border: 1px solid rgba(70, 108, 202, 0.3) !important;
+    color: white !important;
+    border-radius: 8px !important;
+}
+
+#formNuevoEquipo .form-control:focus {
+    border-color: #466cca !important;
+    box-shadow: 0 0 0 3px rgba(70, 108, 202, 0.2) !important;
+    background: #0f0f1a !important;
+}
+
+#formNuevoEquipo .form-control::placeholder {
+    color: rgba(136, 146, 176, 0.5);
+}
+
+/* ── Paginación ──────────────────────────────────────── */
 #paginacionEquipos .btn-outline-primary {
     color: #fff;
     border-color: #466cca;
@@ -86,4 +263,466 @@ body {
 }
 #paginacionEquipos .btn-secondary:hover {
     background-color: #415785;
+}
+
+/* ── Tipos badge en modal ────────────────────────────── */
+.tipo-badge-pkm {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 20px;
+}
+
+/* ── Cards pokémon en modal ver/editar ───────────────── */
+.equipo-pokemon-card-modal {
+    background: linear-gradient(145deg, #1e1e35, #16162a);
+    border: 1px solid rgba(70, 108, 202, 0.2);
+    border-radius: 14px;
+    padding: 1rem 0.75rem 0.85rem;
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    height: 100%;
+}
+
+.equipo-pokemon-card-modal:hover {
+    border-color: rgba(70, 108, 202, 0.4);
+    box-shadow: 0 6px 24px rgba(70, 108, 202, 0.18);
+    transform: translateY(-2px);
+}
+
+.pkm-modal-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 0.5rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+    transition: transform 0.2s;
+}
+.equipo-pokemon-card-modal:hover .pkm-modal-img {
+    transform: scale(1.08) translateY(-2px);
+}
+
+.pkm-modal-nombre {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    color: #fff;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.3px;
+}
+
+.pkm-modal-tipos {
+    display: flex;
+    justify-content: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.pkm-modal-btns {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+}
+
+.btn-pkm-editar {
+    background: rgba(255, 193, 7, 0.12);
+    border: 1px solid rgba(255, 193, 7, 0.3) !important;
+    color: #ffc107;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s;
+}
+.btn-pkm-editar:hover {
+    background: rgba(255, 193, 7, 0.22);
+    color: #ffd54f;
+}
+
+.btn-pkm-quitar {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.25) !important;
+    color: #e07080;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s;
+}
+.btn-pkm-quitar:hover {
+    background: rgba(220, 53, 69, 0.22);
+    color: #f08090;
+}
+
+/* ── Botones modal ver equipo ────────────────────────── */
+.modal-input-dark {
+    background: #0f0f1a !important;
+    border: 1px solid rgba(70, 108, 202, 0.3) !important;
+    color: white !important;
+    border-radius: 10px !important;
+}
+.modal-input-dark:focus {
+    border-color: #466cca !important;
+    box-shadow: 0 0 0 3px rgba(70, 108, 202, 0.2) !important;
+    background: #0f0f1a !important;
+}
+.modal-input-dark::placeholder { color: rgba(136,146,176,0.5); }
+
+.btn-anadir {
+    background: linear-gradient(135deg, #466cca, #5a7fd4);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.5rem 1.1rem;
+    white-space: nowrap;
+    transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(70,108,202,0.3);
+}
+.btn-anadir:hover {
+    background: linear-gradient(135deg, #5278d8, #6b8fd8);
+    box-shadow: 0 5px 18px rgba(70,108,202,0.45);
+    color: #fff;
+}
+
+.btn-eliminar-equipo {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3) !important;
+    color: #e07080;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+}
+.btn-eliminar-equipo:hover {
+    background: rgba(220, 53, 69, 0.22);
+    color: #f08090;
+}
+
+.btn-cerrar-modal {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12) !important;
+    color: #8892b0;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.5rem 1.2rem;
+    transition: all 0.2s;
+}
+.btn-cerrar-modal:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+/* ── Modal editar pokémon ────────────────────────────── */
+.modal-editar-dark {
+    background: linear-gradient(145deg, #1a1a2e, #12121f) !important;
+    border: 1px solid rgba(70, 108, 202, 0.25) !important;
+    border-radius: 18px !important;
+    color: white !important;
+}
+
+.modal-editar-header {
+    background: rgba(70, 108, 202, 0.06);
+    border-bottom: 1px solid rgba(70, 108, 202, 0.2) !important;
+    padding: 1rem 1.25rem;
+}
+
+.modal-editar-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(70, 108, 202, 0.18);
+    border: 1px solid rgba(70, 108, 202, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8ba5e8;
+    flex-shrink: 0;
+}
+
+.modal-editar-body {
+    background: transparent;
+    padding: 1.25rem;
+}
+
+.modal-editar-footer {
+    background: rgba(70, 108, 202, 0.04);
+    border-top: 1px solid rgba(70, 108, 202, 0.2) !important;
+    padding: 0.9rem 1.25rem;
+}
+
+.editar-seccion {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(70, 108, 202, 0.15);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.editar-seccion-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: #8892b0;
+    margin-bottom: 0.65rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.editar-hint {
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 0.7rem;
+    color: #4a5068;
+}
+
+.editar-select {
+    background: #0f0f1a !important;
+    border: 1px solid rgba(70, 108, 202, 0.3) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    font-size: 0.88rem;
+}
+.editar-select:focus {
+    border-color: #466cca !important;
+    box-shadow: 0 0 0 3px rgba(70, 108, 202, 0.2) !important;
+    background: #0f0f1a !important;
+    color: white !important;
+}
+.editar-select option {
+    background: #1a1a2e;
+    color: white;
+}
+
+.editar-move {
+    font-size: 0.82rem !important;
+}
+
+/* Grid stats EV/IV */
+.editar-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+}
+
+.editar-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.editar-stat-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #4a5068;
+    margin: 0;
+}
+
+.editar-stat-input {
+    background: #0f0f1a !important;
+    border: 1px solid rgba(70, 108, 202, 0.25) !important;
+    color: white !important;
+    border-radius: 8px !important;
+    padding: 0.4rem 0.5rem !important;
+    font-size: 0.88rem !important;
+    text-align: center;
+}
+.editar-stat-input:focus {
+    border-color: #466cca !important;
+    box-shadow: 0 0 0 2px rgba(70, 108, 202, 0.2) !important;
+    background: #0f0f1a !important;
+    color: white !important;
+}
+
+/* Barra total EVs */
+.editar-ev-total {
+    margin-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.editar-ev-total-label {
+    font-size: 0.72rem;
+    color: #8892b0;
+    font-weight: 600;
+}
+.editar-ev-bar-bg {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.editar-ev-bar {
+    height: 100%;
+    border-radius: 999px;
+    background: #466cca;
+    transition: width 0.3s ease, background 0.3s ease;
+    width: 0%;
+}
+
+/* Botones footer modal editar */
+.btn-editar-guardar {
+    background: linear-gradient(135deg, #466cca, #5a7fd4);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(70,108,202,0.3);
+}
+.btn-editar-guardar:hover {
+    background: linear-gradient(135deg, #5278d8, #6b8fd8);
+    box-shadow: 0 5px 18px rgba(70,108,202,0.45);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-editar-cancelar {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #8892b0;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.55rem 1.1rem;
+    transition: all 0.2s;
+}
+.btn-editar-cancelar:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+}
+
+/* ── Sliders EV/IV ───────────────────────────────────── */
+.stat-slider-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 36px;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.stat-slider-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #8892b0;
+    white-space: nowrap;
+}
+
+.stat-slider-val {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #c8d0e8;
+    text-align: right;
+    min-width: 28px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Range base */
+.stat-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #466cca 0%, rgba(255,255,255,0.08) 0%);
+    outline: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.stat-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    border: 2px solid #466cca;
+    transition: transform 0.15s, border-color 0.15s;
+}
+.stat-range::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+.stat-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    border: 2px solid #466cca;
+}
+
+.iv-range::-webkit-slider-thumb {
+    border-color: #2dba7e;
+}
+.iv-range::-moz-range-thumb {
+    border-color: #2dba7e;
+}
+
+/* Chip total EVs */
+.editar-ev-chip {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #8892b0;
+    background: rgba(70,108,202,0.1);
+    border: 1px solid rgba(70,108,202,0.2);
+    border-radius: 20px;
+    padding: 0.1rem 0.5rem;
+}
+.editar-ev-chip b { color: #c8d0e8; }
+
+/* Spinner inline de traducción */
+.editar-spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(70,108,202,0.3);
+    border-top-color: #466cca;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Botón exportar Showdown ─────────────────────────── */
+.equipo-card .btn-exportar {
+    background: rgba(70, 108, 202, 0.12);
+    border: 1px solid rgba(70, 108, 202, 0.3) !important;
+    color: #8ba5e8;
+    border-radius: 8px;
+    padding: 0.45rem 0.65rem;
+    transition: all 0.2s ease;
+}
+.equipo-card .btn-exportar:hover {
+    background: rgba(70, 108, 202, 0.25);
+    border-color: rgba(70, 108, 202, 0.55) !important;
+    color: #c8d0e8;
 }

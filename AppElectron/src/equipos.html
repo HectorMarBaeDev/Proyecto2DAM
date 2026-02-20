@@ -180,25 +180,34 @@
     <div class="modal fade" id="modalEquipo" tabindex="-1">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content modalTeam">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalEquipoTitulo">Equipo</h5>
-                </div>
-                <div class="modal-body">
-                    <div id="pokemonDelEquipo" class="row g-3 mb-4"></div>
-                    <div id="addPokemonSection">
-                        <hr>
-                        <h6>Añadir Pokémon <span id="contadorPokemon" class="badge bg-secondary"></span></h6>
-                        <div class="d-flex gap-2 mt-2">
-                            <input type="text" class="form-control" id="inputBuscarPokemon"
-                                placeholder="Nombre o número del Pokémon...">
-                            <button class="btn btn-primary" id="btnAnadirPokemon">Añadir</button>
+                <div class="modal-header" style="border-bottom:1px solid rgba(70,108,202,0.2);">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="modal-editar-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 1024 1024"><path d="M512,359C596,359 665,428 665,512C665,596 596,665 512,665C428,665 359,596 359,512C359,428 428,359 512,359ZM512,410C456,410 410,456 410,512C410,568 456,614 512,614C568,614 614,568 614,512C614,456 568,410 512,410ZM806,218C884,296 928,402 928,512C928,622 884,728 806,806C728,884 622,928 512,928C402,928 296,884 218,806C140,728 96,622 96,512C96,402 140,296 218,218C296,140 402,96 512,96C622,96 728,140 806,218ZM332,512C332,512 138,512 138,512C138,611 178,706 248,776C318,846 413,886 512,886C611,886 706,846 776,776C846,706 886,611 886,512C886,512 692,512 692,512C692,413 611,332 512,332C413,332 332,413 332,512Z"/></svg>
                         </div>
-                        <div id="errorAnadirPokemon" class="alert alert-danger d-none mt-2 py-2"></div>
+                        <h5 class="modal-title mb-0" id="modalEquipoTitulo">Equipo</h5>
+                    </div>
+                    <span id="contadorPokemon" class="badge ms-auto me-3" style="background:rgba(70,108,202,0.25);color:#8ba5e8;font-size:0.8rem;padding:0.35rem 0.65rem;border-radius:20px;border:1px solid rgba(70,108,202,0.3);"></span>
+                </div>
+                <div class="modal-body" style="background:linear-gradient(145deg,#1a1a2e,#16162a);">
+                    <div id="pokemonDelEquipo" class="row g-3 mb-3"></div>
+                    <div id="addPokemonSection">
+                        <hr style="border-color:rgba(70,108,202,0.2);">
+                        <p class="mb-2" style="font-size:0.8rem;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:#8892b0;">Añadir Pokémon</p>
+                        <div class="d-flex gap-2 mt-2">
+                            <input type="text" class="form-control modal-input-dark" id="inputBuscarPokemon"
+                                placeholder="Nombre o número del Pokémon...">
+                            <button class="btn btn-anadir" id="btnAnadirPokemon">Añadir</button>
+                        </div>
+                        <div id="errorAnadirPokemon" class="alert alert-danger d-none mt-2 py-2" style="background:rgba(220,53,69,0.15);border:1px solid rgba(220,53,69,0.3);color:#f08090;border-radius:10px;font-size:0.85rem;"></div>
                     </div>
                 </div>
-                <div class="modal-footer justify-content-between">
-                    <button class="btn btn-danger" id="btnEliminarEquipo">Eliminar equipo</button>
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <div class="modal-footer justify-content-between" style="border-top:1px solid rgba(70,108,202,0.2);background:linear-gradient(145deg,#1a1a2e,#16162a);">
+                    <button class="btn btn-eliminar-equipo" id="btnEliminarEquipo">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/></svg>
+                        Eliminar equipo
+                    </button>
+                    <button class="btn btn-cerrar-modal" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -217,80 +226,161 @@
 <!-- Modal editar Pokémon -->
 <div class="modal fade" id="modalEditarPokemon" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content modal-editar-dark">
 
-            <div class="modal-header">
-                <h5 class="modal-title">Editar Pokémon competitivo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header modal-editar-header">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="modal-editar-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h5 class="modal-title mb-0" id="editarPokemonTitulo">Editar Pokémon</h5>
+                        <small id="editarPokemonSubtitle" class="text-muted" style="font-size:0.75rem;"></small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body modal-editar-body">
+                <div class="row g-3">
 
-                <div class="row g-4">
+                    <!-- Columna izquierda: Objeto, Habilidad, Movimientos -->
+                    <div class="col-lg-5 d-flex flex-column gap-3">
 
-                    <!-- Columna izquierda -->
-                    <div class="col-md-6">
-
-                        <div class="mb-3">
-                            <label class="form-label">Objeto</label>
-                            <select id="editItem" class="form-select"></select>
+                        <div class="editar-seccion">
+                            <div class="editar-seccion-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13.5a.5.5 0 0 1-.777.416L8 13.101l-4.223 2.815A.5.5 0 0 1 3 15.5z"/></svg>
+                                Objeto equipado
+                                <span id="spinnerItem" class="editar-spinner ms-auto d-none"></span>
+                            </div>
+                            <select id="editItem" class="form-select editar-select"></select>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Habilidad</label>
-                            <select id="editAbility" class="form-select"></select>
+                        <div class="editar-seccion">
+                            <div class="editar-seccion-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2"/></svg>
+                                Habilidad
+                                <span id="spinnerAbility" class="editar-spinner ms-auto d-none"></span>
+                            </div>
+                            <select id="editAbility" class="form-select editar-select"></select>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Movimientos</label>
-
-                            <select id="move1" class="form-select mb-2"></select>
-                            <select id="move2" class="form-select mb-2"></select>
-                            <select id="move3" class="form-select mb-2"></select>
-                            <select id="move4" class="form-select"></select>
+                        <div class="editar-seccion">
+                            <div class="editar-seccion-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12z"/></svg>
+                                Movimientos
+                                <span id="spinnerMoves" class="editar-spinner ms-auto d-none"></span>
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <select id="move1" class="form-select editar-select editar-move"></select>
+                                <select id="move2" class="form-select editar-select editar-move"></select>
+                                <select id="move3" class="form-select editar-select editar-move"></select>
+                                <select id="move4" class="form-select editar-select editar-move"></select>
+                            </div>
                         </div>
 
                     </div>
 
-                    <!-- Columna derecha -->
-                    <div class="col-md-6">
+                    <!-- Columna derecha: EVs e IVs con sliders -->
+                    <div class="col-lg-7 d-flex flex-column gap-3">
 
-                        <h6>EVs (máx 510 total)</h6>
-                        <div class="row g-2 mb-3">
-                            <div class="col-4"><input type="number" id="evHp"  min="0" max="252" class="form-control" placeholder="HP"></div>
-                            <div class="col-4"><input type="number" id="evAtk" min="0" max="252" class="form-control" placeholder="Atk"></div>
-                            <div class="col-4"><input type="number" id="evDef" min="0" max="252" class="form-control" placeholder="Def"></div>
-                            <div class="col-4"><input type="number" id="evSpA" min="0" max="252" class="form-control" placeholder="SpA"></div>
-                            <div class="col-4"><input type="number" id="evSpD" min="0" max="252" class="form-control" placeholder="SpD"></div>
-                            <div class="col-4"><input type="number" id="evSpe" min="0" max="252" class="form-control" placeholder="Spe"></div>
+                        <!-- EVs -->
+                        <div class="editar-seccion">
+                            <div class="editar-seccion-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/></svg>
+                                EVs &nbsp;<small class="editar-hint">máx 510 total · 252 por stat</small>
+                                <span class="ms-auto editar-ev-chip">Total: <b id="evTotal">0</b>/510</span>
+                            </div>
+                            <div class="editar-ev-bar-bg mb-2">
+                                <div id="evTotalBar" class="editar-ev-bar"></div>
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">PS</span>
+                                    <input type="range" id="evHp" min="0" max="252" value="0" class="stat-range ev-range">
+                                    <span class="stat-slider-val" id="evHpVal">0</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Ataque</span>
+                                    <input type="range" id="evAtk" min="0" max="252" value="0" class="stat-range ev-range">
+                                    <span class="stat-slider-val" id="evAtkVal">0</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Defensa</span>
+                                    <input type="range" id="evDef" min="0" max="252" value="0" class="stat-range ev-range">
+                                    <span class="stat-slider-val" id="evDefVal">0</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Atq. Esp.</span>
+                                    <input type="range" id="evSpA" min="0" max="252" value="0" class="stat-range ev-range">
+                                    <span class="stat-slider-val" id="evSpAVal">0</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Def. Esp.</span>
+                                    <input type="range" id="evSpD" min="0" max="252" value="0" class="stat-range ev-range">
+                                    <span class="stat-slider-val" id="evSpDVal">0</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Velocidad</span>
+                                    <input type="range" id="evSpe" min="0" max="252" value="0" class="stat-range ev-range">
+                                    <span class="stat-slider-val" id="evSpeVal">0</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <h6>IVs (máx 31)</h6>
-                        <div class="row g-2">
-                            <div class="col-4"><input type="number" id="ivHp"  min="0" max="31" class="form-control" placeholder="HP"></div>
-                            <div class="col-4"><input type="number" id="ivAtk" min="0" max="31" class="form-control" placeholder="Atk"></div>
-                            <div class="col-4"><input type="number" id="ivDef" min="0" max="31" class="form-control" placeholder="Def"></div>
-                            <div class="col-4"><input type="number" id="ivSpA" min="0" max="31" class="form-control" placeholder="SpA"></div>
-                            <div class="col-4"><input type="number" id="ivSpD" min="0" max="31" class="form-control" placeholder="SpD"></div>
-                            <div class="col-4"><input type="number" id="ivSpe" min="0" max="31" class="form-control" placeholder="Spe"></div>
+                        <!-- IVs -->
+                        <div class="editar-seccion">
+                            <div class="editar-seccion-label">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94"/></svg>
+                                IVs &nbsp;<small class="editar-hint">0 a 31 por stat</small>
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">PS</span>
+                                    <input type="range" id="ivHp" min="0" max="31" value="31" class="stat-range iv-range">
+                                    <span class="stat-slider-val" id="ivHpVal">31</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Ataque</span>
+                                    <input type="range" id="ivAtk" min="0" max="31" value="31" class="stat-range iv-range">
+                                    <span class="stat-slider-val" id="ivAtkVal">31</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Defensa</span>
+                                    <input type="range" id="ivDef" min="0" max="31" value="31" class="stat-range iv-range">
+                                    <span class="stat-slider-val" id="ivDefVal">31</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Atq. Esp.</span>
+                                    <input type="range" id="ivSpA" min="0" max="31" value="31" class="stat-range iv-range">
+                                    <span class="stat-slider-val" id="ivSpAVal">31</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Def. Esp.</span>
+                                    <input type="range" id="ivSpD" min="0" max="31" value="31" class="stat-range iv-range">
+                                    <span class="stat-slider-val" id="ivSpDVal">31</span>
+                                </div>
+                                <div class="stat-slider-row">
+                                    <span class="stat-slider-label">Velocidad</span>
+                                    <input type="range" id="ivSpe" min="0" max="31" value="31" class="stat-range iv-range">
+                                    <span class="stat-slider-val" id="ivSpeVal">31</span>
+                                </div>
+                            </div>
                         </div>
+
+                        <div id="errorEditarPokemon" class="alert alert-danger d-none py-2 px-3" style="font-size:0.85rem;border-radius:10px;background:rgba(220,53,69,0.15);border:1px solid rgba(220,53,69,0.3);color:#f08090;"></div>
 
                     </div>
-
                 </div>
-
-                <div class="mt-3">
-                    <small id="errorEditarPokemon" class="text-danger d-none"></small>
-                </div>
-
             </div>
 
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="btnGuardarEdicionPokemon">
+            <div class="modal-footer modal-editar-footer">
+                <button class="btn btn-editar-cancelar" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-editar-guardar" id="btnGuardarEdicionPokemon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1z"/></svg>
                     Guardar cambios
-                </button>
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
-                    Cancelar
                 </button>
             </div>
 
@@ -299,5 +389,4 @@
 </div>
 
 </body>
-
 </html>
