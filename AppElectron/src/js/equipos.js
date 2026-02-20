@@ -48,174 +48,6 @@ async function initEquipos() {
         bootstrap.Toast.getOrCreateInstance(el).show();
     }
 
-<<<<<<< HEAD
-=======
-    // ── Paginación ─────────────────────────────────────
-    const EQUIPOS_POR_PAGINA = 6;
-    let paginaActual = 1;
-    let todosLosEquipos = [];
-
-    function crearCardEquipo(eq) {
-        const wrap = document.createElement("div");
-        wrap.className = "equipo-card-wrap";
-        wrap.innerHTML = `
-            <div class="card equipo-card">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">${eq.name}</h5>
-                    <p class="card-text mb-3">Formato: ${eq.format || "Sin formato"}</p>
-                    <div class="pokemon-preview mb-3" id="preview-${eq.id}">
-                        <div class="spinner-border spinner-border-sm text-warning" style="grid-column:1/-1;align-self:center;justify-self:center;"></div>
-                    </div>
-                    <div class="mt-auto d-flex gap-2">
-                        <button class="btn btn-primary flex-fill btn-ver" data-id="${eq.id}" data-name="${eq.name}">Ver / Editar</button>
-                        <button class="btn btn-danger btn-borrar d-flex align-items-center" data-id="${eq.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06m6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528M8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>`;
-        return wrap;
-    }
-
-    function renderizarPagina() {
-        const lista = document.getElementById("listaEquipos");
-        lista.innerHTML = "";
-
-        const inicio = (paginaActual - 1) * EQUIPOS_POR_PAGINA;
-        const equiposPagina = todosLosEquipos.slice(inicio, inicio + EQUIPOS_POR_PAGINA);
-
-        // Fila 1: primeros 3
-        const fila1 = document.createElement("div");
-        fila1.className = "equipos-fila";
-        equiposPagina.slice(0, 3).forEach(eq => {
-            const wrap = crearCardEquipo(eq);
-            fila1.appendChild(wrap);
-            cargarPreview(eq.id);
-        });
-        lista.appendChild(fila1);
-
-        // Fila 2: siguientes 3 (si los hay)
-        if (equiposPagina.length > 3) {
-            const fila2 = document.createElement("div");
-            fila2.className = "equipos-fila";
-            equiposPagina.slice(3, 6).forEach(eq => {
-                const wrap = crearCardEquipo(eq);
-                fila2.appendChild(wrap);
-                cargarPreview(eq.id);
-            });
-            lista.appendChild(fila2);
-        }
-
-        lista.querySelectorAll(".btn-ver").forEach(btn =>
-            btn.addEventListener("click", () => abrirModal(btn.dataset.id, btn.dataset.name)));
-        lista.querySelectorAll(".btn-borrar").forEach(btn =>
-            btn.addEventListener("click", () => eliminarEquipo(btn.dataset.id)));
-
-        crearPaginacion();
-    }
-
-    // ── Modal salto de página (igual que index) ──────────
-    const modalSaltoEquipos = new bootstrap.Modal(document.getElementById("modalSaltoPaginaEquipos"));
-    const inputPaginaEquipos = document.getElementById("inputPaginaEquipos");
-    const errorPaginaEquipos = document.getElementById("errorPaginaEquipos");
-    const btnIrPaginaEquipos = document.getElementById("btnIrPaginaEquipos");
-
-    function mostrarModalSaltoEquipos() {
-        inputPaginaEquipos.value = "";
-        errorPaginaEquipos.classList.add("d-none");
-        modalSaltoEquipos.show();
-    }
-
-    inputPaginaEquipos.addEventListener("keypress", e => { if (e.key === "Enter") btnIrPaginaEquipos.click(); });
-    btnIrPaginaEquipos.addEventListener("click", () => {
-        const page = parseInt(inputPaginaEquipos.value);
-        const total = Math.ceil(todosLosEquipos.length / EQUIPOS_POR_PAGINA);
-        if (!isNaN(page) && page >= 1 && page <= total) {
-            modalSaltoEquipos.hide();
-            irAPagina(page);
-        } else {
-            errorPaginaEquipos.classList.remove("d-none");
-        }
-    });
-
-    function irAPagina(page) {
-        paginaActual = page;
-        renderizarPagina();
-        equiposView.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function crearPaginacion() {
-        let paginacion = document.getElementById("paginacionEquipos");
-        if (!paginacion) {
-            paginacion = document.createElement("div");
-            paginacion.id = "paginacionEquipos";
-            paginacion.className = "d-flex justify-content-center mt-2 pb-4";
-            document.getElementById("equiposView").appendChild(paginacion);
-        }
-        paginacion.innerHTML = "";
-
-        const total = Math.ceil(todosLosEquipos.length / EQUIPOS_POR_PAGINA);
-        if (total <= 1) return;
-
-        const container = document.createElement("div");
-        container.className = "d-flex align-items-center gap-2 flex-wrap justify-content-center";
-
-        // Botón anterior
-        const prev = document.createElement("button");
-        prev.className = "btn btn-secondary";
-        prev.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/></svg>`;
-        prev.disabled = paginaActual === 1;
-        prev.onclick = () => irAPagina(paginaActual - 1);
-        container.appendChild(prev);
-
-        // Lógica de páginas con "..." igual que index
-        const pages = [];
-
-        if (total === 1) {
-            pages.push(1);
-        } else {
-            pages.push(1);
-            if (paginaActual === total) {
-                pages.push("...");
-                pages.push(total);
-            } else {
-                if (paginaActual > 1) pages.push(paginaActual);
-                if (paginaActual < total) pages.push("...");
-                pages.push(total);
-            }
-        }
-
-        pages.forEach(p => {
-            if (p === "...") {
-                const b = document.createElement("button");
-                b.className = "btn btn-outline-primary";
-                b.textContent = "...";
-                b.onclick = mostrarModalSaltoEquipos;
-                container.appendChild(b);
-            } else {
-                const b = document.createElement("button");
-                b.className = p === paginaActual ? "btn btn-primary" : "btn btn-outline-primary";
-                b.textContent = p;
-                b.disabled = p === paginaActual;
-                b.onclick = () => irAPagina(p);
-                container.appendChild(b);
-            }
-        });
-
-        // Botón siguiente
-        const next = document.createElement("button");
-        next.className = "btn btn-secondary";
-        next.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/></svg>`;
-        next.disabled = paginaActual === total;
-        next.onclick = () => irAPagina(paginaActual + 1);
-        container.appendChild(next);
-
-        paginacion.appendChild(container);
-    }
-
->>>>>>> bbfd4754fbcce38996193e17afeb82d8c4de8f85
     async function cargarEquipos() {
         document.getElementById("spinnerEquipos").classList.remove("d-none");
         document.getElementById("listaEquipos").classList.add("d-none");
@@ -479,6 +311,7 @@ async function guardarEdicionPokemon(pokemonId) {
         +evSpe.value
     ];
 
+    // 🔹 Validación individual (0 - 252)
     for (let ev of valoresEV) {
         if (ev < 0 || ev > 252) {
             const err = document.getElementById("errorEditarPokemon");
@@ -488,6 +321,7 @@ async function guardarEdicionPokemon(pokemonId) {
         }
     }
 
+    // 🔹 Validación total (máx 510)
     const totalEV = valoresEV.reduce((a, b) => a + b, 0);
 
     if (totalEV > 510) {
@@ -497,6 +331,7 @@ async function guardarEdicionPokemon(pokemonId) {
         return;
     }
 
+    // 🔹 Si pasa validaciones, guardar
     await window.api.fetchWithAuth(
         `${API}/pokemon/id/${pokemonId}`,
         {
@@ -533,9 +368,11 @@ async function guardarEdicionPokemon(pokemonId) {
     // ── Exportar equipo (formato Showdown) ───────────────
     async function exportarEquipo(teamId) {
         try {
+            // Primero obtenemos la lista básica del equipo
             const listRes = await window.api.fetchWithAuth(`${API}/pokemon/team/${teamId}`);
             if (!listRes.ok || !listRes.data.length) { mostrarToast("El equipo no tiene Pokémon.", "warning"); return; }
 
+            // Luego pedimos los datos completos de cada Pokémon (EVs, IVs, movimientos, etc.)
             const fullPokemons = await Promise.all(
                 listRes.data.map(p => window.api.fetchWithAuth(`${API}/pokemon/id/${p.id}`).then(r => r.data))
             );
@@ -579,7 +416,7 @@ async function guardarEdicionPokemon(pokemonId) {
             }).join("\n\n");
 
             await navigator.clipboard.writeText(teamText);
-            mostrarToast("Equipo exportado en el portapapeles.", "success");
+            mostrarToast("Equipo exportado en formato Showdown.", "success");
 
         } catch (err) {
             console.error(err);
